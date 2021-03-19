@@ -12,7 +12,10 @@ func GetMessageById(id int) (m model.MessageInfo,err error) {
 
 // 查询需要发送的消息
 func GetMessageToSend(size int) (messages []model.MessageInfo, err error) {
-	messages, err = GetMessageByStatus(30) // TODO 假的
+	_, err = app.GetOrm().Context.
+		QueryTable(new(model.MessageInfo)).
+		Filter("Status", model.MessageInit).
+		OrderBy("UpdateTime").Limit(size).All(&messages)
 	return
 }
 

@@ -19,10 +19,10 @@ type MessageInfo struct {
 }
 
 const (
-	MessageStatusInit = iota // 新建,初始化
-	MessageSending // 投送中
-	MessageSendSuccess // 投送成功
-	MessageSendFailed // 投送失败
+	MessageInit = 1 // 新建,初始化
+	MessageSending = 2 // 投送中
+	MessageSendSuccess = 3 // 投送成功
+	MessageSendFailed = 4 // 投送失败
 	MessageCancelled = -1 // 取消
 	MessageSendExpired = -9 // 投送失败
 )

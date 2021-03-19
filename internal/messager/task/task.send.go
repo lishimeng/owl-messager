@@ -3,6 +3,7 @@ package task
 import (
 	"context"
 	"fmt"
+	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/messager/sender"
@@ -39,8 +40,8 @@ func (t *messageTask) loop() {
 		default:
 			messages, err := t.getMessages(5)
 			if err != nil {
-				fmt.Println("get message failed")
-				fmt.Println(err)
+				log.Info("get message failed")
+				log.Info(err)
 			} else {
 				t.handleMessages(messages...)
 			}
