@@ -1,7 +1,9 @@
 package api
 
+import "github.com/kataras/iris"
+
 // 发送邮件
-func AddMail() {
+func AddMail(ctx iris.Context) {
 	// sender id
 	// receiver list
 	// subject
@@ -13,24 +15,24 @@ func AddMail() {
 }
 
 // 发送短信
-func AddSms() {
+func AddSms(ctx iris.Context) {
 
 }
 
-func addMessage() {
+func addMessage(ctx iris.Context) {
 
 }
 
 // 邮件发件人列表
-func MailSenderList() {
+func MailSenderList(ctx iris.Context) {
 
 }
 // 邮件发件人详情
-func MailSenderInfo() {
+func MailSenderInfo(ctx iris.Context) {
 
 }
 
-func MailSenderEdit() {
+func MailSenderEdit(ctx iris.Context) {
 
 }
 

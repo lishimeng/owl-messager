@@ -66,13 +66,14 @@ func _main() (err error) {
 			SSL: etc.Config.Db.Ssl,
 		}
 		log.Info("start [%s]", etc.Config.Name)
+
 		builder.EnableDatabase(dbConfig.Build(),
 			new(model.MessageInfo),
 			new(model.MailMessageInfo),
 			new(model.SmsMessageInfo),
 			new(model.MailSenderInfo),
 			new(model.MessageTask),
-			new(model.MessageRunningTask)).EnableWeb(etc.Config.Web.Listen, api.Build()...)
+			new(model.MessageRunningTask)).EnableWeb(etc.Config.Web.Listen, api.Route)
 		return err
 	}, func(s string) {
 		log.Info(s)
