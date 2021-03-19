@@ -2,7 +2,7 @@ package sender
 
 import (
 	"context"
-	"fmt"
+	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/messager/msg"
@@ -20,6 +20,7 @@ type taskExecutor struct {
 }
 
 func New(ctx context.Context) (t TaskExecutor, err error) {
+	log.Info("start task engine")
 	mail, err := NewMailSender(ctx)
 	if err != nil {
 		return
@@ -34,32 +35,36 @@ func New(ctx context.Context) (t TaskExecutor, err error) {
 
 func (c *taskExecutor) Execute(task model.MessageTask) (err error) {
 
+	log.Info("task engine handle task: %d", task.Id)
 	mi, err := repo.GetMessageById(task.MessageId)
 	if err != nil {
-		fmt.Println(err)
+		_ = log.Error("unknown task:%d", task.Id)
+		_ = log.Error(err)
 		return
 	}
 
 	category := mi.Category
 	switch mi.Category {
 	case msg.Email:
-		fmt.Println("mail task")
+		log.Debug("mail task")
 		var m model.MailMessageInfo
 		m, err = repo.GetMailByMessageId(mi.Id)
 		if err != nil {
+			_ = log.Error("no mail refer to message:%d", mi.Id)
 			return
 		}
 		err = c.mailSenders.Send(m)
 	case msg.Sms:
-		fmt.Println("sms task")
+		log.Debug("sms task")
 		var m model.SmsMessageInfo
 		m, err = repo.GetSmsByMessageId(mi.Id)
 		if err != nil {
+			_ = log.Error("no sms refer to message:%d", mi.Id)
 			return
 		}
 		err = c.smsSenders.Send(m)
 	default:
-		fmt.Printf("unknown category:%d\n", category)
+		log.Info("unknown category:%d[task:%d]\n", category, task.Id)
 	}
 	return
 }

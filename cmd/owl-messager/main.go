@@ -5,19 +5,18 @@ import (
 	"fmt"
 	"github.com/astaxie/beego/orm"
 	"github.com/lishimeng/app-starter"
-	shutdown "github.com/lishimeng/go-app-shutdown"
 	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl/internal/api"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/etc"
+	"github.com/lishimeng/owl/internal/setup"
 	"time"
 )
 import _ "github.com/lib/pq"
 
 
 func main() {
-	var err error
 	orm.Debug = true
 
 	defer func() {
@@ -26,18 +25,9 @@ func main() {
 		}
 	}()
 
-	err = _main()
-	if err == nil {
-		shutdown.WaitExit(&shutdown.Configuration{
-			BeforeExit: func(s string) {
-				log.Info(s)
-			},
-		})
-	} else {
-		shutdown.Exit(err.Error())
-	}
+	err := _main()
 	if err != nil {
-		log.Info(err)
+		fmt.Println(err)
 	}
 	time.Sleep(time.Second * 2)
 }
@@ -73,7 +63,10 @@ func _main() (err error) {
 			new(model.SmsMessageInfo),
 			new(model.MailSenderInfo),
 			new(model.MessageTask),
-			new(model.MessageRunningTask)).EnableWeb(etc.Config.Web.Listen, api.Route)
+			new(model.MessageRunningTask)).
+			EnableWeb(etc.Config.Web.Listen, api.Route).
+			ComponentBefore(setup.JobClearExpireTask).
+			ComponentBefore(setup.MessageSender)
 		return err
 	}, func(s string) {
 		log.Info(s)

@@ -2,11 +2,15 @@ package repo
 
 import (
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl/internal/db/model"
 )
 
 func GetMessageById(id int) (m model.MessageInfo,err error) {
+	log.Debug("get message from db: %d", id)
+	m.Id = id
+	err = app.GetOrm().Context.Read(&m)
 	return
 }
 

@@ -6,6 +6,8 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
+	"github.com/lishimeng/owl/internal/db/service"
+	"github.com/lishimeng/owl/internal/messager/msg"
 	"github.com/lishimeng/owl/internal/messager/sender"
 	"time"
 )
@@ -59,21 +61,55 @@ func (t messageTask) getMessages(size int) (messages []model.MessageInfo, err er
 
 func (t *messageTask) handleMessages(messages ...model.MessageInfo) {
 	for _, message := range messages {
-		t.handleMessage(message)
+		e := t.handleMessage(message)
+		if e != nil {
+			log.Info("handle message failed")
+			log.Info(e)
+		}
 	}
 }
 
-func (t *messageTask) handleMessage(message model.MessageInfo) {
-	task, err := repo.AddMessageTask(message.Id)
+func (t *messageTask) handleMessage(message model.MessageInfo) (err error) {
+	instanceId, err := getMessageInstanceId(message)
 	if err != nil {
-		fmt.Println(err)
+		log.Info("get message instance id failed")
+		return
+	}
+	task, err := service.CreateMessageTask(message, instanceId)
+	if err != nil {
+		log.Info("create message task failed")
+		log.Info(err)
 		return
 	}
 	// 提交给发送器
 	err = t.executor.Execute(task)
 	if err != nil {
-		fmt.Println(err)
+		// TODO message status -> fail
+		// TODO task status -> fail
+		// TODO delete running task
 		return
 	}
+	return
+}
+
+func getMessageInstanceId(message model.MessageInfo) (id int, err error) {
+	switch message.Category {
+	case msg.Email:
+		var mail model.MailMessageInfo
+		mail, err = repo.GetMailByMessageId(message.Id)
+		if err == nil {
+			id = mail.Id
+		}
+	case msg.Sms:
+		var sms model.SmsMessageInfo
+		sms, err = repo.GetSmsByMessageId(message.Id)
+		if err == nil {
+			id = sms.Id
+		}
+	default:
+		log.Info("known message category:%d[message id:%d]", message.Category, message.Id)
+		err = fmt.Errorf("known message category:%d[message id:%d]", message.Category, message.Id)
+	}
+	return
 }
 

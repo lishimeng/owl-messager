@@ -2,6 +2,7 @@ package sender
 
 import (
 	"context"
+	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/provider/mail"
@@ -28,6 +29,7 @@ func NewMailSender(ctx context.Context) (m Mail, err error) {
 
 func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 	// sender info
+	log.Info("send mail:%d", p.Id)
 	si, err := repo.GetMailSenderByCode(p.SenderCode)
 	if err != nil {
 		return

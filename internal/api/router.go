@@ -16,7 +16,7 @@ func router(root iris.Party) {
 	message(root.Party("/message"))
 
 	mailSender(root.Party("/mail_sender"))
-
+	mailTemplate(root.Party("/mail_template"))
 
 	// send message
 	mail(root.Party("/mail"))
@@ -35,11 +35,20 @@ func task(p iris.Party) {
 
 func mailSender(p iris.Party) {
 	p.Post("/", AddMailSender)
-	p.Post("/{mail_sender_id}", UpdateMailSender)
-	p.Post("/{mail_sender_id}", DeleteMailSender)
+	p.Put("/{id}", UpdateMailSender)
+	p.Delete("/{id}", DeleteMailSender)
 
 	p.Get("/", GetMailSenderList)
-	p.Get("/", GetMailSenderInfo)
+	p.Get("/{id}", GetMailSenderInfo)
+}
+
+func mailTemplate(p iris.Party) {
+	p.Post("/", AddMailTemplate)
+	p.Put("/{id}", UpdateMailTemplate)
+	p.Delete("/{id}", DeleteMailTemplate)
+
+	p.Get("/", GetMailTemplateList)
+	p.Get("/{id}", GetMailTemplateInfo)
 }
 
 func mail(p iris.Party) {

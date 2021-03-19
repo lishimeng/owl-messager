@@ -1,4 +1,4 @@
-package app
+package setup
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 
 var taskExecutor sender.TaskExecutor
 
-func SetupSender(ctx context.Context) (err error) {
+func MessageSender(ctx context.Context) (err error) {
 	taskExecutor, err = sender.New(ctx)
 	if err != nil {
 		return
@@ -24,7 +24,7 @@ func SetupSender(ctx context.Context) (err error) {
 	return
 }
 
-func SetupClearExpireTask(ctx context.Context) (err error) {
+func JobClearExpireTask(ctx context.Context) (err error) {
 	go task.RunClearExpired(ctx)
 	return
 }

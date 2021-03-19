@@ -9,11 +9,22 @@ import (
 
 // 创建投送task
 // 从未投送的message中取出一个
-func AddMessageTask(messageId int) (task model.MessageTask,err error) {
-	// 创建task
-	// task添加进running task表
-	// task提交给发送器
+func AddMessageTask(messageId int, messageInstanceId int) (task model.MessageTask,err error) {
+	task = model.MessageTask{
+		MessageId:         messageId,
+		MessageInstanceId: messageInstanceId,
+		TableChangeInfo:   model.TableChangeInfo{
+			Status:     model.MessageTaskInit, // TODO
+			CreateTime: time.Now(),
+			UpdateTime: time.Now(),
+		},
+	}
+	_, err = app.GetOrm().Context.Insert(&task)
 	return
+}
+
+func TaskSendFail(messageId int) {
+
 }
 
 // 取消超时的task
@@ -49,6 +60,17 @@ func GetExpiredTasks(size int, timeLatest time.Time) (tasks []model.MessageRunni
 		Filter("CreateTime__lt", timeLatest).
 		Limit(size).
 		All(&tasks)
+	return
+}
+
+func AddRunningTask(task model.MessageTask) (runningTask model.MessageRunningTask,err error) {
+	runningTask = model.MessageRunningTask{
+		TaskId:    task.Id,
+		TableInfo: model.TableInfo{
+			CreateTime: time.Now(),
+		},
+	}
+	_, err = app.GetOrm().Context.Insert(&runningTask)
 	return
 }
 
