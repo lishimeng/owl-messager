@@ -16,10 +16,11 @@ type MessageTask interface {
 type messageTask struct {
 	running bool
 	ctx context.Context
+	executor sender.TaskExecutor
 }
 
-func New(ctx context.Context) (t MessageTask, err error) {
-	t = &messageTask{ctx: ctx}
+func New(ctx context.Context, executor sender.TaskExecutor) (t MessageTask, err error) {
+	t = &messageTask{ctx: ctx, executor: executor}
 	return
 }
 
@@ -68,7 +69,7 @@ func (t *messageTask) handleMessage(message model.MessageInfo) {
 		return
 	}
 	// 提交给发送器
-	err = sender.Container.ExecuteTask(task)
+	err = t.executor.Execute(task)
 	if err != nil {
 		fmt.Println(err)
 		return

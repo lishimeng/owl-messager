@@ -2,48 +2,39 @@ package sender
 
 import (
 	"context"
-	"fmt"
+	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/provider/mail"
+	"strings"
 )
 
 type Mail interface {
-
+	Send(model.MailMessageInfo) (err error)
 }
 
 type mailSender struct {
 	ctx context.Context
 
-	payloadCh chan interface{}
-
 	maxWorker int
 }
 
-func NewMailSender(ctx context.Context, maxWorker int) {
-
-}
-
-func (m *mailSender) work() {
-	for {
-		select {
-		case <-m.ctx.Done():
-			return
-		case p := <-m.payloadCh:
-			e := m.send(p)
-			if e != nil {
-				fmt.Println("send mail failed")
-				fmt.Println(e)
-			}
-		}
+func NewMailSender(ctx context.Context) (m Mail, err error) {
+	m = &mailSender{
+		ctx:       ctx,
+		maxWorker: 1,
 	}
+	return
 }
 
-func (m *mailSender) send(p interface{}) (err error) {
+func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 	// sender info
-	si, err := repo.GetMailSenderByCode("")
+	si, err := repo.GetMailSenderByCode(p.SenderCode)
 	if err != nil {
 		return
 	}
+
+	toers := strings.Split(p.Receivers, ",")
+	// TODO delete toer:""
 	metas := mail.MetaInfo{
 		Server: mail.MetaServer{
 			Host: si.Host,
@@ -55,10 +46,10 @@ func (m *mailSender) send(p interface{}) (err error) {
 			Passwd: si.Passwd,
 		},
 		Receiver: mail.MetaReceiver{
-			To: []string{""},
+			To: toers,
 		},
 	}
 	s := mail.New()
-	err = s.Send(metas, "", "")
+	err = s.Send(metas, p.Subject, p.Body)
 	return
 }

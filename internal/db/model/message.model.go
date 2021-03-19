@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type MessageHeader struct {
 	Pk
 	TableChangeInfo
@@ -13,4 +15,5 @@ type MessageInfo struct {
 	TableChangeInfo
 	Category int
 	Subject string
+	NextSendTime time.Time
 }

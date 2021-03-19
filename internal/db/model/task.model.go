@@ -3,7 +3,8 @@ package model
 // 消息投送任务
 type MessageTask struct {
 	Pk
-	MessageId int
+	MessageId int // message
+	MessageInstanceId int // sms id/mail id
 	TableChangeInfo
 }
 
