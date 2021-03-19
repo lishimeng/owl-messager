@@ -23,3 +23,8 @@ func SetupSender(ctx context.Context) (err error) {
 
 	return
 }
+
+func SetupClearExpireTask(ctx context.Context) (err error) {
+	go task.RunClearExpired(ctx)
+	return
+}

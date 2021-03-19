@@ -16,9 +16,10 @@ type MessageRunningTask struct {
 }
 
 const (
-	MessageStatusInit = iota // 新建,初始化
-	MessageSending // 投送中
-	MessageSendSuccess // 投送成功
-	MessageSendFailed // 投送失败
-	MessageCancelled = -1 // 取消
+	MessageTaskInit = iota // 新建,初始化
+	MessageTaskSending // 投送中
+	MessageTaskSendSuccess // 投送成功
+	MessageTaskSendFailed // 投送失败
+	MessageTaskCancelled = -1 // 取消
+	MessageTaskSendExpired = -9 // 投送失败
 )

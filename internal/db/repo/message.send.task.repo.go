@@ -1,6 +1,11 @@
 package repo
 
-import "github.com/lishimeng/owl/internal/db/model"
+import (
+	"github.com/lishimeng/app-starter"
+	persistence "github.com/lishimeng/go-orm"
+	"github.com/lishimeng/owl/internal/db/model"
+	"time"
+)
 
 // 创建投送task
 // 从未投送的message中取出一个
@@ -19,8 +24,37 @@ func CancelExpiredTask(taskId int) {
 	// TODO 是否用数据库函数执行
 }
 
+func UpdateTaskStatus(taskId int, status int) (task model.MessageTask,err error) {
+	task.Id = taskId
+	err = app.GetOrm().Transaction(func(ctx persistence.OrmContext) (e error) {
+		e = ctx.Context.Read(&task)
+		if e != nil {
+			return
+		}
+		task.Status = status
+		_, e = ctx.Context.Update(task, "Status")
+		if e != nil {
+			return
+		}
+		return
+	})
+	return
+}
+
 // 超时的列表
 // size:取出数据量
-func GetExpiredTasks(size int) (tasks []model.MessageRunningTask, err error) {
+func GetExpiredTasks(size int, timeLatest time.Time) (tasks []model.MessageRunningTask, err error) {
+	_, err = app.GetOrm().Context.
+		QueryTable(new(model.MessageRunningTask)).
+		Filter("CreateTime__lt", timeLatest).
+		Limit(size).
+		All(&tasks)
+	return
+}
+
+func DeleteRunningTask(id int) (err error) {
+	_, err = app.GetOrm().Context.Delete(&model.MessageRunningTask{
+		Pk: model.Pk{Id: id},
+	})
 	return
 }
