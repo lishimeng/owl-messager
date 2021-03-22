@@ -4,7 +4,7 @@ package model
 type SmsMessageInfo struct {
 	MessageHeader
 	// 主题
-	Subject string
+	Subject string `orm:"column(subject)"`
 	// 正文
-	Body string
+	Body string `orm:"column(body)"`
 }

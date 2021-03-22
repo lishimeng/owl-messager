@@ -4,18 +4,16 @@ package model
 type MailMessageInfo struct {
 	MessageHeader
 
-	Template int  // mail template
+	Template int `orm:"column(template_id)"` // mail template
 
-	Params string // json params
+	Params string `orm:"column(params)"` // json params
 
-	Sender int // sender's Id
+	Sender int `orm:"column(sender_id)"` // sender's Id
 
-	Receivers string // receiver list. comma split
+	Receivers string `orm:"column(receiver)"` // receiver list. comma split
 
-	Cc string // CC
+	Cc string `orm:"column(cc)"` // CC
 
 	// 主题
-	Subject string
-	// 正文
-	Body string
+	Subject string `orm:"column(subject)"`
 }

@@ -64,6 +64,7 @@ func _main() (err error) {
 			new(model.MailMessageInfo),
 			new(model.SmsMessageInfo),
 			new(model.MailSenderInfo),
+			new(model.MailTemplateInfo),
 			new(model.MessageTask),
 			new(model.MessageRunningTask)).
 			EnableWeb(etc.Config.Web.Listen, api.Route)//.

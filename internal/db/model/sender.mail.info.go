@@ -4,12 +4,12 @@ package model
 // 邮件发送账号
 type MailSenderInfo struct {
 	Pk
-	Code string
-	Host string
-	Port int
-	Email string
-	Alias string
-	Passwd string
+	Code string `orm:"column(code)"`
+	Host string `orm:"column(host)"`
+	Port int `orm:"column(port)"`
+	Email string `orm:"column(email)"`
+	Alias string `orm:"column(alias)"`
+	Passwd string `orm:"column(password)"`
 
 	TableChangeInfo
 }

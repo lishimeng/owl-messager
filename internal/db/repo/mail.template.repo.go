@@ -3,6 +3,7 @@ package repo
 import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/owl/internal/db/model"
+	"time"
 )
 
 // 查询邮件Template
@@ -21,5 +22,25 @@ func GetMailTemplateById(id int) (s model.MailTemplateInfo,err error) {
 // 查询邮件Template列表
 func GetMailTemplateList() (s []model.MailTemplateInfo,err error) {
 	_, err = app.GetOrm().Context.QueryTable(new(model.MailSenderInfo)).All(&s)
+	return
+}
+
+func DeleteMailTemplate(id int) (err error) {
+	return
+}
+
+func CreateMailTemplate(code, body string) (m model.MailTemplateInfo, err error) {
+	tci := model.TableChangeInfo{
+		Status:     10,
+		CreateTime: time.Now(),
+		UpdateTime: time.Now(),
+	}
+	m = model.MailTemplateInfo{
+		Code:            code,
+		Body:            body,
+		TableChangeInfo: tci,
+	}
+	_, err = app.GetOrm().Context.Insert(&m)
+
 	return
 }

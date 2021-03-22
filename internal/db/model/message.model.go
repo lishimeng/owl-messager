@@ -6,16 +6,16 @@ type MessageHeader struct {
 	Pk
 	TableChangeInfo
 	// 消息ID(外键)
-	MessageId int
+	MessageId int `orm:"column(message_id)"`
 }
 
 // 消息主表
 type MessageInfo struct {
 	Pk
 	TableChangeInfo
-	Category int
-	Subject string
-	NextSendTime time.Time
+	Category int `orm:"column(category)"`
+	Subject string `orm:"column(subject)"`
+	NextSendTime time.Time `orm:"column(next_send_time)"`
 }
 
 const (
