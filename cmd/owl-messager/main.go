@@ -10,7 +10,6 @@ import (
 	"github.com/lishimeng/owl/internal/api"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/etc"
-	"github.com/lishimeng/owl/internal/setup"
 	"time"
 )
 import _ "github.com/lib/pq"
@@ -64,9 +63,9 @@ func _main() (err error) {
 			new(model.MailSenderInfo),
 			new(model.MessageTask),
 			new(model.MessageRunningTask)).
-			EnableWeb(etc.Config.Web.Listen, api.Route).
-			ComponentBefore(setup.JobClearExpireTask).
-			ComponentBefore(setup.MessageSender)
+			EnableWeb(etc.Config.Web.Listen, api.Route)//.
+			//ComponentBefore(setup.JobClearExpireTask).
+			//ComponentBefore(setup.MessageSender)
 		return err
 	}, func(s string) {
 		log.Info(s)

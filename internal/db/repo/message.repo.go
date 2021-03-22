@@ -43,3 +43,12 @@ func UpdateMessageStatus(id int, status int) (m model.MessageInfo,err error) {
 	})
 	return
 }
+
+func CreateMessage(subject string, category int) (m model.MessageInfo, err error) {
+	log.Debug("create message %s[category:%d]", subject, category)
+	m.Subject = subject
+	m.Category = category
+	m.Status = model.MessageInit
+	_, err = app.GetOrm().Context.Insert(&m)
+	return
+}

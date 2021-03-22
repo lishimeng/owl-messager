@@ -1,0 +1,13 @@
+
+name = "Owl messager"
+
+[web]
+listen = ":80"
+
+[db]
+user = "postgres"
+password = "postgres"
+host = "192.168.1.252"
+port = 5432
+database = "owl_messager"
+ssl = "disable" #require/verify-full/verify-ca/disable

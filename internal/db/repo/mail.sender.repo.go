@@ -4,6 +4,9 @@ import "github.com/lishimeng/owl/internal/db/model"
 
 // 查询邮件发送账号
 func GetMailSenderByCode(code string) (s model.MailSenderInfo,err error) {
+	if len(code) == 0 {
+
+	}
 	return
 }
 
