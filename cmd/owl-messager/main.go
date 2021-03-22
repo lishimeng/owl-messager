@@ -24,6 +24,9 @@ func main() {
 		}
 	}()
 
+	fmt.Println(AppName)
+	fmt.Println(Version)
+
 	err := _main()
 	if err != nil {
 		fmt.Println(err)
