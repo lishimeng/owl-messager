@@ -1,9 +1,10 @@
-package api
+package mailApi
 
 import (
 	"github.com/kataras/iris"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl/internal/api/common"
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/db/service"
 )
@@ -34,7 +35,7 @@ func SendMail(ctx iris.Context) {
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		resp.Code = -1
-		responseJSON(ctx, resp)
+		common.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -49,7 +50,7 @@ func SendMail(ctx iris.Context) {
 		log.Debug("param body nil")
 		resp.Code = -1
 		resp.Message = "body nil"
-		responseJSON(ctx, resp)
+		common.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -57,7 +58,7 @@ func SendMail(ctx iris.Context) {
 		log.Debug("param sender code nil")
 		resp.Code = -1
 		resp.Message = "sender nil"
-		responseJSON(ctx, resp)
+		common.ResponseJSON(ctx, resp)
 		return
 	}
 	sender, err := repo.GetMailSenderByCode(req.Sender)
@@ -65,7 +66,7 @@ func SendMail(ctx iris.Context) {
 		log.Debug("param sender not exist")
 		resp.Code = -1
 		resp.Message = "sender not exist"
-		responseJSON(ctx, resp)
+		common.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -73,7 +74,7 @@ func SendMail(ctx iris.Context) {
 		log.Debug("param template code nil")
 		resp.Code = -1
 		resp.Message = "template nil"
-		responseJSON(ctx, resp)
+		common.ResponseJSON(ctx, resp)
 		return
 	}
 	tpl, err := repo.GetMailTemplateByCode(req.Template)
@@ -81,7 +82,7 @@ func SendMail(ctx iris.Context) {
 		log.Debug("param template not exist")
 		resp.Code = -1
 		resp.Message = "template not exist"
-		responseJSON(ctx, resp)
+		common.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -91,11 +92,11 @@ func SendMail(ctx iris.Context) {
 		req.TemplateParam,
 		req.Subject, req.Body, req.Receiver, req.Cc)
 	if err != nil {
-		log.Info("can't create template")
+		log.Info("can't create mail")
 		log.Info(err)
 		resp.Code = -1
 		resp.Message = "create message failed"
-		responseJSON(ctx, resp)
+		common.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -103,5 +104,5 @@ func SendMail(ctx iris.Context) {
 	resp.MessageId = m.Id
 
 	resp.Code = 0
-	responseJSON(ctx, resp)
+	common.ResponseJSON(ctx, resp)
 }
