@@ -26,10 +26,13 @@ func GetMailTemplateList() (s []model.MailTemplateInfo, err error) {
 }
 
 func DeleteMailTemplate(id int) (err error) {
+	var t model.MailTemplateInfo
+	t.Id = id
+	_, err = app.GetOrm().Context.Delete(&t)
 	return
 }
 
-func CreateMailTemplate(code, body string) (m model.MailTemplateInfo, err error) {
+func CreateMailTemplate(code, body, description string) (m model.MailTemplateInfo, err error) {
 	tci := model.TableChangeInfo{
 		Status:     10,
 		CreateTime: time.Now(),
@@ -39,6 +42,9 @@ func CreateMailTemplate(code, body string) (m model.MailTemplateInfo, err error)
 		Code:            code,
 		Body:            body,
 		TableChangeInfo: tci,
+	}
+	if len(description) > 0 {
+		m.Description = description
 	}
 	_, err = app.GetOrm().Context.Insert(&m)
 

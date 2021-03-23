@@ -62,9 +62,10 @@ func GetMailTemplateInfo(ctx iris.Context) {
 }
 
 type MailTemplateReq struct {
-	Id   int    `json:"id,omitempty"`
-	Code string `json:"code,omitempty"`
-	Body string `json:"body"`
+	Id          int    `json:"id,omitempty"`
+	Code        string `json:"code,omitempty"`
+	Body        string `json:"body"`
+	Description string `json:"description,omitempty"`
 }
 
 func AddMailTemplate(ctx iris.Context) {
@@ -89,7 +90,7 @@ func AddMailTemplate(ctx iris.Context) {
 
 	code := common.GetRandomString(common.DefaultCodeLen)
 
-	m, err := repo.CreateMailTemplate(code, req.Body)
+	m, err := repo.CreateMailTemplate(code, req.Body, req.Description)
 	if err != nil {
 		log.Info("can't create template")
 		log.Info(err)
