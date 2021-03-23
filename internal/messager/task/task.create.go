@@ -7,6 +7,7 @@ import (
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/db/service"
 	"github.com/lishimeng/owl/internal/messager/sender"
+	"math"
 	"time"
 )
 
@@ -39,7 +40,7 @@ func (t *messageTask) loop() {
 		case <-t.ctx.Done():
 			return
 		default:
-			messages, err := t.getMessages(5)
+			messages, err := t.getMessages(1)
 			if err != nil {
 				log.Info("get message failed")
 				log.Info(err)
@@ -48,6 +49,8 @@ func (t *messageTask) loop() {
 			}
 			if len(messages) == 0 {
 				time.Sleep(time.Second * 10)
+			} else {
+				time.Sleep(time.Second * time.Duration(math.Round(10)))
 			}
 		}
 	}
