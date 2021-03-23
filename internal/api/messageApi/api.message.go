@@ -39,6 +39,5 @@ func Send(ctx iris.Context) {
 		return
 	}
 
-
 	common.ResponseJSON(ctx, resp)
 }

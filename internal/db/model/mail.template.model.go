@@ -2,9 +2,9 @@ package model
 
 type MailTemplateInfo struct {
 	Pk
-	Code string `orm:"column(code);unique"`
-	Body string `orm:"column(body)"`
-	Category int `orm:"column(category)"`
+	Code     string `orm:"column(code);unique"`
+	Body     string `orm:"column(body)"`
+	Category int    `orm:"column(category)"`
 	TableChangeInfo
 }
 
@@ -14,6 +14,6 @@ const (
 )
 
 const (
-	MailTemplateCategoryText  = 1 // text
+	MailTemplateCategoryText = 1 // text
 	MailTemplateCategoryHtml = 2 // html
 )

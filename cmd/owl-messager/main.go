@@ -67,8 +67,8 @@ func _main() (err error) {
 			new(model.MessageTask),
 			new(model.MessageRunningTask)).
 			EnableWeb(etc.Config.Web.Listen, api.Route).
-		//ComponentBefore(setup.JobClearExpireTask).
-		ComponentBefore(setup.MessageSender)
+			//ComponentBefore(setup.JobClearExpireTask).
+			ComponentBefore(setup.MessageSender)
 		return err
 	}, func(s string) {
 		log.Info(s)

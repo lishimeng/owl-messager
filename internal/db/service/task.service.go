@@ -92,7 +92,7 @@ func CreateMessageTask(message model.MessageInfo, messageInstanceId int) (task m
 		log.Info("running task create success [%d]", runningTask.Id)
 		// message status->sending
 		_, e = repo.UpdateMessageStatus(message.Id, model.MessageSending)
-		if e!= nil {
+		if e != nil {
 			log.Info("change message [status -> sending] failed")
 			return
 		}

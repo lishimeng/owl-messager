@@ -1,8 +1,8 @@
 package etc
 
 type Configuration struct {
-	Db      db     `toml:"db"`
-	Web     web    `toml:"web"`
+	Db  db  `toml:"db"`
+	Web web `toml:"web"`
 }
 
 type web struct {

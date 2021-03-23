@@ -34,7 +34,7 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 	log.Info("send mail:%d", p.Id)
 	si, err := repo.GetMailSenderById(p.Sender)
 	if err != nil {
-		log.Info("mail sender not exist:%d",  p.Sender)
+		log.Info("mail sender not exist:%d", p.Sender)
 		return
 	}
 
