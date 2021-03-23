@@ -1,17 +1,20 @@
 package repo
 
-import "github.com/lishimeng/owl/internal/db/model"
+import (
+	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/owl/internal/db/model"
+)
 
 // 查询邮件发送账号
 func GetMailSenderByCode(code string) (s model.MailSenderInfo,err error) {
-	if len(code) == 0 {
-
-	}
+	err = app.GetOrm().Context.QueryTable(new(model.MailSenderInfo)).Filter("Code", code).One(&s)
 	return
 }
 
 // 查询邮件发送账号
-func GetMailSenderById(id string) (s model.MailSenderInfo,err error) {
+func GetMailSenderById(id int) (s model.MailSenderInfo,err error) {
+	s.Id = id
+	err = app.GetOrm().Context.Read(&s)
 	return
 }
 
