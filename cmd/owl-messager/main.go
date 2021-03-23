@@ -7,6 +7,7 @@ import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
+	"github.com/lishimeng/owl/cmd"
 	"github.com/lishimeng/owl/internal/api"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/etc"
@@ -24,8 +25,8 @@ func main() {
 		}
 	}()
 
-	fmt.Println(AppName)
-	fmt.Println(Version)
+	fmt.Println(cmd.AppName)
+	fmt.Println(cmd.Version)
 
 	err := _main()
 	if err != nil {
@@ -53,7 +54,7 @@ func _main() (err error) {
 			Host:      etc.Config.Db.Host,
 			Port:      etc.Config.Db.Port,
 			DbName:    etc.Config.Db.DbName,
-			InitDb:    false,
+			InitDb:    true,
 			AliasName: "default",
 			SSL: etc.Config.Db.Ssl,
 		}

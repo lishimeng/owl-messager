@@ -17,7 +17,6 @@ type Req struct {
 	Template string `json:"template"` // template of this mail
 	TemplateParam string `json:"params"` // template params
 	Subject string `json:"subject"` // mail's subject
-	Body string `json:"body"` // mail body
 	Sender string `json:"sender"` // mail send account on the platform
 	Receiver string `json:"receiver"` // receiver list(with comma if multi)
 	Cc string `json:"cc,omitempty"` // cc list(with comma if multi)
@@ -44,14 +43,6 @@ func SendMail(ctx iris.Context) {
 	if len(req.Subject) == 0 {
 		log.Debug("no subject, use default: %s", DefaultMailSubject)
 		req.Subject = DefaultMailSubject
-	}
-
-	if len(req.Body) == 0 {
-		log.Debug("param body nil")
-		resp.Code = -1
-		resp.Message = "body nil"
-		common.ResponseJSON(ctx, resp)
-		return
 	}
 
 	if len(req.Sender) == 0 {
@@ -90,7 +81,7 @@ func SendMail(ctx iris.Context) {
 		sender,
 		tpl,
 		req.TemplateParam,
-		req.Subject, req.Body, req.Receiver, req.Cc)
+		req.Subject, req.Receiver, req.Cc)
 	if err != nil {
 		log.Info("can't create mail")
 		log.Info(err)

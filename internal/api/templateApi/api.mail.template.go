@@ -23,10 +23,11 @@ type InfoWrapper struct {
 }
 
 func GetMailTemplateList(ctx iris.Context) {
-
+	log.Debug("get mail template list")
 }
 
 func GetMailTemplateInfo(ctx iris.Context) {
+	log.Debug("get mail template")
 	var resp InfoWrapper
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
@@ -36,11 +37,13 @@ func GetMailTemplateInfo(ctx iris.Context) {
 		common.ResponseJSON(ctx, resp)
 		return
 	}
+	log.Debug("id:%d", id)
 	tpl, err := repo.GetMailTemplateById(id)
 	if err != nil {
-		log.Info("delete mail template failed")
+		log.Debug("get mail template failed")
+		log.Debug(err)
 		resp.Response.Code = -1
-		resp.Message = "delete template failed"
+		resp.Message = "template not exist"
 		common.ResponseJSON(ctx, resp)
 		return
 	}
@@ -65,7 +68,7 @@ type MailTemplateReq struct {
 }
 
 func AddMailTemplate(ctx iris.Context) {
-	log.Debug("send mail api")
+	log.Debug("add mail template")
 	var req MailTemplateReq
 	var resp InfoWrapper
 	err := ctx.ReadJSON(&req)
@@ -112,11 +115,12 @@ func AddMailTemplate(ctx iris.Context) {
 }
 
 func UpdateMailTemplate(ctx iris.Context) {
-
+	log.Debug("update mail template")
 }
 
 func DeleteMailTemplate(ctx iris.Context) {
 
+	log.Debug("delete mail template")
 	var resp app.Response
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
