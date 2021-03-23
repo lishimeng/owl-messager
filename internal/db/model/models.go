@@ -4,7 +4,7 @@ import "time"
 
 type Pk struct {
 	// ID
-	Id int `orm:"pk;column(id)"`
+	Id int `orm:"pk;auto;column(id)"`
 }
 
 type TableChangeInfo struct {

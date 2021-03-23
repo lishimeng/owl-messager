@@ -3,7 +3,7 @@ package model
 // 邮件发送账号
 type MailSenderInfo struct {
 	Pk
-	Code   string `orm:"column(code)"`
+	Code   string `orm:"column(code);unique"`
 	Host   string `orm:"column(host)"`
 	Port   int    `orm:"column(port)"`
 	Email  string `orm:"column(email)"`

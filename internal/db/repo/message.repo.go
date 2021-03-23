@@ -5,6 +5,7 @@ import (
 	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl/internal/db/model"
+	"time"
 )
 
 func GetMessageById(id int) (m model.MessageInfo, err error) {
@@ -48,7 +49,12 @@ func CreateMessage(subject string, category int) (m model.MessageInfo, err error
 	log.Debug("create message %s[category:%d]", subject, category)
 	m.Subject = subject
 	m.Category = category
-	m.Status = model.MessageInit
+	var tci = model.TableChangeInfo{
+		Status:     model.MessageInit,
+		CreateTime: time.Now(),
+		UpdateTime: time.Now(),
+	}
+	m.TableChangeInfo = tci
 	_, err = app.GetOrm().Context.Insert(&m)
 	return
 }
