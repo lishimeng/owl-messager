@@ -15,7 +15,6 @@ import (
 )
 import _ "github.com/lib/pq"
 
-
 func main() {
 	orm.Debug = true
 
@@ -39,7 +38,6 @@ func _main() (err error) {
 	configName := "config.toml"
 
 	application := app.New()
-	
 
 	err = application.Start(func(ctx context.Context, builder *app.ApplicationBuilder) error {
 
@@ -56,7 +54,7 @@ func _main() (err error) {
 			DbName:    etc.Config.Db.DbName,
 			InitDb:    true,
 			AliasName: "default",
-			SSL: etc.Config.Db.Ssl,
+			SSL:       etc.Config.Db.Ssl,
 		}
 		log.Info("start [%s]", etc.Config.Name)
 
@@ -68,9 +66,9 @@ func _main() (err error) {
 			new(model.MailTemplateInfo),
 			new(model.MessageTask),
 			new(model.MessageRunningTask)).
-			EnableWeb(etc.Config.Web.Listen, api.Route)//.
-			//ComponentBefore(setup.JobClearExpireTask).
-			//ComponentBefore(setup.MessageSender)
+			EnableWeb(etc.Config.Web.Listen, api.Route) //.
+		//ComponentBefore(setup.JobClearExpireTask).
+		//ComponentBefore(setup.MessageSender)
 		return err
 	}, func(s string) {
 		log.Info(s)

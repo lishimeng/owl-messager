@@ -14,7 +14,7 @@ import (
 ////////////////
 
 func RunClearExpired(ctx context.Context) {
-	var duration = time.Minute*10
+	var duration = time.Minute * 10
 	var timer = time.NewTimer(duration)
 	defer func() {
 		timer.Stop()
@@ -50,7 +50,7 @@ func clearExpiredTaskOnce(ctx context.Context) {
 }
 
 func clearExpiredTask() (size int, err error) {
-	var now = time.Now().Add(-time.Minute*12)
+	var now = time.Now().Add(-time.Minute * 12)
 	tasks, err := repo.GetExpiredTasks(10, now)
 	if err != nil {
 		log.Info(err)

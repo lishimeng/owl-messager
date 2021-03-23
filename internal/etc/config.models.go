@@ -17,5 +17,5 @@ type db struct {
 	Host     string `toml:"host"`
 	Port     int    `toml:"port"`
 	DbName   string `toml:"database"`
-	Ssl      string   `toml:"ssl"`
+	Ssl      string `toml:"ssl"`
 }

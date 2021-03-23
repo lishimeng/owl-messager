@@ -17,8 +17,8 @@ type MessageTask interface {
 }
 
 type messageTask struct {
-	running bool
-	ctx context.Context
+	running  bool
+	ctx      context.Context
 	executor sender.TaskExecutor
 }
 
@@ -48,7 +48,7 @@ func (t *messageTask) loop() {
 				t.handleMessages(messages...)
 			}
 			if len(messages) == 0 {
-				time.Sleep(time.Second*10)
+				time.Sleep(time.Second * 10)
 			}
 		}
 	}
@@ -112,4 +112,3 @@ func getMessageInstanceId(message model.MessageInfo) (id int, err error) {
 	}
 	return
 }
-

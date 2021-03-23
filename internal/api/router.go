@@ -7,7 +7,6 @@ import (
 	"github.com/lishimeng/owl/internal/api/templateApi"
 )
 
-
 func Route(app *iris.Application) {
 	root := app.Party("/api")
 	router(root)

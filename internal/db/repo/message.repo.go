@@ -7,7 +7,7 @@ import (
 	"github.com/lishimeng/owl/internal/db/model"
 )
 
-func GetMessageById(id int) (m model.MessageInfo,err error) {
+func GetMessageById(id int) (m model.MessageInfo, err error) {
 	log.Debug("get message from db: %d", id)
 	m.Id = id
 	err = app.GetOrm().Context.Read(&m)
@@ -27,7 +27,7 @@ func GetMessageByStatus(status int) (messages []model.MessageInfo, err error) {
 	return
 }
 
-func UpdateMessageStatus(id int, status int) (m model.MessageInfo,err error) {
+func UpdateMessageStatus(id int, status int) (m model.MessageInfo, err error) {
 	err = app.GetOrm().Transaction(func(ctx persistence.OrmContext) (e error) {
 		m.Id = id
 		e = ctx.Context.Read(&m)

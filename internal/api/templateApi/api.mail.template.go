@@ -9,12 +9,12 @@ import (
 )
 
 type Info struct {
-	Id int `json:"id,omitempty"`
+	Id           int    `json:"id,omitempty"`
 	TemplateCode string `json:"templateCode,omitempty"`
 	TemplateBody string `json:"templateBody,omitempty"`
-	Status int `json:"status,omitempty"`
-	CreateTime string `json:"createTime,omitempty"`
-	UpdateTime string `json:"updateTime,omitempty"`
+	Status       int    `json:"status,omitempty"`
+	CreateTime   string `json:"createTime,omitempty"`
+	UpdateTime   string `json:"updateTime,omitempty"`
 }
 
 type InfoWrapper struct {
@@ -62,7 +62,7 @@ func GetMailTemplateInfo(ctx iris.Context) {
 }
 
 type MailTemplateReq struct {
-	Id int `json:"id,omitempty"`
+	Id   int    `json:"id,omitempty"`
 	Code string `json:"code,omitempty"`
 	Body string `json:"body"`
 }

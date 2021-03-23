@@ -14,12 +14,12 @@ const (
 )
 
 type Req struct {
-	Template string `json:"template,omitempty"` // template of this mail
-	TemplateParam string `json:"params,omitempty"` // template params
-	Subject string `json:"subject,omitempty"` // mail's subject
-	Sender string `json:"sender,omitempty"` // mail send account on the platform
-	Receiver string `json:"receiver,omitempty"` // receiver list(with comma if multi)
-	Cc string `json:"cc,omitempty"` // cc list(with comma if multi)
+	Template      string `json:"template,omitempty"` // template of this mail
+	TemplateParam string `json:"params,omitempty"`   // template params
+	Subject       string `json:"subject,omitempty"`  // mail's subject
+	Sender        string `json:"sender,omitempty"`   // mail send account on the platform
+	Receiver      string `json:"receiver,omitempty"` // receiver list(with comma if multi)
+	Cc            string `json:"cc,omitempty"`       // cc list(with comma if multi)
 }
 
 type Resp struct {
@@ -61,7 +61,7 @@ func SendMail(ctx iris.Context) {
 		return
 	}
 
-	if len(req.Template) == 0{
+	if len(req.Template) == 0 {
 		log.Debug("param template code nil")
 		resp.Code = -1
 		resp.Message = "template nil"

@@ -14,7 +14,7 @@ type TaskExecutor interface {
 
 type taskExecutor struct {
 	mailSenders Mail
-	smsSenders Sms
+	smsSenders  Sms
 
 	ctx context.Context
 }

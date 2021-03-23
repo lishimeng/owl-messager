@@ -39,7 +39,6 @@ type Sender interface {
 }
 
 type sender struct {
-
 }
 
 func New() (s Sender) {

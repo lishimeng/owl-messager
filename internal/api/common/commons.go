@@ -15,7 +15,7 @@ func ResponseJSON(ctx iris.Context, j interface{}) {
 
 const (
 	DefaultTimeFormatter = "2006-01-02:15:04:05"
-	DefaultCodeLen = 16
+	DefaultCodeLen       = 16
 )
 
 func FormatTime(t time.Time) (s string) {

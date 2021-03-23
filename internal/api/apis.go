@@ -9,7 +9,6 @@ func AddMail(ctx iris.Context) {
 	// subject
 	// body
 
-
 	// save message
 	// save mail body
 }
@@ -27,6 +26,7 @@ func addMessage(ctx iris.Context) {
 func MailSenderList(ctx iris.Context) {
 
 }
+
 // 邮件发件人详情
 func MailSenderInfo(ctx iris.Context) {
 
@@ -50,5 +50,3 @@ func MailSenderDelete() {
 func MailSenderSetDefault() {
 
 }
-
-

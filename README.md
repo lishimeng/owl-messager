@@ -15,12 +15,12 @@ What is this?
 ---
 
 owl messager is a platform:
+
 1. Support email.
 1. Support SMS.
 1. Support APNS.
 1. Support Multi-tenant.
 1. Support Account list(mail sender).
-
 
 Build & Install
 --------------

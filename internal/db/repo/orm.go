@@ -9,7 +9,7 @@ type PagerRes struct {
 	// 页面大小
 	PageSize int
 	// 页号
-	PageNo   int
+	PageNo int
 	// 总页数
 	TotalPage int
 	// 总条数
