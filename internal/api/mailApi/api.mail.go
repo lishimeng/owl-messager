@@ -14,11 +14,11 @@ const (
 )
 
 type Req struct {
-	Template string `json:"template"` // template of this mail
-	TemplateParam string `json:"params"` // template params
-	Subject string `json:"subject"` // mail's subject
-	Sender string `json:"sender"` // mail send account on the platform
-	Receiver string `json:"receiver"` // receiver list(with comma if multi)
+	Template string `json:"template,omitempty"` // template of this mail
+	TemplateParam string `json:"params,omitempty"` // template params
+	Subject string `json:"subject,omitempty"` // mail's subject
+	Sender string `json:"sender,omitempty"` // mail send account on the platform
+	Receiver string `json:"receiver,omitempty"` // receiver list(with comma if multi)
 	Cc string `json:"cc,omitempty"` // cc list(with comma if multi)
 }
 
