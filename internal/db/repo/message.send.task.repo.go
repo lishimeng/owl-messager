@@ -2,7 +2,6 @@ package repo
 
 import (
 	"github.com/lishimeng/app-starter"
-	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl/internal/db/model"
 	"time"
 )
@@ -37,18 +36,9 @@ func CancelExpiredTask(taskId int) {
 
 func UpdateTaskStatus(taskId int, status int) (task model.MessageTask, err error) {
 	task.Id = taskId
-	err = app.GetOrm().Transaction(func(ctx persistence.OrmContext) (e error) {
-		e = ctx.Context.Read(&task)
-		if e != nil {
-			return
-		}
-		task.Status = status
-		_, e = ctx.Context.Update(task, "Status")
-		if e != nil {
-			return
-		}
-		return
-	})
+	task.Status = status
+	task.UpdateTime = time.Now()
+	_, err = app.GetOrm().Context.Update(&task, "Status")
 	return
 }
 
@@ -74,9 +64,19 @@ func AddRunningTask(task model.MessageTask) (runningTask model.MessageRunningTas
 	return
 }
 
+func DeleteRunningTaskByTaskId(taskId int) (err error) {
+	var runningTask model.MessageRunningTask
+	err = app.GetOrm().Context.QueryTable(new(model.MessageRunningTask)).Filter("TaskId", taskId).One(&runningTask)
+	if err != nil {
+		return
+	}
+	_, err = app.GetOrm().Context.Delete(&runningTask)
+	return
+}
+
 func DeleteRunningTask(id int) (err error) {
-	_, err = app.GetOrm().Context.Delete(&model.MessageRunningTask{
-		Pk: model.Pk{Id: id},
-	})
+	var runningTask model.MessageRunningTask
+	runningTask.Id = id
+	_, err = app.GetOrm().Context.Delete(runningTask)
 	return
 }

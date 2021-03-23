@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/kataras/iris"
 	"github.com/lishimeng/owl/internal/api/mailApi"
+	"github.com/lishimeng/owl/internal/api/messageApi"
 	mailSender2 "github.com/lishimeng/owl/internal/api/senderApi"
 	"github.com/lishimeng/owl/internal/api/templateApi"
 )
@@ -26,8 +27,9 @@ func router(root iris.Party) {
 }
 
 func message(p iris.Party) {
-	p.Get("/", GetMessageList)
-	p.Get("/{message_id}", GetMessageInfo)
+	p.Get("/", messageApi.GetMessageList)
+	p.Get("/{message_id}", messageApi.GetMessageInfo)
+	p.Post("/send/{id}", messageApi.Send)
 }
 
 func task(p iris.Party) {

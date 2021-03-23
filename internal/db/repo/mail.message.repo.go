@@ -7,6 +7,7 @@ import (
 )
 
 func GetMailByMessageId(msgId int) (m model.MailMessageInfo, err error) {
+	err = app.GetOrm().Context.QueryTable(new(model.MailMessageInfo)).Filter("MessageId", msgId).One(&m)
 	return
 }
 

@@ -3,7 +3,6 @@ package repo
 import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/go-log"
-	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl/internal/db/model"
 	"time"
 )
@@ -29,25 +28,25 @@ func GetMessageByStatus(status int) (messages []model.MessageInfo, err error) {
 }
 
 func UpdateMessageStatus(id int, status int) (m model.MessageInfo, err error) {
-	err = app.GetOrm().Transaction(func(ctx persistence.OrmContext) (e error) {
-		m.Id = id
-		e = ctx.Context.Read(&m)
-		if e != nil {
-			return
-		}
-		m.Status = status
-		_, e = ctx.Context.Update(m, "Status")
-		if e != nil {
-			return
-		}
-		return
-	})
+	m.Id = id
+	m.Status = status
+	m.UpdateTime = time.Now()
+	_, err = app.GetOrm().Context.Update(&m, "Status")
+	return
+}
+
+func UpdateMessagePriority(id int, priority int) (m model.MessageInfo, err error) {
+	m.Id = id
+	m.Priority = priority
+	m.UpdateTime = time.Now()
+	_, err = app.GetOrm().Context.Update(&m, "Priority")
 	return
 }
 
 func CreateMessage(subject string, category int) (m model.MessageInfo, err error) {
 	log.Debug("create message %s[category:%d]", subject, category)
 	m.Subject = subject
+	m.Priority = model.MessagePriorityNormal
 	m.Category = category
 	var tci = model.TableChangeInfo{
 		Status:     model.MessageInit,

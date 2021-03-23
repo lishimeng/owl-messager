@@ -15,6 +15,7 @@ type MessageInfo struct {
 	TableChangeInfo
 	Category     int       `orm:"column(category)"`
 	Subject      string    `orm:"column(subject)"`
+	Priority     int       `orm:"column(priority);null"`
 	NextSendTime time.Time `orm:"column(next_send_time);null"`
 }
 
@@ -25,4 +26,10 @@ const (
 	MessageSendFailed  = 4  // 投送失败
 	MessageCancelled   = -1 // 取消
 	MessageSendExpired = -9 // 投送失败
+)
+
+const (
+	MessagePriorityLow    = 1 // low
+	MessagePriorityNormal = 2 // normal
+	MessagePriorityHigh   = 3 // high
 )

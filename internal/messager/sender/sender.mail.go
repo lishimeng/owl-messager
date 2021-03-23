@@ -2,10 +2,12 @@ package sender
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/provider/mail"
+	"github.com/lishimeng/owl/internal/provider/template"
 	"strings"
 )
 
@@ -30,8 +32,9 @@ func NewMailSender(ctx context.Context) (m Mail, err error) {
 func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 	// sender info
 	log.Info("send mail:%d", p.Id)
-	si, err := repo.GetMailSenderByCode(p.SenderCode)
+	si, err := repo.GetMailSenderById(p.Sender)
 	if err != nil {
+		log.Info("mail sender not exist:%d",  p.Sender)
 		return
 	}
 
@@ -51,7 +54,27 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 			To: toers,
 		},
 	}
-	s := mail.New()
-	err = s.Send(metas, p.Subject, p.Body)
+
+	tpl, err := repo.GetMailTemplateById(p.Template)
+	if err != nil {
+		log.Info("mail template not exist:%d", p.Template)
+		return
+	}
+	var params map[string]interface{}
+	err = json.Unmarshal([]byte(p.Params), &params)
+	if err != nil {
+		log.Info("params of mail template is not json format:%s", p.Params)
+		return
+	}
+	c, err := template.Rend(params, tpl.Body, tpl.Category)
+	if err != nil {
+		log.Info("template render failed")
+		log.Info(err)
+		return
+	}
+	if len(c) > 0 {
+		s := mail.New()
+		err = s.Send(metas, p.Subject, c)
+	}
 	return
 }
