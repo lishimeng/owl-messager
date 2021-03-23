@@ -1,5 +1,3 @@
-name = "Owl messager"
-
 [web]
 listen = ":80"
 

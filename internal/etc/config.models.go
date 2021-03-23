@@ -1,8 +1,6 @@
 package etc
 
 type Configuration struct {
-	Name    string `toml:"name"`
-	Version string `toml:"version"`
 	Db      db     `toml:"db"`
 	Web     web    `toml:"web"`
 }

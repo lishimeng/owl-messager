@@ -56,7 +56,6 @@ func _main() (err error) {
 			AliasName: "default",
 			SSL:       etc.Config.Db.Ssl,
 		}
-		log.Info("start [%s]", etc.Config.Name)
 
 		builder.EnableDatabase(dbConfig.Build(),
 			new(model.MessageInfo),
