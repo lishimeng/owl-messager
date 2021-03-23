@@ -6,3 +6,8 @@ type MailTemplateInfo struct {
 	Body string `orm:"column(body)"`
 	TableChangeInfo
 }
+
+const (
+	MailTemplateEnable  = 1 // enable
+	MailTemplateDisable = 0 // disable
+)

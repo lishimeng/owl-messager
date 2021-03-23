@@ -13,9 +13,9 @@ type MessageHeader struct {
 type MessageInfo struct {
 	Pk
 	TableChangeInfo
-	Category     int       `orm:"column(category);null"`
+	Category     int       `orm:"column(category)"`
 	Subject      string    `orm:"column(subject)"`
-	NextSendTime time.Time `orm:"column(next_send_time)"`
+	NextSendTime time.Time `orm:"column(next_send_time);null"`
 }
 
 const (

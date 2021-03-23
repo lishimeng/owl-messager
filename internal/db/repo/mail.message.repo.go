@@ -3,6 +3,7 @@ package repo
 import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/owl/internal/db/model"
+	"time"
 )
 
 func GetMailByMessageId(msgId int) (m model.MailMessageInfo, err error) {
@@ -22,6 +23,10 @@ func CreateMailMessage(message model.MessageInfo, sender model.MailSenderInfo, t
 	if len(cc) > 0 {
 		m.Cc = cc
 	}
+
+	m.Status = model.MailTemplateEnable
+	m.CreateTime = time.Now()
+	m.UpdateTime = time.Now()
 
 	_, err = app.GetOrm().Context.Insert(&m)
 	return

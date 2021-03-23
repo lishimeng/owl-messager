@@ -7,7 +7,7 @@ type MailSenderInfo struct {
 	Host   string `orm:"column(host)"`
 	Port   int    `orm:"column(port)"`
 	Email  string `orm:"column(email)"`
-	Alias  string `orm:"column(alias)"`
+	Alias  string `orm:"column(alias);null"`
 	Passwd string `orm:"column(password)"`
 
 	TableChangeInfo
