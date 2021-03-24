@@ -85,7 +85,7 @@ type MailTemplateReq struct {
 http://localhost/api/mail_template
 
 {"body":"fasfasgasd", "category":2,"name":"电量低超提醒"}
- */
+*/
 func AddMailTemplate(ctx iris.Context) {
 	log.Debug("add mail template")
 	var req MailTemplateReq
@@ -119,6 +119,7 @@ func AddMailTemplate(ctx iris.Context) {
 	}
 
 	code := common.GetRandomString(common.DefaultCodeLen)
+	code = "tpl_" + code
 
 	m, err := repo.CreateMailTemplate(code, req.Name, req.Body, req.Description, req.Category)
 	if err != nil {

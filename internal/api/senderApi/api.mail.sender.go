@@ -30,6 +30,9 @@ func GetMailSenderList(ctx iris.Context) {
 
 }
 
+/**
+@Router /api/mail_sender/{id} [get]
+ */
 func GetMailSenderInfo(ctx iris.Context) {
 	log.Debug("get mail sender")
 	var resp InfoWrapper
@@ -70,7 +73,8 @@ func GetMailSenderInfo(ctx iris.Context) {
 }
 
 func AddMailSender(ctx iris.Context) {
-
+	code := common.GetRandomString(common.DefaultCodeLen)
+	code = "sender_" + code
 }
 
 func UpdateMailSender(ctx iris.Context) {

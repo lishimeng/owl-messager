@@ -22,8 +22,8 @@ func router(root iris.Party) {
 	mailTemplate(root.Party("/mail_template"))
 
 	// send message
-	mail(root.Party("/mail"))
-	sms(root.Party("/sms"))
+	mail(root.Party("/send/mail"))
+	sms(root.Party("/send/sms"))
 }
 
 func message(p iris.Party) {

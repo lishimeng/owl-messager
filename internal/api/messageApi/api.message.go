@@ -17,6 +17,11 @@ func GetMessageInfo(ctx iris.Context) {
 
 }
 
+/**
+@Summary send a message now, this will change message to a high priority
+
+@Router /api/message/send/{id} [post]
+ */
 func Send(ctx iris.Context) {
 	log.Debug("send message[manual]")
 	var resp app.Response
