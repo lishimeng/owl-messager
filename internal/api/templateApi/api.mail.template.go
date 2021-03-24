@@ -71,6 +71,21 @@ type MailTemplateReq struct {
 	Category    int    `json:"category,omitempty"`
 }
 
+/**
+@Summary add a new template for send email
+
+@Accept  json
+
+@Produce  json
+
+@Router /api/mail_template [post]
+
+@Example
+
+http://localhost/api/mail_template
+
+{"body":"fasfasgasd", "category":2,"name":"电量低超提醒"}
+ */
 func AddMailTemplate(ctx iris.Context) {
 	log.Debug("add mail template")
 	var req MailTemplateReq
