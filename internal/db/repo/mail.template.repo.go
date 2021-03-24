@@ -31,9 +31,10 @@ func DeleteMailTemplate(id int) (err error) {
 	return
 }
 
-func CreateMailTemplate(code, body, description string, category int) (m model.MailTemplateInfo, err error) {
+func CreateMailTemplate(code, name, body, description string, category int) (m model.MailTemplateInfo, err error) {
 	m = model.MailTemplateInfo{
 		Code:     code,
+		Name:     name,
 		Body:     body,
 		Category: category,
 	}

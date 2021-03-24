@@ -4,6 +4,7 @@ package model
 type MailSenderInfo struct {
 	Pk
 	Code   string `orm:"column(code);unique"`
+	Name   string `orm:"column(name)"`
 	Host   string `orm:"column(host)"`
 	Port   int    `orm:"column(port)"`
 	Email  string `orm:"column(email)"`
