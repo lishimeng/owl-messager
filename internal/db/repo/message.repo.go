@@ -48,12 +48,7 @@ func CreateMessage(subject string, category int) (m model.MessageInfo, err error
 	m.Subject = subject
 	m.Priority = model.MessagePriorityNormal
 	m.Category = category
-	var tci = model.TableChangeInfo{
-		Status:     model.MessageInit,
-		CreateTime: time.Now(),
-		UpdateTime: time.Now(),
-	}
-	m.TableChangeInfo = tci
+	m.Status = model.MessageInit
 	_, err = app.GetOrm().Context.Insert(&m)
 	return
 }

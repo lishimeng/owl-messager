@@ -12,12 +12,8 @@ func AddMessageTask(messageId int, messageInstanceId int) (task model.MessageTas
 	task = model.MessageTask{
 		MessageId:         messageId,
 		MessageInstanceId: messageInstanceId,
-		TableChangeInfo: model.TableChangeInfo{
-			Status:     model.MessageTaskInit, // TODO
-			CreateTime: time.Now(),
-			UpdateTime: time.Now(),
-		},
 	}
+	task.Status = model.MessageTaskInit
 	_, err = app.GetOrm().Context.Insert(&task)
 	return
 }
@@ -56,9 +52,6 @@ func GetExpiredTasks(size int, timeLatest time.Time) (tasks []model.MessageRunni
 func AddRunningTask(task model.MessageTask) (runningTask model.MessageRunningTask, err error) {
 	runningTask = model.MessageRunningTask{
 		TaskId: task.Id,
-		TableInfo: model.TableInfo{
-			CreateTime: time.Now(),
-		},
 	}
 	_, err = app.GetOrm().Context.Insert(&runningTask)
 	return

@@ -20,6 +20,7 @@ func Rend(data interface{}, temp string, category int) (content string, err erro
 		err = fmt.Errorf("unknown mail template category:%d", category)
 		return
 	}
+
 	return
 }
 

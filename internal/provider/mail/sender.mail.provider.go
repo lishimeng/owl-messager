@@ -3,6 +3,7 @@ package mail
 import (
 	"errors"
 	"github.com/go-gomail/gomail"
+	"github.com/lishimeng/go-log"
 )
 
 type MetaInfo struct {
@@ -49,6 +50,7 @@ func New() (s Sender) {
 
 func (s *sender) Send(metas MetaInfo, subject string, body string) (err error) {
 
+	log.Debug("mail body:%s", body)
 	err = s.chkParam(metas)
 	if err != nil {
 		return err

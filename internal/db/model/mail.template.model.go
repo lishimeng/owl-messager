@@ -15,6 +15,7 @@ const (
 )
 
 const (
-	MailTemplateCategoryText = 1 // text
-	MailTemplateCategoryHtml = 2 // html
+	MailTemplateCategoryText    = 1                        // text
+	MailTemplateCategoryHtml    = 2                        // html
+	MailTemplateCategoryDefault = MailTemplateCategoryText // text
 )

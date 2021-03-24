@@ -5,6 +5,7 @@ import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/api/common"
+	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
 )
 
@@ -64,8 +65,9 @@ func GetMailTemplateInfo(ctx iris.Context) {
 type MailTemplateReq struct {
 	Id          int    `json:"id,omitempty"`
 	Code        string `json:"code,omitempty"`
-	Body        string `json:"body"`
+	Body        string `json:"body,omitempty"`
 	Description string `json:"description,omitempty"`
+	Category    int    `json:"category,omitempty"`
 }
 
 func AddMailTemplate(ctx iris.Context) {
@@ -88,9 +90,14 @@ func AddMailTemplate(ctx iris.Context) {
 		return
 	}
 
+	if req.Category == 0 {
+		log.Debug("param category nil, use default")
+		req.Category = model.MailTemplateCategoryDefault
+	}
+
 	code := common.GetRandomString(common.DefaultCodeLen)
 
-	m, err := repo.CreateMailTemplate(code, req.Body, req.Description)
+	m, err := repo.CreateMailTemplate(code, req.Body, req.Description, req.Category)
 	if err != nil {
 		log.Info("can't create template")
 		log.Info(err)
