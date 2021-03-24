@@ -143,6 +143,7 @@ func AddMailTemplate(ctx iris.Context) {
 		UpdateTime:   common.FormatTime(m.UpdateTime),
 	}
 	resp.Info = tmpInfo
+	resp.Code = common.RespCodeSuccess
 	common.ResponseJSON(ctx, resp)
 }
 

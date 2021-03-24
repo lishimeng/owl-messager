@@ -126,6 +126,6 @@ func SendMail(ctx iris.Context) {
 	log.Debug("create message success, id:%d", m.Id)
 	resp.MessageId = m.Id
 
-	resp.Code = 0
+	resp.Code = common.RespCodeSuccess
 	common.ResponseJSON(ctx, resp)
 }

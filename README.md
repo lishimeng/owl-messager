@@ -4,7 +4,6 @@ owl messager
 [![issues](https://img.shields.io/github/issues/lishimeng/owl-messager)](https://github.com/lishimeng/owl-messager)
 [![License](https://img.shields.io/github/license/lishimeng/owl-messager)](https://github.com/lishimeng/owl-messager)
 
-
 Message notify platform.
 
 Great for:

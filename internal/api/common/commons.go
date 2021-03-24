@@ -8,6 +8,11 @@ import (
 	"time"
 )
 
+const (
+	RespCodeSuccess  = 200
+	RespCodeNotFound = 400
+)
+
 func ResponseJSON(ctx iris.Context, j interface{}) {
 	bs, _ := json.Marshal(j)
 	_, _ = ctx.Write(bs)

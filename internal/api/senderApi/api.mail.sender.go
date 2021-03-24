@@ -32,7 +32,7 @@ func GetMailSenderList(ctx iris.Context) {
 
 /**
 @Router /api/mail_sender/{id} [get]
- */
+*/
 func GetMailSenderInfo(ctx iris.Context) {
 	log.Debug("get mail sender")
 	var resp InfoWrapper
@@ -49,7 +49,7 @@ func GetMailSenderInfo(ctx iris.Context) {
 	if err != nil {
 		log.Debug("get mail sender account failed")
 		log.Debug(err)
-		resp.Response.Code = -1
+		resp.Response.Code = common.RespCodeNotFound
 		resp.Message = "sender account not exist"
 		common.ResponseJSON(ctx, resp)
 		return
@@ -68,7 +68,7 @@ func GetMailSenderInfo(ctx iris.Context) {
 		UpdateTime: common.FormatTime(ms.UpdateTime),
 	}
 	resp.Info = tmpInfo
-
+	resp.Code = common.RespCodeSuccess
 	common.ResponseJSON(ctx, resp)
 }
 
