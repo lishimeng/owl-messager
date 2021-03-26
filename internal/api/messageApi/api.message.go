@@ -9,12 +9,64 @@ import (
 	"github.com/lishimeng/owl/internal/db/repo"
 )
 
+type Req struct {
+}
+
+type RespMessageInfo struct {
+	Id           int    `json:"id,omitempty"`
+	Status       int    `json:"status,omitempty"`
+	CreateTime   string `json:"createTime,omitempty"`
+	UpdateTime   string `json:"updateTime,omitempty"`
+	Category     int    `json:"category,omitempty"`
+	Subject      string `json:"subject,omitempty"`
+	Priority     int    `json:"priority,omitempty"`
+	NextSendTime string `json:"nextSendTime,omitempty"`
+}
+
+type RespMessageInfoWrapper struct {
+	app.Response
+	RespMessageInfo
+}
+
 func GetMessageList(ctx iris.Context) {
 	// TODO
 }
 
 func GetMessageInfo(ctx iris.Context) {
+	log.Debug("get message")
+	var resp RespMessageInfoWrapper
+	id, err := ctx.Params().GetInt("id")
+	if err != nil {
+		log.Debug("id must be a int value")
+		resp.Response.Code = common.RespCodeNotFound
+		resp.Message = "id must be a int value"
+		common.ResponseJSON(ctx, resp)
+		return
+	}
+	log.Debug("id:%d", id)
+	ms, err := repo.GetMessageById(id)
+	if err != nil {
+		log.Debug("get mail sender account failed")
+		log.Debug(err)
+		resp.Response.Code = common.RespCodeNotFound
+		resp.Message = "sender account not exist"
+		common.ResponseJSON(ctx, resp)
+		return
+	}
 
+	var tmpInfo = RespMessageInfo{
+		Id:         ms.Id,
+		Category: ms.Category,
+		Subject:       ms.Subject,
+		Priority:       ms.Priority,
+		NextSendTime:      common.FormatTime(ms.NextSendTime),
+		Status:     ms.Status,
+		CreateTime: common.FormatTime(ms.CreateTime),
+		UpdateTime: common.FormatTime(ms.UpdateTime),
+	}
+	resp.RespMessageInfo = tmpInfo
+	resp.Code = common.RespCodeSuccess
+	common.ResponseJSON(ctx, resp)
 }
 
 /**
