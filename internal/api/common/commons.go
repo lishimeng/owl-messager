@@ -9,7 +9,7 @@ import (
 
 const (
 	RespCodeSuccess  = 200
-	RespCodeNotFound = 400
+	RespCodeNotFound = 404
 )
 
 func ResponseJSON(ctx iris.Context, j interface{}) {
