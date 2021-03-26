@@ -1,7 +1,6 @@
 package common
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/kataras/iris"
 	"math/rand"
@@ -14,8 +13,7 @@ const (
 )
 
 func ResponseJSON(ctx iris.Context, j interface{}) {
-	bs, _ := json.Marshal(j)
-	_, _ = ctx.Write(bs)
+	_, _ = ctx.JSON(j)
 }
 
 const (
