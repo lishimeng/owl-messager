@@ -33,7 +33,7 @@ func GetMailTemplateInfo(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
-		resp.Response.Code = -1
+		resp.Response.Code = common.RespCodeNotFound
 		resp.Message = "id must be a int value"
 		common.ResponseJSON(ctx, resp)
 		return
