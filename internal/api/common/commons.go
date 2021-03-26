@@ -12,6 +12,11 @@ const (
 	RespCodeNotFound = 404
 )
 
+const (
+	RespMsgNotFount = "not found"
+	RespMsgIdNum    = "id must be a int value"
+)
+
 func ResponseJSON(ctx iris.Context, j interface{}) {
 	_, _ = ctx.JSON(j)
 }

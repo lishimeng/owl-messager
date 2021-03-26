@@ -40,7 +40,7 @@ func GetMailSenderInfo(ctx iris.Context) {
 	if err != nil {
 		log.Debug("id must be a int value")
 		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = "id must be a int value"
+		resp.Message = common.RespMsgIdNum
 		common.ResponseJSON(ctx, resp)
 		return
 	}
@@ -50,7 +50,7 @@ func GetMailSenderInfo(ctx iris.Context) {
 		log.Debug("get mail sender account failed")
 		log.Debug(err)
 		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = "sender account not exist"
+		resp.Message = common.RespMsgNotFount
 		common.ResponseJSON(ctx, resp)
 		return
 	}

@@ -34,7 +34,7 @@ func GetMailTemplateInfo(ctx iris.Context) {
 	if err != nil {
 		log.Debug("id must be a int value")
 		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = "id must be a int value"
+		resp.Message = common.RespMsgIdNum
 		common.ResponseJSON(ctx, resp)
 		return
 	}
@@ -43,8 +43,8 @@ func GetMailTemplateInfo(ctx iris.Context) {
 	if err != nil {
 		log.Debug("get mail template failed")
 		log.Debug(err)
-		resp.Response.Code = -1
-		resp.Message = "template not exist"
+		resp.Response.Code = common.RespCodeNotFound
+		resp.Message = common.RespMsgNotFount
 		common.ResponseJSON(ctx, resp)
 		return
 	}

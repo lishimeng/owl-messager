@@ -39,17 +39,17 @@ func GetMessageInfo(ctx iris.Context) {
 	if err != nil {
 		log.Debug("id must be a int value")
 		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = "id must be a int value"
+		resp.Message = common.RespMsgIdNum
 		common.ResponseJSON(ctx, resp)
 		return
 	}
 	log.Debug("id:%d", id)
 	ms, err := repo.GetMessageById(id)
 	if err != nil {
-		log.Debug("get mail sender account failed")
+		log.Debug("get message failed")
 		log.Debug(err)
 		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = "sender account not exist"
+		resp.Message = common.RespMsgNotFount
 		common.ResponseJSON(ctx, resp)
 		return
 	}
@@ -80,8 +80,8 @@ func Send(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
-		resp.Code = -1
-		resp.Message = "id must be a int value"
+		resp.Code = common.RespMsgNotFount
+		resp.Message = common.RespMsgNotFount
 		common.ResponseJSON(ctx, resp)
 		return
 	}
