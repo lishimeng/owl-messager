@@ -35,7 +35,7 @@ func calcTotalPage(p app.Pager, count int64) int {
 }
 
 const (
-	ConditionIgnore = -1
+	ConditionIgnore = 0
 	DefaultPageNo   = 1
 	DefaultPageSize = 10
 )

@@ -65,3 +65,9 @@ func CreateMailTemplate(code, name, body, description string, category int) (m m
 
 	return
 }
+
+func UpdateMailTemplate(ori model.MailTemplateInfo, cols ...string) (m model.MailTemplateInfo, err error) {
+	_, err = app.GetOrm().Context.Update(&ori, cols...)
+	m = ori
+	return
+}

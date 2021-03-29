@@ -22,3 +22,30 @@ func CreateMailMessage(sender model.MailSenderInfo, template model.MailTemplateI
 	})
 	return
 }
+
+func UpdateMailTemplate(id, status int, body, description string) (m model.MailTemplateInfo, err error) {
+	err = app.GetOrm().Transaction(func(ctx persistence.OrmContext) (e error) {
+		m, e = repo.GetMailTemplateById(id)
+		if e != nil {
+			return
+		}
+		var cols []string
+		if status > repo.ConditionIgnore {
+			m.Status = status
+			cols = append(cols, "Status")
+		}
+		if len(body) > 0 {
+			m.Body = body
+			cols = append(cols, "Body")
+		}
+		if len(description) > 0 {
+			m.Description = description
+			cols = append(cols, "Description")
+		}
+
+		m, e = repo.UpdateMailTemplate(m, cols...)
+
+		return
+	})
+	return
+}

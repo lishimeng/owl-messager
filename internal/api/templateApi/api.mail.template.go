@@ -7,6 +7,7 @@ import (
 	"github.com/lishimeng/owl/internal/api/common"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
+	"github.com/lishimeng/owl/internal/db/service"
 )
 
 type Info struct {
@@ -89,6 +90,7 @@ type MailTemplateReq struct {
 	Body        string `json:"body,omitempty"`
 	Description string `json:"description,omitempty"`
 	Category    int    `json:"category,omitempty"`
+	Status      int    `json:"status,omitempty"`
 }
 
 /**
@@ -169,6 +171,58 @@ func AddMailTemplate(ctx iris.Context) {
 
 func UpdateMailTemplate(ctx iris.Context) {
 	log.Debug("update mail template")
+	var req MailTemplateReq
+	var resp InfoWrapper
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		log.Debug("req err")
+		log.Debug(err)
+		resp.Code = -1
+		resp.Message = "req err"
+		common.ResponseJSON(ctx, resp)
+		return
+	}
+
+	// check params
+	if req.Id == 0 {
+		log.Debug("param id nil")
+		resp.Code = -1
+		resp.Message = "id nil"
+		common.ResponseJSON(ctx, resp)
+		return
+	}
+	if len(req.Body) == 0 {
+		log.Debug("param body nil")
+		resp.Code = -1
+		resp.Message = "body nil"
+		common.ResponseJSON(ctx, resp)
+		return
+	}
+
+	m, err := service.UpdateMailTemplate(req.Id, req.Status, req.Body, req.Description)
+	if err != nil {
+		log.Info("can't update template")
+		log.Info(err)
+		resp.Code = -1
+		resp.Message = "create update failed"
+		common.ResponseJSON(ctx, resp)
+		return
+	}
+
+	log.Debug("update template success, id:%d", m.Id)
+	resp.Id = m.Id
+
+	var tmpInfo = Info{
+		Id:           m.Id,
+		TemplateCode: m.Code,
+		TemplateBody: m.Body,
+		Status:       m.Status,
+		CreateTime:   common.FormatTime(m.CreateTime),
+		UpdateTime:   common.FormatTime(m.UpdateTime),
+	}
+	resp.Info = tmpInfo
+	resp.Code = common.RespCodeSuccess
+	common.ResponseJSON(ctx, resp)
 }
 
 func DeleteMailTemplate(ctx iris.Context) {
