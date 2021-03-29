@@ -1,6 +1,7 @@
 package msg
 
 const (
-	Email = iota
+	_ = iota
+	Email
 	Sms
 )
