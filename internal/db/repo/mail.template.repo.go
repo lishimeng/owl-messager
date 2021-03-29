@@ -19,8 +19,27 @@ func GetMailTemplateById(id int) (s model.MailTemplateInfo, err error) {
 }
 
 // 查询邮件Template列表
-func GetMailTemplateList() (s []model.MailTemplateInfo, err error) {
-	_, err = app.GetOrm().Context.QueryTable(new(model.MailSenderInfo)).All(&s)
+func GetMailTemplateList(status int, page app.Pager) (p app.Pager, err error) {
+	var tpls []model.MailTemplateInfo
+	var qs = app.GetOrm().Context.QueryTable(new(model.MailTemplateInfo))
+	if status > ConditionIgnore {
+		qs = qs.Filter("Status", status)
+	}
+	sum, err := qs.Count()
+	if err != nil {
+		return
+	}
+	page.TotalPage =calcTotalPage(page, sum)
+	_, err = qs.OrderBy("CreateTime").Offset(calcPageOffset(page)).Limit(page.PageSize).All(&tpls)
+	if err != nil {
+		return
+	}
+	if len(tpls) > 0 {
+		for _, tpl := range tpls {
+			page.Data = append(page.Data, tpl)
+		}
+	}
+	p = page
 	return
 }
 

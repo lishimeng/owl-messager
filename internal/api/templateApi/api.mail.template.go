@@ -25,6 +25,26 @@ type InfoWrapper struct {
 
 func GetMailTemplateList(ctx iris.Context) {
 	log.Debug("get mail template list")
+	var resp app.PagerResponse
+	var status = ctx.URLParamIntDefault("status", repo.ConditionIgnore)
+	var pageSize = ctx.URLParamIntDefault("pageSize", repo.DefaultPageSize)
+	var pageNo = ctx.URLParamIntDefault("pageNo", repo.DefaultPageNo)
+	page := app.Pager{
+		PageSize: pageSize,
+		PageNum:  pageNo,
+	}
+	page, err := repo.GetMailTemplateList(status, page)
+	if err != nil {
+		log.Debug("get templates failed")
+		log.Debug(err)
+		resp.Code = -1
+		resp.Message = "get templates failed"
+		common.ResponseJSON(ctx, resp)
+		return
+	}
+
+	resp.Pager = page
+	common.ResponseJSON(ctx, resp)
 }
 
 func GetMailTemplateInfo(ctx iris.Context) {
