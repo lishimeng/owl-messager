@@ -29,7 +29,7 @@ func GetMailSenderList(status int, page app.Pager) (p app.Pager, err error) {
 	if err != nil {
 		return
 	}
-	page.TotalPage =calcTotalPage(page, sum)
+	page.TotalPage = calcTotalPage(page, sum)
 	_, err = qs.OrderBy("CreateTime").Offset(calcPageOffset(page)).Limit(page.PageSize).All(&senders)
 	if err != nil {
 		return

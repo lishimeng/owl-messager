@@ -33,7 +33,6 @@ type RespMessageInfoListWrapper struct {
 }
 
 func GetMessageList(ctx iris.Context) {
-	// TODO
 	var resp app.PagerResponse
 	var status = ctx.URLParamIntDefault("status", repo.ConditionIgnore)
 	var category = ctx.URLParamIntDefault("category", repo.ConditionIgnore)
