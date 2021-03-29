@@ -27,7 +27,26 @@ type InfoWrapper struct {
 }
 
 func GetMailSenderList(ctx iris.Context) {
+	var resp app.PagerResponse
+	var status = ctx.URLParamIntDefault("status", repo.ConditionIgnore)
+	var pageSize = ctx.URLParamIntDefault("pageSize", repo.DefaultPageSize)
+	var pageNo = ctx.URLParamIntDefault("pageNo", repo.DefaultPageNo)
+	page := app.Pager{
+		PageSize: pageSize,
+		PageNum:  pageNo,
+	}
+	page, err := repo.GetMailSenderList(status, page)
+	if err != nil {
+		log.Debug("get senders failed")
+		log.Debug(err)
+		resp.Code = -1
+		resp.Message = "get senders failed"
+		common.ResponseJSON(ctx, resp)
+		return
+	}
 
+	resp.Pager = page
+	common.ResponseJSON(ctx, resp)
 }
 
 /**
