@@ -63,7 +63,7 @@ func GetMessageInfo(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
-		resp.Response.Code = common.RespCodeNotFound
+		resp.Code = common.RespCodeNotFound
 		resp.Message = common.RespMsgIdNum
 		common.ResponseJSON(ctx, resp)
 		return

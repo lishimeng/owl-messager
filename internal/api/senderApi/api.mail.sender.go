@@ -101,5 +101,25 @@ func UpdateMailSender(ctx iris.Context) {
 }
 
 func DeleteMailSender(ctx iris.Context) {
+	log.Debug("delete mail sender")
+	var resp app.Response
+	id, err := ctx.Params().GetInt("id")
+	if err != nil {
+		log.Debug("id must be a int value")
+		resp.Code = common.RespCodeNotFound
+		resp.Message = common.RespMsgIdNum
+		common.ResponseJSON(ctx, resp)
+		return
+	}
+	err = repo.DeleteMailSender(id)
+	if err != nil {
+		log.Info("delete mail sender failed")
+		log.Debug(err)
+		resp.Code = -1
+		resp.Message = "delete sender failed"
+		common.ResponseJSON(ctx, resp)
+		return
+	}
 
+	common.ResponseJSON(ctx, resp)
 }

@@ -18,6 +18,13 @@ func GetMailSenderById(id int) (s model.MailSenderInfo, err error) {
 	return
 }
 
+func DeleteMailSender(id int) (err error) {
+	var t model.MailSenderInfo
+	t.Id = id
+	_, err = app.GetOrm().Context.Delete(&t)
+	return
+}
+
 // 查询邮件发送账号列表
 func GetMailSenderList(status int, page app.Pager) (p app.Pager, err error) {
 	var senders []model.MailSenderInfo
