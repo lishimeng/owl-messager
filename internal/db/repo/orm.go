@@ -1,5 +1,10 @@
 package repo
 
+import (
+	"github.com/lishimeng/app-starter"
+	"math"
+)
+
 type PagerReq struct {
 	PageSize int
 	PageNo   int
@@ -19,3 +24,18 @@ type PagerRes struct {
 	// 尾页
 	LastPage bool
 }
+
+func calcPageOffset(p app.Pager) int {
+	return (p.PageNum - 1) * p.PageSize
+}
+
+func calcTotalPage(p app.Pager, count int64) int {
+	t := math.Ceil(float64(count) / float64(p.PageSize))
+	return int(t)
+}
+
+const (
+	ConditionIgnore = -1
+	DefaultPageNo = 1
+	DefaultPageSize = 10
+)

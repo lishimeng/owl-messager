@@ -28,8 +28,34 @@ type RespMessageInfoWrapper struct {
 	RespMessageInfo
 }
 
+type RespMessageInfoListWrapper struct {
+	app.PagerResponse
+}
+
 func GetMessageList(ctx iris.Context) {
 	// TODO
+	var resp app.PagerResponse
+	var status = ctx.URLParamIntDefault("status", repo.ConditionIgnore)
+	var category = ctx.URLParamIntDefault("category", repo.ConditionIgnore)
+	var pageSize = ctx.URLParamIntDefault("pageSize", repo.DefaultPageSize)
+	var pageNo = ctx.URLParamIntDefault("pageNo", repo.DefaultPageNo)
+	page := app.Pager{
+		PageSize: pageSize,
+		PageNum:  pageNo,
+	}
+	page, err := repo.GetMessages(status, category, page)
+	if err != nil {
+		log.Debug("get messages failed")
+		log.Debug(err)
+		resp.Code = -1
+		resp.Message = "get messages failed"
+		common.ResponseJSON(ctx, resp)
+		return
+	}
+
+	resp.Pager = page
+	common.ResponseJSON(ctx, resp)
+
 }
 
 func GetMessageInfo(ctx iris.Context) {
@@ -55,14 +81,14 @@ func GetMessageInfo(ctx iris.Context) {
 	}
 
 	var tmpInfo = RespMessageInfo{
-		Id:         ms.Id,
-		Category: ms.Category,
-		Subject:       ms.Subject,
-		Priority:       ms.Priority,
-		NextSendTime:      common.FormatTime(ms.NextSendTime),
-		Status:     ms.Status,
-		CreateTime: common.FormatTime(ms.CreateTime),
-		UpdateTime: common.FormatTime(ms.UpdateTime),
+		Id:           ms.Id,
+		Category:     ms.Category,
+		Subject:      ms.Subject,
+		Priority:     ms.Priority,
+		NextSendTime: common.FormatTime(ms.NextSendTime),
+		Status:       ms.Status,
+		CreateTime:   common.FormatTime(ms.CreateTime),
+		UpdateTime:   common.FormatTime(ms.UpdateTime),
 	}
 	resp.RespMessageInfo = tmpInfo
 	resp.Code = common.RespCodeSuccess

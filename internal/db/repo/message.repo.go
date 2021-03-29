@@ -23,7 +23,30 @@ func GetMessageToSend(size int) (messages []model.MessageInfo, err error) {
 	return
 }
 
-func GetMessageByStatus(status int) (messages []model.MessageInfo, err error) {
+func GetMessages(status int, category int, page app.Pager) (p app.Pager, err error) {
+	var messages []model.MessageInfo
+	qs := app.GetOrm().Context.QueryTable(new(model.MessageInfo))
+	if status > ConditionIgnore {
+		qs = qs.Filter("Status", status)
+	}
+	if category > ConditionIgnore {
+		qs = qs.Filter("Category", category)
+	}
+	sum, err := qs.Count()
+	if err != nil {
+		return
+	}
+	page.TotalPage =calcTotalPage(page, sum)
+	_, err = qs.OrderBy("CreateTime").Offset(calcPageOffset(page)).Limit(page.PageSize).All(&messages)
+	if err != nil {
+		return
+	}
+	if len(messages) > 0 {
+		for _, m := range messages {
+			page.Data = append(page.Data, m)
+		}
+	}
+	p = page
 	return
 }
 
