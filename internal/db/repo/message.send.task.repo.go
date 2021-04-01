@@ -18,6 +18,18 @@ func AddMessageTask(messageId int, messageInstanceId int) (task model.MessageTas
 	return
 }
 
+func GetMessageTask(id int) (t model.MessageTask, err error) {
+	t.Id = id
+	err = app.GetOrm().Context.Read(&t)
+	return
+}
+
+func GetTaskByMessage(messageId int) (t []model.MessageTask, err error) {
+
+	_, err = app.GetOrm().Context.QueryTable(new(model.MessageTask)).Filter("MessageId", messageId).All(&t)
+	return
+}
+
 func TaskSendFail(messageId int) {
 
 }
@@ -71,5 +83,30 @@ func DeleteRunningTask(id int) (err error) {
 	var runningTask model.MessageRunningTask
 	runningTask.Id = id
 	_, err = app.GetOrm().Context.Delete(runningTask)
+	return
+}
+
+func GetTaskList(status int, page app.Pager) (p app.Pager, err error) {
+	var list []model.MessageTask
+	var qs = app.GetOrm().Context.QueryTable(new(model.MessageTask))
+	if status > ConditionIgnore {
+		qs = qs.Filter("Status", status)
+	}
+	all, err := qs.Count()
+	if err != nil {
+		return
+	}
+	page.TotalPage = calcTotalPage(page, all)
+	qs = qs.Offset(calcPageOffset(page)).Limit(page.PageSize)
+	qs = qs.OrderBy("CreateTime")
+
+	_, err = qs.All(&list)
+
+	if len(list) > 0 {
+		for _, t := range list {
+			page.Data = append(page.Data, t)
+		}
+	}
+	p = page
 	return
 }

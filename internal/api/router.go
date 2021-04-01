@@ -5,6 +5,7 @@ import (
 	"github.com/lishimeng/owl/internal/api/mailApi"
 	"github.com/lishimeng/owl/internal/api/messageApi"
 	mailSender2 "github.com/lishimeng/owl/internal/api/senderApi"
+	"github.com/lishimeng/owl/internal/api/taskApi"
 	"github.com/lishimeng/owl/internal/api/templateApi"
 )
 
@@ -33,8 +34,8 @@ func message(p iris.Party) {
 }
 
 func task(p iris.Party) {
-	p.Get("/", GetTaskList)
-	p.Get("/{task_id}", GetTaskInfo)
+	p.Get("/", taskApi.GetTaskList)
+	p.Get("/{task_id}", taskApi.GetTaskInfo)
 }
 
 func mailSender(p iris.Party) {
