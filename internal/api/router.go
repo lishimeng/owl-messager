@@ -5,6 +5,7 @@ import (
 	"github.com/lishimeng/owl/internal/api/mailApi"
 	"github.com/lishimeng/owl/internal/api/messageApi"
 	mailSender2 "github.com/lishimeng/owl/internal/api/senderApi"
+	"github.com/lishimeng/owl/internal/api/smsApi"
 	"github.com/lishimeng/owl/internal/api/taskApi"
 	"github.com/lishimeng/owl/internal/api/templateApi"
 )
@@ -61,5 +62,5 @@ func mail(p iris.Party) {
 }
 
 func sms(p iris.Party) {
-	p.Post("/", SendSms)
+	p.Post("/", smsApi.SendSms)
 }

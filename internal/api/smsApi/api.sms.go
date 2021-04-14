@@ -1,4 +1,4 @@
-package api
+package smsApi
 
 import "github.com/kataras/iris"
 
