@@ -40,7 +40,6 @@
 </template>
 
 <script>
-import clipboard from '@/utils/clipboard'
 import svgIcons from './svg-icons'
 import elementIcons from './element-icons'
 
@@ -60,7 +59,7 @@ export default {
       return `<i class="el-icon-${symbol}" />`
     },
     handleClipboard(text, event) {
-      clipboard(text, event)
+      console.log(text)
     }
   }
 }

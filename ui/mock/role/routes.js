@@ -384,20 +384,6 @@ const asyncRoutes = [
   },
 
   {
-    path: '/error-log',
-    component: 'layout/Layout',
-    redirect: 'noRedirect',
-    children: [
-      {
-        path: 'log',
-        component: 'views/error-log/index',
-        name: 'ErrorLog',
-        meta: { title: 'Error Log', icon: 'bug' }
-      }
-    ]
-  },
-
-  {
     path: '/excel',
     component: 'layout/Layout',
     redirect: '/excel/export-excel',
@@ -479,20 +465,6 @@ const asyncRoutes = [
         component: 'views/theme/index',
         name: 'Theme',
         meta: { title: 'Theme', icon: 'theme' }
-      }
-    ]
-  },
-
-  {
-    path: '/clipboard',
-    component: 'layout/Layout',
-    redirect: 'noRedirect',
-    children: [
-      {
-        path: 'index',
-        component: 'views/clipboard/index',
-        name: 'ClipboardDemo',
-        meta: { title: 'Clipboard Demo', icon: 'clipboard' }
       }
     ]
   },

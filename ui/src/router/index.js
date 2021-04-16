@@ -10,7 +10,7 @@ import Layout from '@/layout'
 import componentsRouter from './modules/components'
 import chartsRouter from './modules/charts'
 import tableRouter from './modules/table'
-import nestedRouter from './modules/nested'
+import templateRouter from './modules/template'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -105,49 +105,8 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   {
-    path: '/permission',
-    component: Layout,
-    redirect: '/permission/page',
-    alwaysShow: true, // will always show the root menu
-    name: 'Permission',
-    meta: {
-      title: 'Permission',
-      icon: 'lock',
-      roles: ['admin', 'editor'] // you can set roles in root nav
-    },
-    children: [
-      {
-        path: 'page',
-        component: () => import('@/views/permission/page'),
-        name: 'PagePermission',
-        meta: {
-          title: 'Page Permission',
-          roles: ['admin'] // or you can only set roles in sub nav
-        }
-      },
-      {
-        path: 'directive',
-        component: () => import('@/views/permission/directive'),
-        name: 'DirectivePermission',
-        meta: {
-          title: 'Directive Permission'
-          // if do not set roles, means: this page does not require permission
-        }
-      },
-      {
-        path: 'role',
-        component: () => import('@/views/permission/role'),
-        name: 'RolePermission',
-        meta: {
-          title: 'Role Permission',
-          roles: ['admin']
-        }
-      }
-    ]
-  },
-
-  {
     path: '/icon',
+    hidden: true,
     component: Layout,
     children: [
       {
@@ -162,91 +121,8 @@ export const asyncRoutes = [
   /** when your routing map is too long, you can split it into small modules **/
   componentsRouter,
   chartsRouter,
-  nestedRouter,
   tableRouter,
-
-  {
-    path: '/template',
-    component: Layout,
-    redirect: '/template/list',
-    name: 'Template',
-    meta: {
-      title: 'Template',
-      icon: 'el-icon-s-help'
-    },
-    children: [
-      {
-        path: 'create',
-        component: () => import('@/views/template/create'),
-        name: 'CreateTemplate',
-        meta: { title: 'Create Template', icon: 'edit' }
-      },
-      {
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/template/edit'),
-        name: 'EditTemplate',
-        meta: { title: 'Edit Template', noCache: true, activeMenu: '/template/list' },
-        hidden: true
-      },
-      {
-        path: 'list',
-        component: () => import('@/views/template/list'),
-        name: 'TemplateList',
-        meta: { title: 'Template List', icon: 'list' }
-      }
-    ]
-  },
-
-  {
-    path: '/tab',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/tab/index'),
-        name: 'Tab',
-        meta: { title: 'Tab', icon: 'tab' }
-      }
-    ]
-  },
-
-  {
-    path: '/error',
-    component: Layout,
-    redirect: 'noRedirect',
-    name: 'ErrorPages',
-    meta: {
-      title: 'Error Pages',
-      icon: '404'
-    },
-    children: [
-      {
-        path: '401',
-        component: () => import('@/views/error-page/401'),
-        name: 'Page401',
-        meta: { title: '401', noCache: true }
-      },
-      {
-        path: '404',
-        component: () => import('@/views/error-page/404'),
-        name: 'Page404',
-        meta: { title: '404', noCache: true }
-      }
-    ]
-  },
-
-  {
-    path: '/error-log',
-    component: Layout,
-    children: [
-      {
-        path: 'log',
-        component: () => import('@/views/error-log/index'),
-        name: 'ErrorLog',
-        meta: { title: 'Error Log', icon: 'bug' }
-      }
-    ]
-  },
+  templateRouter,
 
   {
     path: '/theme',
@@ -257,19 +133,6 @@ export const asyncRoutes = [
         component: () => import('@/views/theme/index'),
         name: 'Theme',
         meta: { title: 'Theme', icon: 'theme' }
-      }
-    ]
-  },
-
-  {
-    path: '/clipboard',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/clipboard/index'),
-        name: 'ClipboardDemo',
-        meta: { title: 'Clipboard', icon: 'clipboard' }
       }
     ]
   },
