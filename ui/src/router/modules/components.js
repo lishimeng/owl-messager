@@ -31,12 +31,6 @@ const componentsRouter = {
       meta: { title: 'JSON Editor' }
     },
     {
-      path: 'split-pane',
-      component: () => import('@/views/components-demo/split-pane'),
-      name: 'SplitpaneDemo',
-      meta: { title: 'SplitPane' }
-    },
-    {
       path: 'avatar-upload',
       component: () => import('@/views/components-demo/avatar-upload'),
       name: 'AvatarUploadDemo',
@@ -47,12 +41,6 @@ const componentsRouter = {
       component: () => import('@/views/components-demo/dropzone'),
       name: 'DropzoneDemo',
       meta: { title: 'Dropzone' }
-    },
-    {
-      path: 'sticky',
-      component: () => import('@/views/components-demo/sticky'),
-      name: 'StickyDemo',
-      meta: { title: 'Sticky' }
     },
     {
       path: 'count-to',
@@ -77,12 +65,6 @@ const componentsRouter = {
       component: () => import('@/views/components-demo/drag-dialog'),
       name: 'DragDialogDemo',
       meta: { title: 'Drag Dialog' }
-    },
-    {
-      path: 'drag-select',
-      component: () => import('@/views/components-demo/drag-select'),
-      name: 'DragSelectDemo',
-      meta: { title: 'Drag Select' }
     }
   ]
 }
