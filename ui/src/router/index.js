@@ -137,6 +137,62 @@ export const asyncRoutes = [
     ]
   },
 
+  {
+    path: '/message',
+    component: Layout,
+    redirect: '/message/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/message/index'),
+        name: 'Messages',
+        meta: { title: 'Messages', icon: 'message', noCache: true }
+      }
+    ]
+  },
+
+  {
+    path: '/task',
+    component: Layout,
+    redirect: '/task/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/task/index'),
+        name: 'Task',
+        meta: { title: 'Message tasks', icon: 'skill', noCache: true }
+      }
+    ]
+  },
+
+  {
+    path: '/sender',
+    component: Layout,
+    redirect: '/sender/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/sender/index'),
+        name: 'Sender',
+        meta: { title: 'Mail senders', icon: 'peoples', noCache: true }
+      }
+    ]
+  },
+
+  {
+    path: '/mail',
+    component: Layout,
+    redirect: '/mail/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/mail/index'),
+        name: 'Mail',
+        meta: { title: 'Send mail', icon: 'email', noCache: true }
+      }
+    ]
+  },
+
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
