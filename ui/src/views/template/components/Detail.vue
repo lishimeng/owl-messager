@@ -3,9 +3,6 @@
     <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
 
       <sticky :z-index="10" :class-name="'sub-navbar '+postForm.status">
-        <CommentDropdown v-model="postForm.comment_disabled" />
-        <PlatformDropdown v-model="postForm.platforms" />
-        <SourceUrlDropdown v-model="postForm.source_uri" />
         <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
           Publish
         </el-button>
@@ -84,7 +81,6 @@ import { validURL } from '@/utils/validate'
 import { fetchArticle } from '@/api/article'
 import { searchUser } from '@/api/remote-search'
 import Warning from './Warning'
-import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
 
 const defaultForm = {
   status: 'draft',
@@ -101,8 +97,8 @@ const defaultForm = {
 }
 
 export default {
-  name: 'ArticleDetail',
-  components: { Tinymce, MDinput, Upload, Sticky, Warning, CommentDropdown, PlatformDropdown, SourceUrlDropdown },
+  name: 'Detail',
+  components: { Tinymce, MDinput, Upload, Sticky, Warning },
   props: {
     isEdit: {
       type: Boolean,

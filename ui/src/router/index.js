@@ -84,31 +84,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/documentation',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/documentation/index'),
-        name: 'Documentation',
-        meta: { title: 'Documentation', icon: 'documentation', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/guide',
-    component: Layout,
-    redirect: '/guide/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/guide/index'),
-        name: 'Guide',
-        meta: { title: 'Guide', icon: 'guide', noCache: true }
-      }
-    ]
-  },
-  {
     path: '/profile',
     component: Layout,
     redirect: '/profile/index',
@@ -191,33 +166,33 @@ export const asyncRoutes = [
   tableRouter,
 
   {
-    path: '/example',
+    path: '/template',
     component: Layout,
-    redirect: '/example/list',
-    name: 'Example',
+    redirect: '/template/list',
+    name: 'Template',
     meta: {
-      title: 'Example',
+      title: 'Template',
       icon: 'el-icon-s-help'
     },
     children: [
       {
         path: 'create',
-        component: () => import('@/views/example/create'),
-        name: 'CreateArticle',
-        meta: { title: 'Create Article', icon: 'edit' }
+        component: () => import('@/views/template/create'),
+        name: 'CreateTemplate',
+        meta: { title: 'Create Template', icon: 'edit' }
       },
       {
         path: 'edit/:id(\\d+)',
-        component: () => import('@/views/example/edit'),
-        name: 'EditArticle',
-        meta: { title: 'Edit Article', noCache: true, activeMenu: '/example/list' },
+        component: () => import('@/views/template/edit'),
+        name: 'EditTemplate',
+        meta: { title: 'Edit Template', noCache: true, activeMenu: '/template/list' },
         hidden: true
       },
       {
         path: 'list',
-        component: () => import('@/views/example/list'),
-        name: 'ArticleList',
-        meta: { title: 'Article List', icon: 'list' }
+        component: () => import('@/views/template/list'),
+        name: 'TemplateList',
+        meta: { title: 'Template List', icon: 'list' }
       }
     ]
   },
@@ -274,79 +249,6 @@ export const asyncRoutes = [
   },
 
   {
-    path: '/excel',
-    component: Layout,
-    redirect: '/excel/export-excel',
-    name: 'Excel',
-    meta: {
-      title: 'Excel',
-      icon: 'excel'
-    },
-    children: [
-      {
-        path: 'export-excel',
-        component: () => import('@/views/excel/export-excel'),
-        name: 'ExportExcel',
-        meta: { title: 'Export Excel' }
-      },
-      {
-        path: 'export-selected-excel',
-        component: () => import('@/views/excel/select-excel'),
-        name: 'SelectExcel',
-        meta: { title: 'Export Selected' }
-      },
-      {
-        path: 'export-merge-header',
-        component: () => import('@/views/excel/merge-header'),
-        name: 'MergeHeader',
-        meta: { title: 'Merge Header' }
-      },
-      {
-        path: 'upload-excel',
-        component: () => import('@/views/excel/upload-excel'),
-        name: 'UploadExcel',
-        meta: { title: 'Upload Excel' }
-      }
-    ]
-  },
-
-  {
-    path: '/zip',
-    component: Layout,
-    redirect: '/zip/download',
-    alwaysShow: true,
-    name: 'Zip',
-    meta: { title: 'Zip', icon: 'zip' },
-    children: [
-      {
-        path: 'download',
-        component: () => import('@/views/zip/index'),
-        name: 'ExportZip',
-        meta: { title: 'Export Zip' }
-      }
-    ]
-  },
-
-  {
-    path: '/pdf',
-    component: Layout,
-    redirect: '/pdf/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/pdf/index'),
-        name: 'PDF',
-        meta: { title: 'PDF', icon: 'pdf' }
-      }
-    ]
-  },
-  {
-    path: '/pdf/download',
-    component: () => import('@/views/pdf/download'),
-    hidden: true
-  },
-
-  {
     path: '/theme',
     component: Layout,
     children: [
@@ -368,17 +270,6 @@ export const asyncRoutes = [
         component: () => import('@/views/clipboard/index'),
         name: 'ClipboardDemo',
         meta: { title: 'Clipboard', icon: 'clipboard' }
-      }
-    ]
-  },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://github.com/PanJiaChen/vue-element-admin',
-        meta: { title: 'External Link', icon: 'link' }
       }
     ]
   },
