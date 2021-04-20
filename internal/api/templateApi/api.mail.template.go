@@ -34,7 +34,7 @@ func GetMailTemplateList(ctx iris.Context) {
 		PageSize: pageSize,
 		PageNum:  pageNo,
 	}
-	page, err := repo.GetMailTemplateList(status, page)
+	page, tpls, err := repo.GetMailTemplateList(status, page)
 	if err != nil {
 		log.Debug("get templates failed")
 		log.Debug(err)
@@ -42,6 +42,18 @@ func GetMailTemplateList(ctx iris.Context) {
 		resp.Message = "get templates failed"
 		common.ResponseJSON(ctx, resp)
 		return
+	}
+
+	for _, tpl := range tpls {
+		var tmpInfo = Info{
+			Id:           tpl.Id,
+			TemplateCode: tpl.Code,
+			TemplateBody: tpl.Body,
+			Status:       tpl.Status,
+			CreateTime:   common.FormatTime(tpl.CreateTime),
+			UpdateTime:   common.FormatTime(tpl.UpdateTime),
+		}
+		page.Data = append(page.Data, tmpInfo)
 	}
 
 	resp.Pager = page

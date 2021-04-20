@@ -33,7 +33,7 @@ func GetTaskList(ctx iris.Context) {
 		PageSize: pageSize,
 		PageNum:  pageNo,
 	}
-	page, err := repo.GetTaskList(status, page)
+	page, tasks, err := repo.GetTaskList(status, page)
 	if err != nil {
 		log.Debug("get templates failed")
 		log.Debug(err)
@@ -41,6 +41,19 @@ func GetTaskList(ctx iris.Context) {
 		resp.Message = "get templates failed"
 		common.ResponseJSON(ctx, resp)
 		return
+	}
+	if len(tasks) > 0 {
+		for _, ms := range tasks {
+			var tmpInfo = TaskInfoResp{
+				Id:                ms.Id,
+				MessageId:         ms.MessageId,
+				MessageInstanceId: ms.MessageInstanceId,
+				Status:            ms.Status,
+				CreateTime:        common.FormatTime(ms.CreateTime),
+				UpdateTime:        common.FormatTime(ms.UpdateTime),
+			}
+			page.Data = append(page.Data, tmpInfo)
+		}
 	}
 
 	resp.Code = common.RespCodeSuccess

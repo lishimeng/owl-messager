@@ -86,8 +86,7 @@ func DeleteRunningTask(id int) (err error) {
 	return
 }
 
-func GetTaskList(status int, page app.Pager) (p app.Pager, err error) {
-	var list []model.MessageTask
+func GetTaskList(status int, page app.Pager) (p app.Pager, list []model.MessageTask, err error) {
 	var qs = app.GetOrm().Context.QueryTable(new(model.MessageTask))
 	if status > ConditionIgnore {
 		qs = qs.Filter("Status", status)
@@ -101,12 +100,6 @@ func GetTaskList(status int, page app.Pager) (p app.Pager, err error) {
 	qs = qs.OrderBy("CreateTime")
 
 	_, err = qs.All(&list)
-
-	if len(list) > 0 {
-		for _, t := range list {
-			page.Data = append(page.Data, t)
-		}
-	}
 	p = page
 	return
 }

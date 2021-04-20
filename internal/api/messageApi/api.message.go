@@ -42,7 +42,7 @@ func GetMessageList(ctx iris.Context) {
 		PageSize: pageSize,
 		PageNum:  pageNo,
 	}
-	page, err := repo.GetMessages(status, category, page)
+	page, messages, err := repo.GetMessages(status, category, page)
 	if err != nil {
 		log.Debug("get messages failed")
 		log.Debug(err)
@@ -50,6 +50,21 @@ func GetMessageList(ctx iris.Context) {
 		resp.Message = "get messages failed"
 		common.ResponseJSON(ctx, resp)
 		return
+	}
+	if len(messages) > 0 {
+		for _, ms := range messages {
+			var tmpInfo = RespMessageInfo{
+				Id:           ms.Id,
+				Category:     ms.Category,
+				Subject:      ms.Subject,
+				Priority:     ms.Priority,
+				NextSendTime: common.FormatTime(ms.NextSendTime),
+				Status:       ms.Status,
+				CreateTime:   common.FormatTime(ms.CreateTime),
+				UpdateTime:   common.FormatTime(ms.UpdateTime),
+			}
+			page.Data = append(page.Data, tmpInfo)
+		}
 	}
 
 	resp.Pager = page

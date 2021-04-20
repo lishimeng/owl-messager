@@ -19,8 +19,7 @@ func GetMailTemplateById(id int) (s model.MailTemplateInfo, err error) {
 }
 
 // 查询邮件Template列表
-func GetMailTemplateList(status int, page app.Pager) (p app.Pager, err error) {
-	var tpls []model.MailTemplateInfo
+func GetMailTemplateList(status int, page app.Pager) (p app.Pager, tpls []model.MailTemplateInfo, err error) {
 	var qs = app.GetOrm().Context.QueryTable(new(model.MailTemplateInfo))
 	if status > ConditionIgnore {
 		qs = qs.Filter("Status", status)
@@ -33,11 +32,6 @@ func GetMailTemplateList(status int, page app.Pager) (p app.Pager, err error) {
 	_, err = qs.OrderBy("CreateTime").Offset(calcPageOffset(page)).Limit(page.PageSize).All(&tpls)
 	if err != nil {
 		return
-	}
-	if len(tpls) > 0 {
-		for _, tpl := range tpls {
-			page.Data = append(page.Data, tpl)
-		}
 	}
 	p = page
 	return
