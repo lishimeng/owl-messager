@@ -106,6 +106,7 @@ type MailTemplateReq struct {
 	Status      int    `json:"status,omitempty"`
 }
 
+// AddMailTemplate
 /**
 @Summary add a new template for send email
 

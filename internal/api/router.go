@@ -60,7 +60,6 @@ func mailTemplate(p iris.Party) {
 	p.Get("/{id}", templateApi.GetMailTemplateInfo)
 }
 
-
 func mail(p iris.Party) {
 	p.Get("/message/{id}", mailApi.GetByMessage)
 }

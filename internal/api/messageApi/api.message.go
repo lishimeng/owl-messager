@@ -110,6 +110,7 @@ func GetMessageInfo(ctx iris.Context) {
 	common.ResponseJSON(ctx, resp)
 }
 
+// Send
 /**
 @Summary send a message now, this will change message to a high priority
 

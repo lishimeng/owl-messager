@@ -9,13 +9,13 @@ import (
 )
 
 type MailInfoResp struct {
-	Id                int    `json:"id,omitempty"`
-	MessageId         int    `json:"messageId,omitempty"`         // message
-	TemplateId        int    `json:"templateId,omitempty"`
-	Params            string `json:"params,omitempty"`
-	Status            int    `json:"status,omitempty"`
-	CreateTime        string `json:"createTime,omitempty"`
-	UpdateTime        string `json:"updateTime,omitempty"`
+	Id         int    `json:"id,omitempty"`
+	MessageId  int    `json:"messageId,omitempty"` // message
+	TemplateId int    `json:"templateId,omitempty"`
+	Params     string `json:"params,omitempty"`
+	Status     int    `json:"status,omitempty"`
+	CreateTime string `json:"createTime,omitempty"`
+	UpdateTime string `json:"updateTime,omitempty"`
 }
 
 type RespWrapper struct {
@@ -46,13 +46,13 @@ func GetByMessage(ctx iris.Context) {
 	}
 
 	var tmpInfo = MailInfoResp{
-		Id:                ms.Id,
-		MessageId:         ms.MessageId,
-		TemplateId:        ms.Template,
-		Params:            ms.Params,
-		Status:            ms.Status,
-		CreateTime:        common.FormatTime(ms.CreateTime),
-		UpdateTime:        common.FormatTime(ms.UpdateTime),
+		Id:         ms.Id,
+		MessageId:  ms.MessageId,
+		TemplateId: ms.Template,
+		Params:     ms.Params,
+		Status:     ms.Status,
+		CreateTime: common.FormatTime(ms.CreateTime),
+		UpdateTime: common.FormatTime(ms.UpdateTime),
 	}
 	resp.MailInfoResp = tmpInfo
 	resp.Code = common.RespCodeSuccess
