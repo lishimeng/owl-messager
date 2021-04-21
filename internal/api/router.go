@@ -23,8 +23,10 @@ func router(root iris.Party) {
 	mailSender(root.Party("/mail_sender"))
 	mailTemplate(root.Party("/mail_template"))
 
+	mail(root.Party("/mail"))
+
 	// send message
-	mail(root.Party("/send/mail"))
+	sendMail(root.Party("/send/mail"))
 	sms(root.Party("/send/sms"))
 }
 
@@ -58,9 +60,12 @@ func mailTemplate(p iris.Party) {
 	p.Get("/{id}", templateApi.GetMailTemplateInfo)
 }
 
+
 func mail(p iris.Party) {
-	p.Post("/", mailApi.SendMail)
 	p.Get("/message/{id}", mailApi.GetByMessage)
+}
+func sendMail(p iris.Party) {
+	p.Post("/", mailApi.SendMail)
 }
 
 func sms(p iris.Party) {
