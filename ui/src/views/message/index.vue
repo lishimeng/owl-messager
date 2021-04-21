@@ -1,43 +1,36 @@
 <template>
   <div class="app-container">
     <el-table :data="tableData.rows" stripe border style="width: 100%">
-      <el-table-column prop="id" label="ID" />
+      <el-table-column prop="id" label="ID" width="80px" />
       <el-table-column prop="subject" label="邮件主题" />
-      <el-table-column prop="priority" label="优先级" />
+      <el-table-column prop="priority" label="优先级" width="80px" />
       <el-table-column prop="createTime" label="创建时间" />
       <el-table-column prop="updateTime" label="发件时间" />
       <el-table-column prop="nextSendTime" label="下次发件时间" />
+      <el-table-column prop="" label="邮件详情" width="100px">
+        <template slot-scope="scope">
+          <el-button size="mini" type="primary" icon="" @click="showInfo(1,scope.row)">查看邮件</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column prop="" label="任务详情" width="100px">
+        <template slot-scope="scope">
+          <el-button size="mini" type="primary" icon="" @click="showInfo(2,scope.row)">查看任务</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <div style="text-align: left; margin-top: 15px">
       <el-pagination
-        :current-page="tableData.pagination.pageNum"
+        :current-page="tableData.pagination.pageNo"
         :pager-count="5"
         :page-sizes="[10, 20, 50, 100]"
         :page-size="tableData.pagination.pageSize"
         background
         layout="total, sizes, prev, pager, next, jumper"
-        :total="tableData.pagination.totalSize"
+        :page-count="tableData.pagination.pageCount"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
     </div>
-    <!-- <el-row :gutter="32" style="background:#fff;padding:16px 16px 0;margin-top:32px;">
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <raddar-chart />
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <pie-chart />
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <bar-chart />
-        </div>
-      </el-col>
-    </el-row> -->
   </div>
 </template>
 
@@ -52,9 +45,9 @@ export default {
       tableData: {
         pagination: {
           total: 0,
-          pageNum: 1,
+          pageNo: 1,
           pageSize: 10,
-          totalSize: 0
+          pageCount: 0
         },
         rows: []
       }
@@ -67,21 +60,41 @@ export default {
   methods: {
     handleSizeChange(val) {
       this.tableData.pagination.pageSize = val
-      this.getMaterialOperationList()
+      this.getMessageInfo()
     },
     handleCurrentChange(val) {
-      this.tableData.pagination.pageNum = val
-      this.getMaterialOperationList()
+      this.tableData.pagination.pageNo = val
+      this.getMessageInfo()
     },
     getMessageInfo() {
       getMessageInfoApi({
-        pageNum: this.tableData.pageNum,
-        pageSize: this.tableData.pageSize
+        pageNo: this.tableData.pagination.pageNo,
+        pageSize: this.tableData.pagination.pageSize
       }).then(res => {
-        if (res) {
+        if (res && res.code === 200) {
           this.tableData.rows = res.items
+          this.tableData.pagination.pageCount = res.totalPage
+        } else {
+          this.$message.error(res.message)
         }
       })
+    },
+    showInfo(type, row) {
+      if (type === 1) {
+        this.$router.push({
+          path: '/mail',
+          query: {
+            messageId: row.id
+          }
+        })
+      } else if (type === 2) {
+        this.$router.push({
+          path: '/task',
+          query: {
+            messageId: row.id
+          }
+        })
+      }
     }
   }
 }

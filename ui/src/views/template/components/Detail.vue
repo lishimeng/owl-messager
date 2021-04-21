@@ -4,7 +4,7 @@
 
       <sticky :z-index="10" :class-name="'sub-navbar '+postForm.status">
         <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
-          Publish
+          完成创建
         </el-button>
       </sticky>
 
@@ -39,7 +39,7 @@
         </el-form-item>
 
         <el-form-item prop="body" style="margin-bottom: 30px;">
-          <Tinymce ref="editor" v-model="postForm.body" :height="400" />
+          <vue-editor v-model="postForm.body" />
         </el-form-item>
 
       </div>
@@ -48,11 +48,11 @@
 </template>
 
 <script>
-import Tinymce from '@/components/Tinymce'
 import MDinput from '@/components/MDinput'
 import Sticky from '@/components/Sticky' // 粘性header组件
 import Warning from './Warning'
 import { createMailTemplateApi } from '@/api/mail'
+import { VueEditor } from 'vue2-editor'
 
 const defaultForm = {
   status: 'submit',
@@ -67,7 +67,7 @@ const defaultForm = {
 
 export default {
   name: 'Detail',
-  components: { Tinymce, MDinput, Sticky, Warning },
+  components: { MDinput, Sticky, Warning, VueEditor },
   props: {
     isEdit: {
       type: Boolean,
@@ -141,7 +141,7 @@ export default {
         if (res && res.code !== -1) {
           this.$notify({
             title: '成功',
-            message: '发布文章成功',
+            message: '新建邮件模板成功',
             type: 'success',
             duration: 2000
           })
