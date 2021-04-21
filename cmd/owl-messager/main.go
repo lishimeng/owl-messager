@@ -12,6 +12,7 @@ import (
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/etc"
 	"github.com/lishimeng/owl/internal/setup"
+	"github.com/lishimeng/owl/static"
 	"time"
 )
 import _ "github.com/lib/pq"
@@ -67,6 +68,7 @@ func _main() (err error) {
 			new(model.MessageTask),
 			new(model.MessageRunningTask)).
 			EnableWeb(etc.Config.Web.Listen, api.Route).
+			EnableStaticWeb("index.html", static.Asset, static.AssetNames).
 			//ComponentBefore(setup.JobClearExpireTask).
 			ComponentBefore(setup.MessageSender)
 		return err
