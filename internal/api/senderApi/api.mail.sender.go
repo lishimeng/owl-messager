@@ -35,7 +35,7 @@ func GetMailSenderList(ctx iris.Context) {
 		PageSize: pageSize,
 		PageNum:  pageNo,
 	}
-	page, err := repo.GetMailSenderList(status, page)
+	page, senders, err := repo.GetMailSenderList(status, page)
 	if err != nil {
 		log.Debug("get senders failed")
 		log.Debug(err)
@@ -43,6 +43,25 @@ func GetMailSenderList(ctx iris.Context) {
 		resp.Message = "get senders failed"
 		common.ResponseJSON(ctx, resp)
 		return
+	}
+
+	if len(senders) > 0 {
+		for _, ms := range senders {
+			var tmpInfo = Info{
+				Id:         ms.Id,
+				SenderCode: ms.Code,
+				Host:       ms.Host,
+				Port:       ms.Port,
+				Email:      ms.Email,
+				Alias:      ms.Alias,
+				Passwd:     ms.Passwd,
+				Status:     ms.Status,
+				CreateTime: common.FormatTime(ms.CreateTime),
+				UpdateTime: common.FormatTime(ms.UpdateTime),
+			}
+
+			page.Data = append(page.Data, tmpInfo)
+		}
 	}
 
 	resp.Pager = page

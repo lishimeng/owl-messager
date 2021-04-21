@@ -5,13 +5,13 @@ import (
 	"github.com/lishimeng/owl/internal/db/model"
 )
 
-// 查询邮件发送账号
+// GetMailSenderByCode 查询邮件发送账号
 func GetMailSenderByCode(code string) (s model.MailSenderInfo, err error) {
 	err = app.GetOrm().Context.QueryTable(new(model.MailSenderInfo)).Filter("Code", code).One(&s)
 	return
 }
 
-// 查询邮件发送账号
+// GetMailSenderById 查询邮件发送账号
 func GetMailSenderById(id int) (s model.MailSenderInfo, err error) {
 	s.Id = id
 	err = app.GetOrm().Context.Read(&s)
@@ -25,9 +25,8 @@ func DeleteMailSender(id int) (err error) {
 	return
 }
 
-// 查询邮件发送账号列表
-func GetMailSenderList(status int, page app.Pager) (p app.Pager, err error) {
-	var senders []model.MailSenderInfo
+// GetMailSenderList 查询邮件发送账号列表
+func GetMailSenderList(status int, page app.Pager) (p app.Pager, senders []model.MailSenderInfo, err error) {
 	var qs = app.GetOrm().Context.QueryTable(new(model.MailSenderInfo))
 	if status > ConditionIgnore {
 		qs = qs.Filter("Status", status)
@@ -40,11 +39,6 @@ func GetMailSenderList(status int, page app.Pager) (p app.Pager, err error) {
 	_, err = qs.OrderBy("CreateTime").Offset(calcPageOffset(page)).Limit(page.PageSize).All(&senders)
 	if err != nil {
 		return
-	}
-	if len(senders) > 0 {
-		for _, s := range senders {
-			page.Data = append(page.Data, s)
-		}
 	}
 	p = page
 	return
