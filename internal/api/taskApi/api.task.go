@@ -57,6 +57,7 @@ func GetTaskList(ctx iris.Context) {
 	}
 
 	resp.Code = common.RespCodeSuccess
+	resp.Pager = page
 	common.ResponseJSON(ctx, resp)
 }
 

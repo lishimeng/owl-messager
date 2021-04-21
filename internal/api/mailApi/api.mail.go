@@ -28,6 +28,7 @@ type Resp struct {
 	MessageId int `json:"messageId,omitempty"`
 }
 
+// SendMail
 /**
 @Summary send a email
 

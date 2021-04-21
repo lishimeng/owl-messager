@@ -57,6 +57,7 @@ func GetMailTemplateList(ctx iris.Context) {
 	}
 
 	resp.Pager = page
+	resp.Code = common.RespCodeSuccess
 	common.ResponseJSON(ctx, resp)
 }
 
@@ -91,7 +92,7 @@ func GetMailTemplateInfo(ctx iris.Context) {
 		UpdateTime:   common.FormatTime(tpl.UpdateTime),
 	}
 	resp.Info = tmpInfo
-
+	resp.Code = common.RespCodeSuccess
 	common.ResponseJSON(ctx, resp)
 }
 
@@ -257,6 +258,6 @@ func DeleteMailTemplate(ctx iris.Context) {
 		common.ResponseJSON(ctx, resp)
 		return
 	}
-
+	resp.Code = common.RespCodeSuccess
 	common.ResponseJSON(ctx, resp)
 }
