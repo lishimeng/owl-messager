@@ -1,112 +1,94 @@
 <template>
   <div class="app-container">
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="ID" width="80">
+    <!-- <el-row>
+      <router-link :to="{ path: 'AddMailTemplate'}">
+				<el-button type="primary" icon="el-icon-plus" size="small">新增</el-button>
+			</router-link>
+    </el-row> -->
+    <el-table :data="tableData.rows" stripe border style="width: 100%">
+      <el-table-column prop="id" label="ID" width="50px" />
+      <el-table-column prop="templateCode" label="模板" />
+      <el-table-column prop="templateBody" label="正文" />
+      <!-- <el-table-column prop="category" label="分类" width="50px"></el-table-column> -->
+      <!-- <el-table-column prop="description" label="描述"></el-table-column> -->
+      <el-table-column prop="createTime" label="创建时间" />
+      <el-table-column prop="updateTime" label="更新时间" />
+      <el-table-column prop="status" label="状态" width="80px">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <el-tag v-if="scope.row.status === 1" type="success" size="mini" disable-transitions>已启用</el-tag>
+          <el-tag v-else-if="scope.row.status === 2" type="danger" size="mini" disable-transitions>已停用</el-tag>
         </template>
       </el-table-column>
-
-      <el-table-column width="180px" align="center" label="Date">
-        <template slot-scope="scope">
-          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="120px" align="center" label="Author">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="100px" label="Importance">
-        <template slot-scope="scope">
-          <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" class="meta-item__icon" />
-        </template>
-      </el-table-column>
-
-      <el-table-column class-name="status-col" label="Status" width="110">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column min-width="300px" label="Title">
-        <template slot-scope="{row}">
-          <router-link :to="'/template/edit/'+row.id" class="link-type">
-            <span>{{ row.title }}</span>
-          </router-link>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Actions" width="120">
-        <template slot-scope="scope">
-          <router-link :to="'/template/edit/'+scope.row.id">
-            <el-button type="primary" size="small" icon="el-icon-edit">
-              Edit
-            </el-button>
-          </router-link>
-        </template>
-      </el-table-column>
+      <!-- <el-table-column prop="name" label="模板名称"></el-table-column> -->
+      <!-- <el-table-column prop="" label="操作" width="180px">
+        <template slot-scope="">
+					<el-button size="mini" type="default" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+					<el-button size="mini" type="danger" icon="el-icon-edit" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+				</template>
+      </el-table-column> -->
     </el-table>
-
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <div style="text-align: left; margin-top: 15px">
+      <el-pagination
+        :current-page="tableData.pagination.pageNum"
+        :pager-count="5"
+        :page-sizes="[10, 20, 50, 100]"
+        :page-size="tableData.pagination.pageSize"
+        background
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="tableData.pagination.totalSize"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import { fetchList } from '@/api/article'
-import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-
+import { getMailTemplateApi } from '../../api/mail.js'
 export default {
-  name: 'ArticleList',
-  components: { Pagination },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
-  },
+  name: 'MailTemplate',
+  props: {},
   data() {
     return {
-      list: null,
-      total: 0,
-      listLoading: true,
-      listQuery: {
-        page: 1,
-        limit: 20
+      tableData: {
+        pagination: {
+          total: 0,
+          pageNum: 1,
+          pageSize: 20,
+          totalSize: 0
+        },
+        rows: []
       }
     }
   },
-  created() {
-    this.getList()
+  created() {},
+  mounted() {
+    this.getMailTemplate()
   },
   methods: {
-    getList() {
-      this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
-        this.listLoading = false
+    handleSizeChange(val) {
+      this.tableData.pagination.pageSize = val
+      this.getMaterialOperationList()
+    },
+    handleCurrentChange(val) {
+      this.tableData.pagination.pageNum = val
+      this.getMaterialOperationList()
+    },
+    getMailTemplate() {
+      getMailTemplateApi({
+        pageNum: this.tableData.pagination.pageNum,
+        pageSize: this.tableData.pagination.pageSize
+      }).then(res => {
+        console.log(res)
+        if (res) {
+          this.tableData.rows = res.items
+        }
       })
     }
   }
 }
 </script>
 
-<style scoped>
-.edit-input {
-  padding-right: 100px;
-}
-.cancel-btn {
-  position: absolute;
-  right: 15px;
-  top: 10px;
-}
+<style lang="scss" scoped>
+
 </style>
