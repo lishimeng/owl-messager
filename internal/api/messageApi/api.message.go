@@ -68,6 +68,7 @@ func GetMessageList(ctx iris.Context) {
 	}
 
 	resp.Pager = page
+	resp.Code = common.RespCodeSuccess
 	common.ResponseJSON(ctx, resp)
 
 }

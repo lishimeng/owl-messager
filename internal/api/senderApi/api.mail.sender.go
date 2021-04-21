@@ -65,6 +65,7 @@ func GetMailSenderList(ctx iris.Context) {
 	}
 
 	resp.Pager = page
+	resp.Code = common.RespCodeSuccess
 	common.ResponseJSON(ctx, resp)
 }
 
@@ -116,7 +117,10 @@ func AddMailSender(ctx iris.Context) {
 }
 
 func UpdateMailSender(ctx iris.Context) {
-
+	log.Debug("update mail sender")
+	var resp app.Response
+	resp.Code = common.RespCodeSuccess
+	common.ResponseJSON(ctx, resp)
 }
 
 func DeleteMailSender(ctx iris.Context) {
@@ -140,5 +144,6 @@ func DeleteMailSender(ctx iris.Context) {
 		return
 	}
 
+	resp.Code = common.RespCodeSuccess
 	common.ResponseJSON(ctx, resp)
 }
