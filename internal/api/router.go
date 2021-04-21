@@ -30,13 +30,13 @@ func router(root iris.Party) {
 
 func message(p iris.Party) {
 	p.Get("/", messageApi.GetMessageList)
-	p.Get("/{message_id}", messageApi.GetMessageInfo)
+	p.Get("/{id}", messageApi.GetMessageInfo)
 	p.Post("/send/{id}", messageApi.Send)
 }
 
 func task(p iris.Party) {
 	p.Get("/", taskApi.GetTaskList)
-	p.Get("/{task_id}", taskApi.GetTaskInfo)
+	p.Get("/{id}", taskApi.GetTaskInfo)
 }
 
 func mailSender(p iris.Party) {
@@ -59,6 +59,7 @@ func mailTemplate(p iris.Party) {
 
 func mail(p iris.Party) {
 	p.Post("/", mailApi.SendMail)
+	p.Get("/message/{id}", mailApi.GetByMessage)
 }
 
 func sms(p iris.Party) {
