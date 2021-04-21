@@ -37,6 +37,7 @@ func message(p iris.Party) {
 func task(p iris.Party) {
 	p.Get("/", taskApi.GetTaskList)
 	p.Get("/{id}", taskApi.GetTaskInfo)
+	p.Get("/message/{id}", taskApi.GetByMessage)
 }
 
 func mailSender(p iris.Party) {

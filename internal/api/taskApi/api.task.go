@@ -96,3 +96,38 @@ func GetTaskInfo(ctx iris.Context) {
 	resp.Code = common.RespCodeSuccess
 	common.ResponseJSON(ctx, resp)
 }
+
+func GetByMessage(ctx iris.Context) {
+	log.Debug("get task by message")
+	var resp RespWrapper
+	id, err := ctx.Params().GetInt("id")
+	if err != nil {
+		log.Debug("id must be a int value")
+		resp.Response.Code = common.RespCodeNotFound
+		resp.Message = common.RespMsgIdNum
+		common.ResponseJSON(ctx, resp)
+		return
+	}
+	log.Debug("id:%d", id)
+	ms, err := repo.GetTaskByMessage(id)
+	if err != nil {
+		log.Debug("get task failed")
+		log.Debug(err)
+		resp.Response.Code = common.RespCodeNotFound
+		resp.Message = common.RespMsgNotFount
+		common.ResponseJSON(ctx, resp)
+		return
+	}
+
+	var tmpInfo = TaskInfoResp{
+		Id:                ms.Id,
+		MessageId:         ms.MessageId,
+		MessageInstanceId: ms.MessageInstanceId,
+		Status:            ms.Status,
+		CreateTime:        common.FormatTime(ms.CreateTime),
+		UpdateTime:        common.FormatTime(ms.UpdateTime),
+	}
+	resp.TaskInfoResp = tmpInfo
+	resp.Code = common.RespCodeSuccess
+	common.ResponseJSON(ctx, resp)
+}
