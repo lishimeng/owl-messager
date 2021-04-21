@@ -19,6 +19,7 @@ import './permission' // permission control
 
 import * as filters from './filters' // global filters
 
+import Vue2Editor from 'vue2-editor'
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -31,6 +32,8 @@ if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
   mockXHR()
 }
+
+Vue.use(Vue2Editor)
 
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium', // set element-ui default size

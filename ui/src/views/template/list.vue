@@ -6,13 +6,13 @@
 			</router-link>
     </el-row> -->
     <el-table :data="tableData.rows" stripe border style="width: 100%">
-      <el-table-column prop="id" label="ID" width="50px" />
-      <el-table-column prop="templateCode" label="模板" />
+      <el-table-column prop="id" label="ID" width="80px" />
+      <el-table-column prop="templateCode" label="模板" width="200px" />
       <el-table-column prop="templateBody" label="正文" />
       <!-- <el-table-column prop="category" label="分类" width="50px"></el-table-column> -->
       <!-- <el-table-column prop="description" label="描述"></el-table-column> -->
-      <el-table-column prop="createTime" label="创建时间" />
-      <el-table-column prop="updateTime" label="更新时间" />
+      <el-table-column prop="createTime" label="创建时间" width="200px" />
+      <el-table-column prop="updateTime" label="更新时间" width="200px" />
       <el-table-column prop="status" label="状态" width="80px">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status === 1" type="success" size="mini" disable-transitions>已启用</el-tag>
@@ -29,13 +29,13 @@
     </el-table>
     <div style="text-align: left; margin-top: 15px">
       <el-pagination
-        :current-page="tableData.pagination.pageNum"
+        :current-page="tableData.pagination.pageNo"
         :pager-count="5"
         :page-sizes="[10, 20, 50, 100]"
         :page-size="tableData.pagination.pageSize"
         background
         layout="total, sizes, prev, pager, next, jumper"
-        :total="tableData.pagination.totalSize"
+        :page-count="tableData.pagination.pageCount"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
@@ -53,9 +53,9 @@ export default {
       tableData: {
         pagination: {
           total: 0,
-          pageNum: 1,
+          pageNo: 1,
           pageSize: 20,
-          totalSize: 0
+          pageCount: 0
         },
         rows: []
       }
@@ -68,20 +68,22 @@ export default {
   methods: {
     handleSizeChange(val) {
       this.tableData.pagination.pageSize = val
-      this.getMaterialOperationList()
+      this.getMailTemplate()
     },
     handleCurrentChange(val) {
-      this.tableData.pagination.pageNum = val
-      this.getMaterialOperationList()
+      this.tableData.pagination.pageNo = val
+      this.getMailTemplate()
     },
     getMailTemplate() {
       getMailTemplateApi({
-        pageNum: this.tableData.pagination.pageNum,
+        pageNo: this.tableData.pagination.pageNo,
         pageSize: this.tableData.pagination.pageSize
       }).then(res => {
-        console.log(res)
-        if (res) {
+        if (res && res.code === 200) {
           this.tableData.rows = res.items
+          this.tableData.pagination.pageCount = res.totalPage
+        } else {
+          this.$message.error(res.message)
         }
       })
     }

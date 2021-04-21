@@ -7,12 +7,16 @@ export const getMessageInfoApi = (p) => get('api/message', p)
 export const getSenderInfoApi = (p) => get('api/mail_sender', p)
 export const getMailTemplateApi = (p) => get('api/mail_template', p)
 export const getTaskApi = (p) => get('api/task', p)
+export const getTaskInfoByMessageIdApi = (p) => get('api/task/message/' + p.messageId, p)
+export const getMailApi = (p) => get('api/mail', p)
+export const getMailByMessageIdApi = (p) => get('api/mail/message/' + p.messageId, p)
 
-export const addSenderInfoApi = (p) => post('api/mail_sender', p)
 export const createMailTemplateApi = (p) => post('api/mail_template', p)
 
-export const deleteSenderInfoApi = (p) => get('api/mail_sender/delete', p)
-export const deleteMailTemplateApi = (p) => get('api/mail_template/delete', p)
+// export const addSenderInfoApi = (p) => post('api/mail_sender', p)
+// export const deleteSenderInfoApi = (p) => get('api/mail_sender/delete', p)
+// export const deleteMailTemplateApi = (p) => get('api/mail_template/delete', p)
+
 // import request from '@/utils/request'
 // import { baseURL } from './request'
 

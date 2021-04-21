@@ -6,12 +6,12 @@
 			</router-link>
     </el-row> -->
     <el-table :data="tableData.rows" stripe border style="width: 100%">
-      <el-table-column prop="id" label="ID" />
+      <el-table-column prop="id" label="ID" width="80px" />
       <el-table-column prop="senderCode" label="发件CODE" />
       <el-table-column prop="host" label="主机地址" />
-      <el-table-column prop="port" label="端口" />
+      <el-table-column prop="port" label="端口" width="80px" />
       <el-table-column prop="email" label="邮箱" />
-      <el-table-column prop="status" label="状态">
+      <el-table-column prop="status" label="状态" width="80px">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status === 2" type="success" size="mini" disable-transitions>已启用</el-tag>
           <el-tag v-else-if="scope.row.status === 1" type="danger" size="mini" disable-transitions>已停用</el-tag>
@@ -29,13 +29,13 @@
     </el-table>
     <div style="text-align: left; margin-top: 15px">
       <el-pagination
-        :current-page="tableData.pagination.pageNum"
+        :current-page="tableData.pagination.pageNo"
         :pager-count="5"
         :page-sizes="[10, 20, 50, 100]"
         :page-size="tableData.pagination.pageSize"
         background
         layout="total, sizes, prev, pager, next, jumper"
-        :total="tableData.pagination.totalSize"
+        :page-count="tableData.pagination.pageCount"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
@@ -53,9 +53,9 @@ export default {
       tableData: {
         pagination: {
           total: 0,
-          pageNum: 1,
+          pageNo: 1,
           pageSize: 10,
-          totalSize: 0
+          pageCount: 0
         },
         rows: []
       }
@@ -71,17 +71,19 @@ export default {
       this.getMaterialOperationList()
     },
     handleCurrentChange(val) {
-      this.tableData.pagination.pageNum = val
+      this.tableData.pagination.pageNo = val
       this.getMaterialOperationList()
     },
     getSenderInfoList() {
       getSenderInfoApi({
-        pageNum: this.tableData.pageNum,
-        pageSize: this.tableData.pageSize
+        pageNo: this.tableData.pagination.pageNo,
+        pageSize: this.tableData.pagination.pageSize
       }).then(res => {
-        console.log(res)
-        if (res) {
+        if (res && res.code === 200) {
           this.tableData.rows = res.items
+          this.tableData.pagination.pageCount = res.totalPage
+        } else {
+          this.$message.error(res.message)
         }
       })
     }
