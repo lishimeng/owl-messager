@@ -1,10 +1,10 @@
 package api
 
 import (
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/owl/internal/api/mailApi"
 	"github.com/lishimeng/owl/internal/api/messageApi"
-	mailSender2 "github.com/lishimeng/owl/internal/api/senderApi"
+	"github.com/lishimeng/owl/internal/api/senderApi"
 	"github.com/lishimeng/owl/internal/api/smsApi"
 	"github.com/lishimeng/owl/internal/api/taskApi"
 	"github.com/lishimeng/owl/internal/api/templateApi"
@@ -43,12 +43,12 @@ func task(p iris.Party) {
 }
 
 func mailSender(p iris.Party) {
-	p.Post("/", mailSender2.AddMailSender)
-	p.Put("/{id}", mailSender2.UpdateMailSender)
-	p.Delete("/{id}", mailSender2.DeleteMailSender)
+	p.Post("/", senderApi.AddMailSender)
+	p.Put("/{id}", senderApi.UpdateMailSender)
+	p.Delete("/{id}", senderApi.DeleteMailSender)
 
-	p.Get("/", mailSender2.GetMailSenderList)
-	p.Get("/{id}", mailSender2.GetMailSenderInfo)
+	p.Get("/", senderApi.GetMailSenderList)
+	p.Get("/{id}", senderApi.GetMailSenderInfo)
 }
 
 func mailTemplate(p iris.Party) {

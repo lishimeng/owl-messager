@@ -7,12 +7,8 @@ import (
 	"github.com/lishimeng/app-starter"
 	etc2 "github.com/lishimeng/app-starter/etc"
 	"github.com/lishimeng/go-log"
-	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl/cmd"
-	"github.com/lishimeng/owl/internal/api"
-	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/etc"
-	"github.com/lishimeng/owl/internal/setup"
 	"github.com/lishimeng/owl/static"
 	"time"
 )
@@ -51,36 +47,15 @@ func _main() (err error) {
 		if err != nil {
 			return err
 		}
-		dbConfig := persistence.PostgresConfig{
-			UserName:  etc.Config.Db.User,
-			Password:  etc.Config.Db.Password,
-			Host:      etc.Config.Db.Host,
-			Port:      etc.Config.Db.Port,
-			DbName:    etc.Config.Db.Database,
-			InitDb:    true,
-			AliasName: "default",
-			SSL:       etc.Config.Db.Ssl,
-		}
 
-		builder.EnableDatabase(dbConfig.Build(),
-			new(model.MessageInfo),
-			new(model.MailMessageInfo),
-			new(model.SmsMessageInfo),
-			new(model.MailSenderInfo),
-			new(model.MailTemplateInfo),
-			new(model.MessageTask),
-			new(model.MessageRunningTask)).
-			//SetWebLogLevel("debug").
-			EnableWeb(etc.Config.Web.Listen, api.Route).
+		builder.SetWebLogLevel("debug").
+			EnableWeb(etc.Config.Web.Listen).
 			EnableStaticWeb(
 				"ui/dist",
 				"index.html",
 				static.AssetInfo,
 				static.Asset,
-				static.AssetNames).
-			//ComponentBefore(setup.JobClearExpireTask).
-			ComponentBefore(setup.MessageSender)
-
+				static.AssetNames)
 		return err
 	}, func(s string) {
 		log.Info(s)

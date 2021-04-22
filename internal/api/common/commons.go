@@ -2,7 +2,7 @@ package common
 
 import (
 	"fmt"
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"math/rand"
 	"time"
 )
