@@ -193,6 +193,20 @@ export const asyncRoutes = [
     ]
   },
 
+  {
+    path: '/manage',
+    component: Layout,
+    redirect: '/manage/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/manage/index'),
+        name: 'Manage',
+        meta: { title: 'manage', icon: 'email', noCache: true }
+      }
+    ]
+  },
+
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
