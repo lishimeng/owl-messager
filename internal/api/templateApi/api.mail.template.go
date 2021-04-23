@@ -1,7 +1,7 @@
 package templateApi
 
 import (
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/api/common"
@@ -106,6 +106,7 @@ type MailTemplateReq struct {
 	Status      int    `json:"status,omitempty"`
 }
 
+// AddMailTemplate
 /**
 @Summary add a new template for send email
 
