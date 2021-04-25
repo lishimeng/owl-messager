@@ -7,9 +7,6 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 /* Router Modules */
-import componentsRouter from './modules/components'
-import chartsRouter from './modules/charts'
-import tableRouter from './modules/table'
 import templateRouter from './modules/template'
 
 /**
@@ -119,23 +116,7 @@ export const asyncRoutes = [
   },
 
   /** when your routing map is too long, you can split it into small modules **/
-  componentsRouter,
-  chartsRouter,
-  tableRouter,
   templateRouter,
-
-  {
-    path: '/theme',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/theme/index'),
-        name: 'Theme',
-        meta: { title: 'Theme', icon: 'theme' }
-      }
-    ]
-  },
 
   {
     path: '/message',
@@ -189,6 +170,19 @@ export const asyncRoutes = [
         component: () => import('@/views/mail/index'),
         name: 'Mail',
         meta: { title: 'Send mail', icon: 'email', noCache: true }
+      }
+    ]
+  },
+
+  {
+    path: '/theme',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/theme/index'),
+        name: 'Theme',
+        meta: { title: 'Theme', icon: 'theme' }
       }
     ]
   },
