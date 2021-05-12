@@ -9,9 +9,7 @@ import (
 import (
 	"github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/manage"
-	"github.com/go-oauth2/oauth2/v4/models"
 	"github.com/go-oauth2/oauth2/v4/server"
-	"github.com/go-oauth2/oauth2/v4/store"
 	oredis "github.com/go-oauth2/redis/v4"
 )
 
@@ -25,12 +23,8 @@ type Req struct {
 func Init(ctx context.Context) {
 
 	manager := manage.NewDefaultManager()
-	clientStore := store.NewClientStore()
-	_ = clientStore.Set("000000", &models.Client{
-		ID:     "000000",
-		Secret: "999999",
-		Domain: "http://localhost",
-	}) // TODO replace the client store: wait implementation of postgres
+	clientStore := NewClientStore()
+
 	manager.MapClientStorage(clientStore)
 	manager.MustTokenStorage(oredis.NewRedisStore(&redis.Options{
 		Addr:               etc.Config.Redis.Addr,
