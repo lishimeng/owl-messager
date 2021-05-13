@@ -35,8 +35,7 @@ func router(root iris.Party) {
 }
 
 func oauth(p iris.Party) {
-	p.Get("/authorize", openApi.Authorize)
-	p.Get("/token", openApi.Token)
+	p.Get("/token", openApi.Token) // only support client credential
 }
 
 func message(p iris.Party) {
