@@ -9,6 +9,7 @@ require (
 	github.com/go-gomail/gomail v0.0.0-20160411212932-81ebce5c23df
 	github.com/go-oauth2/oauth2/v4 v4.3.0
 	github.com/go-oauth2/redis/v4 v4.1.1
+	github.com/go-redis/redis/v8 v8.0.0-beta.5
 	github.com/iris-contrib/jade v1.1.3
 	github.com/kataras/iris/v12 v12.1.8
 	github.com/lib/pq v1.0.0
