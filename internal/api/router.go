@@ -48,6 +48,8 @@ func task(p iris.Party) {
 	p.Get("/", taskApi.GetTaskList)
 	p.Get("/{id}", taskApi.GetTaskInfo)
 	p.Get("/message/{id}", taskApi.GetByMessage)
+
+	p.Get("/send/monitor", taskApi.TaskMonitorWs())
 }
 
 func mailSender(p iris.Party) {
