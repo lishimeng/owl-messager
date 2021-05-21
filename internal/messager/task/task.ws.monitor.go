@@ -6,6 +6,7 @@ import (
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/lishimeng/go-log"
 	"sync"
+	"time"
 )
 
 type MonitorData struct {
@@ -85,10 +86,7 @@ func (s *sendMonitor) pub(msg MonitorData) {
 			log.Info("task monitor client[%s] closed skip", id)
 			continue
 		}
-		c.Write(websocket.Message{
-			IsNative: true,
-			Body: bs,
-		})
+		_ = c.Socket().WriteText(bs, time.Second*8)
 	}
 }
 
