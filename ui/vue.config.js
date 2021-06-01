@@ -31,12 +31,13 @@ module.exports = {
   productionSourceMap: false,
   devServer: {
     proxy: {
-      "/api": {
-        target: "http://192.168.1.76/messager",
+      '/api': {
+        target: 'http://127.0.0.1:9527/',
         changeOrigin: true,
         pathRewrite: {
-          "^api": ""
-        }
+          '^/api': '/api'
+        },
+		    logLevel: 'debug'
       },
     },
     port: port,
