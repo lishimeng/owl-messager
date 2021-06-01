@@ -44,4 +44,4 @@ sudo owl-messager
 Contributing
 ------------
 
-Please check out our [contributing guide](CONTRIBUTING.md) if you're interested in contributing to K3s.
+Please check out our [contributing guide](CONTRIBUTING.md) if you're interested in contributing to owl.
