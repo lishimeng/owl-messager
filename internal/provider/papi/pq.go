@@ -10,35 +10,41 @@ type Item struct {
 }
 
 // A PriorityQueue implements heap.Interface and holds Items.
-type PriorityQueue []*Item
+type PriorityQueue struct {
+	items []*Item
+}
 
-func (pq PriorityQueue) Len() int { return len(pq) }
+func NewPq() *PriorityQueue {
+	return &PriorityQueue{}
+}
+
+func (pq PriorityQueue) Len() int { return len(pq.items) }
 
 func (pq PriorityQueue) Less(i, j int) bool {
 	// We want Pop to give us the highest, not lowest, priority so we use greater than here.
-	return pq[i].priority > pq[j].priority
+	return pq.items[i].priority > pq.items[j].priority
 }
 
 func (pq PriorityQueue) Swap(i, j int) {
-	pq[i], pq[j] = pq[j], pq[i]
-	pq[i].index = i
-	pq[j].index = j
+	pq.items[i], pq.items[j] = pq.items[j], pq.items[i]
+	pq.items[i].index = i
+	pq.items[j].index = j
 }
 
 func (pq *PriorityQueue) Push(x interface{}) {
-	n := len(*pq)
+	n := len(pq.items)
 	item := x.(*Item)
 	item.index = n
-	*pq = append(*pq, item)
+	pq.items = append(pq.items, item)
 }
 
 func (pq *PriorityQueue) Pop() interface{} {
 	old := *pq
-	n := len(old)
-	item := old[n-1]
-	old[n-1] = nil  // avoid memory leak
+	n := len(old.items)
+	item := old.items[n-1]
+	old.items[n-1] = nil  // avoid memory leak
 	item.index = -1 // for safety
-	*pq = old[0 : n-1]
+	pq.items = old.items[0 : n-1]
 	return item
 }
 
