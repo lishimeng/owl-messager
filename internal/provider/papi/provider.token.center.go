@@ -2,7 +2,13 @@ package papi
 
 import "time"
 
-type TokenStorage struct {
+type TokenStorage interface {
+	RegisterToken(id string, t TokenItem)
+	GetToken(id string) (t TokenItem, err error)
+	DelToken(id string) (err error)
+}
+
+type RamTokenStorage struct {
 	tokens map[string]TokenItem
 }
 
