@@ -27,8 +27,3 @@ func (t TokenItem) AccessExpired() bool {
 func (t TokenItem) RefreshExpired() bool {
 	return t.RefreshTokenExpireAt.Before(time.Now())
 }
-
-type TokenCenter interface {
-	RegisterToken(id string, t TokenItem)
-	GetToken(id string) (t TokenItem, err error)
-}
