@@ -3,6 +3,7 @@ module github.com/lishimeng/owl
 go 1.16
 
 require (
+	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1142
 	github.com/astaxie/beego v1.12.3
 	github.com/aymerick/raymond v2.0.3-0.20180322193309-b565731e1464+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
