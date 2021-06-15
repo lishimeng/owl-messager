@@ -27,7 +27,7 @@ func (p Provider) Send(toer string, tplId string, tplParams string) (err error) 
 	req := dysmsapi.CreateSendSmsRequest()
 	req.Scheme = "https"
 	req.PhoneNumbers = toer
-	req.SignName = ""
+	req.SignName = p.signName
 	req.TemplateCode = tplId
 	req.TemplateParam = tplParams
 
