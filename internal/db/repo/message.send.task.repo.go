@@ -24,9 +24,13 @@ func GetMessageTask(id int) (t model.MessageTask, err error) {
 	return
 }
 
-func GetTaskByMessage(messageId int) (t []model.MessageTask, err error) {
+func GetTaskByMessage(messageId int) (t model.MessageTask, err error) {
 
-	_, err = app.GetOrm().Context.QueryTable(new(model.MessageTask)).Filter("MessageId", messageId).All(&t)
+	err = app.GetOrm().Context.QueryTable(new(model.MessageTask)).
+		Filter("MessageId", messageId).
+		OrderBy("-CreateTime").
+		Limit(1).
+		One(&t)
 	return
 }
 

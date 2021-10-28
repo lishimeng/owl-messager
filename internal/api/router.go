@@ -1,13 +1,15 @@
 package api
 
 import (
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/owl/internal/api/mailApi"
 	"github.com/lishimeng/owl/internal/api/messageApi"
-	mailSender2 "github.com/lishimeng/owl/internal/api/senderApi"
+	"github.com/lishimeng/owl/internal/api/openApi"
+	"github.com/lishimeng/owl/internal/api/senderApi"
 	"github.com/lishimeng/owl/internal/api/smsApi"
 	"github.com/lishimeng/owl/internal/api/taskApi"
 	"github.com/lishimeng/owl/internal/api/templateApi"
+	"github.com/lishimeng/owl/internal/openapi"
 )
 
 func Route(app *iris.Application) {
@@ -23,29 +25,40 @@ func router(root iris.Party) {
 	mailSender(root.Party("/mail_sender"))
 	mailTemplate(root.Party("/mail_template"))
 
+	mail(root.Party("/mail"))
+
 	// send message
-	mail(root.Party("/send/mail"))
+	sendMail(root.Party("/send/mail"))
 	sms(root.Party("/send/sms"))
+
+	oauth(root.Party("/oauth2"))
+}
+
+func oauth(p iris.Party) {
+	p.Get("/token", openApi.Token) // only support client credential
 }
 
 func message(p iris.Party) {
 	p.Get("/", messageApi.GetMessageList)
-	p.Get("/{message_id}", messageApi.GetMessageInfo)
+	p.Get("/{id}", messageApi.GetMessageInfo)
 	p.Post("/send/{id}", messageApi.Send)
 }
 
 func task(p iris.Party) {
 	p.Get("/", taskApi.GetTaskList)
-	p.Get("/{task_id}", taskApi.GetTaskInfo)
+	p.Get("/{id}", taskApi.GetTaskInfo)
+	p.Get("/message/{id}", taskApi.GetByMessage)
+
+	p.Get("/send/monitor", taskApi.TaskMonitorWs())
 }
 
 func mailSender(p iris.Party) {
-	p.Post("/", mailSender2.AddMailSender)
-	p.Put("/{id}", mailSender2.UpdateMailSender)
-	p.Delete("/{id}", mailSender2.DeleteMailSender)
+	p.Post("/", senderApi.AddMailSender)
+	p.Put("/{id}", senderApi.UpdateMailSender)
+	p.Delete("/{id}", senderApi.DeleteMailSender)
 
-	p.Get("/", mailSender2.GetMailSenderList)
-	p.Get("/{id}", mailSender2.GetMailSenderInfo)
+	p.Get("/", senderApi.GetMailSenderList)
+	p.Get("/{id}", senderApi.GetMailSenderInfo)
 }
 
 func mailTemplate(p iris.Party) {
@@ -58,7 +71,10 @@ func mailTemplate(p iris.Party) {
 }
 
 func mail(p iris.Party) {
-	p.Post("/", mailApi.SendMail)
+	p.Get("/message/{id}", mailApi.GetByMessage)
+}
+func sendMail(p iris.Party) {
+	p.Post("/", openapi.CheckAccessToken, mailApi.SendMail)
 }
 
 func sms(p iris.Party) {

@@ -83,16 +83,35 @@ func (t *messageTask) HandleMessage(message model.MessageInfo) (err error) {
 		log.Info(err)
 		return
 	}
+	GetMonitor().Pub(MonitorData{
+		TaskId:            task.Id,
+		MessageId:         message.Id,
+		MessageCategory:   message.Category,
+		Subject:           message.Subject,
+		MessageInstanceId: task.MessageInstanceId,
+		Status:            task.Status,
+	})
 	// 提交给发送器
 	err = t.executor.Execute(task)
-	AfterHandleTask(task, err)
+	AfterHandleTask(task, message, err)
 	return
 }
 
-func AfterHandleTask(task model.MessageTask, err error) {
+func AfterHandleTask(task model.MessageTask, message model.MessageInfo, err error) {
+	pubData := MonitorData{
+		TaskId:            task.Id,
+		MessageId:         message.Id,
+		MessageCategory:   message.Category,
+		Subject:           message.Subject,
+		MessageInstanceId: task.MessageInstanceId,
+	}
 	if err != nil {
 		err = service.OnTaskHandleFail(task)
+		pubData.Status = model.MessageTaskSendFailed
 	} else {
 		err = service.OnTaskHandleSuccess(task)
+		pubData.Status = model.MessageTaskSendSuccess
 	}
+
+	GetMonitor().Pub(pubData)
 }

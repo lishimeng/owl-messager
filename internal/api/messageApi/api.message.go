@@ -1,7 +1,7 @@
 package messageApi
 
 import (
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/api/common"
@@ -110,6 +110,7 @@ func GetMessageInfo(ctx iris.Context) {
 	common.ResponseJSON(ctx, resp)
 }
 
+// Send
 /**
 @Summary send a message now, this will change message to a high priority
 

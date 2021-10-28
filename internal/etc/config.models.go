@@ -1,19 +1,27 @@
 package etc
 
 type Configuration struct {
-	Db  db  `toml:"db"`
-	Web web `toml:"web"`
+	Db    db
+	Web   web
+	Redis redis
 }
 
 type web struct {
-	Listen string `toml:"listen"`
+	Listen string
+}
+
+type redis struct {
+	Enable   bool
+	Addr     string
+	Password string
+	Db       int
 }
 
 type db struct {
-	User     string `toml:"user"`
-	Password string `toml:"password"`
-	Host     string `toml:"host"`
-	Port     int    `toml:"port"`
-	DbName   string `toml:"database"`
-	Ssl      string `toml:"ssl"`
+	User     string
+	Password string
+	Host     string
+	Port     int
+	Database string
+	Ssl      string
 }

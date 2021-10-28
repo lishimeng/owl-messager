@@ -19,6 +19,10 @@ export const changeSwitchStatusApi = (p) => postForm('coreapi/908/001/2', p)
 // export const deleteSenderInfoApi = (p) => get('api/mail_sender/delete', p)
 // export const deleteMailTemplateApi = (p) => get('api/mail_template/delete', p)
 
+// export const addSenderInfoApi = (p) => post('api/mail_sender', p)
+// export const deleteSenderInfoApi = (p) => get('api/mail_sender/delete', p)
+// export const deleteMailTemplateApi = (p) => get('api/mail_template/delete', p)
+
 // import request from '@/utils/request'
 // import { baseURL } from './request'
 
