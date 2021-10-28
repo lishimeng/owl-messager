@@ -39,6 +39,13 @@ module.exports = {
         },
 		    logLevel: 'debug'
       },
+      "/coreapi": {
+        target: "http://192.168.1.76/",
+        changeOrigin: true,
+        pathRewrite: {
+          "^coreapi": ""
+        }
+      },
     },
     port: port,
     open: true,

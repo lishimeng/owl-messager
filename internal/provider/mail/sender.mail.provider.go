@@ -26,6 +26,7 @@ type MetaSender struct {
 	Name string
 	// 发件人邮箱密码（注意，这里是明文形式），TODO：如果设置成密文？
 	Passwd string
+	EmailAlias string
 }
 
 type MetaReceiver struct {
@@ -66,12 +67,17 @@ func (s *sender) Send(metas MetaInfo, subject string, body string) (err error) {
 	}
 
 	// 发件人
+	// 发件人子邮箱
+	emailAlias := metas.Sender.Email
+	if len(metas.Sender.EmailAlias) > 0 {
+		emailAlias = metas.Sender.EmailAlias
+	}
 	// 第三个参数为发件人别名，如"李大锤"，可以为空（此时则为邮箱名称）
 	var senderName = ""
 	if len(metas.Sender.Name) > 0 {
 		senderName = metas.Sender.Name
 	}
-	m.SetAddressHeader("From", metas.Sender.Email, senderName)
+	m.SetAddressHeader("From", emailAlias, senderName)
 
 	// -----------------------------------
 	// 主题

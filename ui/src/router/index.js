@@ -175,6 +175,19 @@ export const asyncRoutes = [
   },
 
   {
+    path: '/manage',
+    component: Layout,
+    redirect: '/manage/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/manage/index'),
+        name: 'Manage',
+        meta: { title: 'manage', icon: 'email', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/theme',
     component: Layout,
     children: [

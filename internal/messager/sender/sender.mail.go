@@ -49,6 +49,7 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 			Email:  si.Email,
 			Name:   si.Alias,
 			Passwd: si.Passwd,
+			EmailAlias: si.EmailAlias,
 		},
 		Receiver: mail.MetaReceiver{
 			To: toers,

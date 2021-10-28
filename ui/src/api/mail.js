@@ -1,6 +1,7 @@
 import {
   get,
-  post
+  post,
+  postForm
 } from '../api/request'
 
 export const getMessageInfoApi = (p) => get('api/message', p)
@@ -12,6 +13,11 @@ export const getMailApi = (p) => get('api/mail', p)
 export const getMailByMessageIdApi = (p) => get('api/mail/message/' + p.messageId, p)
 
 export const createMailTemplateApi = (p) => post('api/mail_template', p)
+export const getCurrentSwitchStatusApi = (p) => get('coreapi/908/001/1', p)
+export const changeSwitchStatusApi = (p) => postForm('coreapi/908/001/2', p)
+// export const addSenderInfoApi = (p) => post('api/mail_sender', p)
+// export const deleteSenderInfoApi = (p) => get('api/mail_sender/delete', p)
+// export const deleteMailTemplateApi = (p) => get('api/mail_template/delete', p)
 
 // export const addSenderInfoApi = (p) => post('api/mail_sender', p)
 // export const deleteSenderInfoApi = (p) => get('api/mail_sender/delete', p)
