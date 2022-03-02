@@ -72,12 +72,7 @@ func _main() (err error) {
 			new(model.MessageRunningTask)).
 			//SetWebLogLevel("debug").
 			EnableWeb(etc.Config.Web.Listen, api.Route).
-			EnableStaticWeb(
-				"ui/dist",
-				"index.html",
-				static.AssetInfo,
-				static.Asset,
-				static.AssetNames).
+			EnableStaticWeb(static.AssetFile).
 			//ComponentBefore(setup.JobClearExpireTask).
 			ComponentBefore(setup.MessageSender)
 
