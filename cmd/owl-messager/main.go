@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/astaxie/beego/orm"
+	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
 	etc2 "github.com/lishimeng/app-starter/etc"
 	"github.com/lishimeng/go-log"

@@ -6,7 +6,7 @@ type Payload struct {
 	Payload         interface{} `json:"payload"`
 }
 
-// 消息
+// Message 消息
 type Message struct {
 	MessageId       int `json:"id"`
 	MessageCategory int `json:"messageCategory,omitempty"` // 消息类型

@@ -10,7 +10,7 @@ import (
 
 func CreateMailMessage(sender model.MailSenderInfo, template model.MailTemplateInfo, templateParams string,
 	subject, receiver, cc string) (m model.MessageInfo, err error) {
-	err = app.GetOrm().Transaction(func(ctx persistence.OrmContext) (e error) {
+	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// create message
 		m, e = repo.CreateMessage(subject, msg.Email)
 		if e != nil {
@@ -24,7 +24,7 @@ func CreateMailMessage(sender model.MailSenderInfo, template model.MailTemplateI
 }
 
 func UpdateMailTemplate(id, status int, body, description string) (m model.MailTemplateInfo, err error) {
-	err = app.GetOrm().Transaction(func(ctx persistence.OrmContext) (e error) {
+	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		m, e = repo.GetMailTemplateById(id)
 		if e != nil {
 			return

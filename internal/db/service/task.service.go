@@ -12,7 +12,7 @@ import (
 
 func HandleExpiredTask(runningTask model.MessageRunningTask) (err error) {
 	// start transmission
-	err = app.GetOrm().Transaction(func(ctx persistence.OrmContext) (e error) {
+	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// remove from running runningTask
 		e = repo.DeleteRunningTask(runningTask.Id)
 		if e != nil {
@@ -34,7 +34,7 @@ func HandleExpiredTask(runningTask model.MessageRunningTask) (err error) {
 
 func OnTaskHandleFail(task model.MessageTask) (err error) {
 	log.Debug("on task handle failed")
-	err = app.GetOrm().Transaction(func(ctx persistence.OrmContext) (e error) {
+	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// message status -> fail
 		_, e = repo.UpdateMessageStatus(task.MessageId, model.MessageSendFailed)
 		if e != nil {
@@ -55,7 +55,7 @@ func OnTaskHandleFail(task model.MessageTask) (err error) {
 
 func OnTaskHandleSuccess(task model.MessageTask) (err error) {
 	log.Debug("on task handle success")
-	err = app.GetOrm().Transaction(func(ctx persistence.OrmContext) (e error) {
+	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// message status -> success
 		_, e = repo.UpdateMessageStatus(task.MessageId, model.MessageSendSuccess)
 		if e != nil {
@@ -76,7 +76,7 @@ func OnTaskHandleSuccess(task model.MessageTask) (err error) {
 
 func CreateMessageTask(message model.MessageInfo, messageInstanceId int) (task model.MessageTask, err error) {
 
-	err = app.GetOrm().Transaction(func(ctx persistence.OrmContext) (e error) {
+	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// 创建task
 		task, e = repo.AddMessageTask(message.Id, messageInstanceId)
 		if e != nil {
