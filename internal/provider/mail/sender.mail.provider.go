@@ -1,6 +1,7 @@
 package mail
 
 import (
+	"crypto/tls"
 	"errors"
 	"github.com/go-gomail/gomail"
 	"github.com/lishimeng/go-log"
@@ -85,7 +86,10 @@ func (s *sender) Send(metas MetaInfo, subject string, body string) (err error) {
 	// 正文
 	m.SetBody("text/html", body)
 
+	log.Info("[gomail]info before-Send: message: %+v, metas: %+v", m, metas)
+
 	d := gomail.NewDialer(metas.Server.Host, metas.Server.Port, metas.Sender.Email, metas.Sender.Passwd)
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	// 发送
 	err = d.DialAndSend(m)
 	return
