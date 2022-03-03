@@ -1,0 +1,8 @@
+{
+  "sku_skuNo": "SKU编号",
+  "sku_skuName": "物料名称",
+  "sku_description": "物料描述",
+  "menu_skuManagement": "SKU管理",
+  "menu_skuList": "SKU列表",
+  "storage_containerNo": "物品编号"
+}

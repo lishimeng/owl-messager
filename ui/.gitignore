@@ -1,26 +1,17 @@
-.DS_Store
-node_modules/
-dist/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-**/*.log
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 
-tests/**/coverage/
-tests/e2e/reports
-selenium-debug.log
+# Test binary, built with `go test -c`
+*.test
 
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.local
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
 
-package-lock.json
-yarn.lock
-
-build/
-dist/
+# Dependency directories (remove the comment below to include it)
+# vendor/
+node_modules
+dist
