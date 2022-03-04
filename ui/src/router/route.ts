@@ -48,6 +48,22 @@ export /** @type {*} */
 				},
 
 				{
+					path: '/sender',
+					name: 'sender',
+					component: () => import('/@/views/sender/index.vue'),
+					meta: {
+						title: 'message.router.sender',
+						isLink: '',
+						isHide: false,
+						isKeepAlive: true,
+						isAffix: true,
+						isIframe: false,
+						auth: ['base'],
+						icon: 'iconfont icon-shouye',
+					},
+				},
+
+				{
 					path: '/user',
 					name: '用户管理',
 					component: () => import('/@/layout/routerView/parent.vue'),
