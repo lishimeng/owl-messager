@@ -2,6 +2,7 @@
 export default {
 	router: {
 		home: 'inventory',
+		sender: 'sender',
 		system: 'system',
 		systemMenu: 'systemMenu',
 		systemUser: 'systemUser',
