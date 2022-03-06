@@ -62,6 +62,68 @@ export /** @type {*} */
 						icon: 'iconfont icon-shouye',
 					},
 				},
+				{
+					path: '/template',
+					name: 'template',
+					component: () => import('/@/views/template/index.vue'),
+					meta: {
+						title: 'message.router.template',
+						isLink: '',
+						isHide: false,
+						isKeepAlive: true,
+						isAffix: true,
+						isIframe: false,
+						auth: ['base'],
+						icon: 'iconfont icon-shouye',
+					},
+				},
+				{
+					path: '/task',
+					name: 'task',
+					component: () => import('/@/layout/routerView/parent.vue'),
+					meta: {
+						title: 'message.router.task',
+						isLink: '',
+						isHide: false,
+						isKeepAlive: true,
+						isAffix: true,
+						isIframe: false,
+						auth: ['base'],
+						icon: 'iconfont icon-shouye',
+					},
+					children: [
+						{
+							path: '/task/add',
+							name: 'addTask',
+							component: () => import('/@/views/task/index.vue'),
+							meta: {
+								title: '新增模板',
+								isLink: '',
+								isHide: false,
+								isKeepAlive: true,
+								isAffix: false,
+								isIframe: false,
+								auth: ['admin', 'system'],
+								icon: 'fa fa-list-ul',
+							},
+						},
+						{
+							path: '/task/list',
+							name: 'listTask',
+							component: () => import('/@/views/task/list.vue'),
+							meta: {
+								title: '模板列表',
+								isLink: '',
+								isHide: false,
+								isKeepAlive: true,
+								isAffix: false,
+								isIframe: false,
+								auth: ['admin', 'system'],
+								icon: 'fa fa-list-ul',
+							},
+						},
+					]
+				},
 
 				{
 					path: '/user',
