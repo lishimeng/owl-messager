@@ -3,6 +3,8 @@ export default {
 	router: {
 		home: '首页',
 		sender: '发件人管理',
+		template: '模板管理',
+		task: '任务列表',
 		system: '系统设置',
 		systemMenu: '菜单管理',
 		systemUser: '用户管理',
