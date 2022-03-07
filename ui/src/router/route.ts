@@ -46,7 +46,7 @@ export /** @type {*} */
 						icon: 'iconfont icon-shouye',
 					},
 				},
-
+				// 发件人
 				{
 					path: '/sender',
 					name: 'sender',
@@ -62,10 +62,11 @@ export /** @type {*} */
 						icon: 'iconfont icon-shouye',
 					},
 				},
+				// 模板
 				{
 					path: '/template',
 					name: 'template',
-					component: () => import('/@/views/template/index.vue'),
+					component: () => import('/@/layout/routerView/parent.vue'),
 					meta: {
 						title: 'message.router.template',
 						isLink: '',
@@ -76,11 +77,43 @@ export /** @type {*} */
 						auth: ['base'],
 						icon: 'iconfont icon-shouye',
 					},
+					children: [
+						{
+							path: '/template/add',
+							name: 'addTemplate',
+							component: () => import('/@/views/template/index.vue'),
+							meta: {
+								title: '新增模板',
+								isLink: '',
+								isHide: false,
+								isKeepAlive: true,
+								isAffix: false,
+								isIframe: false,
+								auth: ['base'],
+								icon: 'fa fa-list-ul',
+							},
+						},
+						{
+							path: '/template/list',
+							name: 'listTemplate',
+							component: () => import('/@/views/template/list.vue'),
+							meta: {
+								title: '模板列表',
+								isLink: '',
+								isHide: false,
+								isKeepAlive: true,
+								isAffix: false,
+								isIframe: false,
+								auth: ['base'],
+								icon: 'fa fa-list-ul',
+							},
+						},
+					]
 				},
 				{
 					path: '/task',
 					name: 'task',
-					component: () => import('/@/layout/routerView/parent.vue'),
+					component: () => import('/@/views/task/index.vue'),
 					meta: {
 						title: 'message.router.task',
 						isLink: '',
@@ -91,38 +124,6 @@ export /** @type {*} */
 						auth: ['base'],
 						icon: 'iconfont icon-shouye',
 					},
-					children: [
-						{
-							path: '/task/add',
-							name: 'addTask',
-							component: () => import('/@/views/task/index.vue'),
-							meta: {
-								title: '新增模板',
-								isLink: '',
-								isHide: false,
-								isKeepAlive: true,
-								isAffix: false,
-								isIframe: false,
-								auth: ['admin', 'system'],
-								icon: 'fa fa-list-ul',
-							},
-						},
-						{
-							path: '/task/list',
-							name: 'listTask',
-							component: () => import('/@/views/task/list.vue'),
-							meta: {
-								title: '模板列表',
-								isLink: '',
-								isHide: false,
-								isKeepAlive: true,
-								isAffix: false,
-								isIframe: false,
-								auth: ['admin', 'system'],
-								icon: 'fa fa-list-ul',
-							},
-						},
-					]
 				},
 
 				{
