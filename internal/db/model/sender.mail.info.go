@@ -1,6 +1,6 @@
 package model
 
-// 邮件发送账号
+// MailSenderInfo 邮件发送账号
 type MailSenderInfo struct {
 	Pk
 	Code       string `orm:"column(code);unique"`
