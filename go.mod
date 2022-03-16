@@ -3,6 +3,7 @@ module github.com/lishimeng/owl
 go 1.16
 
 require (
+	github.com/alibabacloud-go/darabonba-openapi v0.1.14
 	github.com/alibabacloud-go/dingtalk v1.3.14
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1142
 	github.com/aymerick/raymond v2.0.3-0.20180322193309-b565731e1464+incompatible
@@ -19,6 +20,7 @@ require (
 	github.com/lishimeng/app-starter v1.6.3
 	github.com/lishimeng/go-log v1.0.0
 	github.com/lishimeng/go-orm v1.1.1
+	github.com/qiniu/go-sdk/v7 v7.11.1
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
 )
