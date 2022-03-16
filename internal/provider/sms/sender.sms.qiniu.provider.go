@@ -1,17 +1,13 @@
 package sms
 
 import (
-	"fmt"
 	"github.com/qiniu/go-sdk/v7/auth"
 	"github.com/qiniu/go-sdk/v7/sms"
 )
 
 // 七牛云SMS
 
-type QiniuSdk interface {
-}
-
-type qiniuSdkImpl struct {
+type QiniuSdk struct {
 	appKey    string
 	appSecret string
 
@@ -20,25 +16,34 @@ type qiniuSdkImpl struct {
 	manager *sms.Manager
 }
 
-func NewQiniu(appkey, appSecret string) (sdk QiniuSdk) {
+func NewQiniu(appkey, appSecret string) (sdk Provider) {
+
+	qiniu := QiniuSdk{}
+	sdk = &qiniu
+
 	return
 }
 
-func (qiniu *qiniuSdkImpl) handleToken() {
+func (qiniu *QiniuSdk) Send(req Request) (resp Response, err error) {
+	ret, err := qiniu.SendSms(req.Sign, req.Template, req.Receivers, req.Params)
+	if err != nil {
+		return
+	}
+	resp.RequestId = ret.JobID
+	return
+}
+
+func (qiniu *QiniuSdk) handleToken() {
 	qiniu.token = auth.New(qiniu.appKey, qiniu.appSecret)
 	qiniu.manager = sms.NewManager(qiniu.token)
 }
 
-func (qiniu *qiniuSdkImpl) SendSms(signature, template string, to []string, params map[string]interface{}) (err error) {
-	resp, err := qiniu.manager.SendMessage(sms.MessagesRequest{
+func (qiniu *QiniuSdk) SendSms(signature, template string, to []string, params map[string]interface{}) (resp sms.MessagesResponse, err error) {
+	resp, err = qiniu.manager.SendMessage(sms.MessagesRequest{
 		SignatureID: signature,
 		TemplateID:  template,
 		Mobiles:     to,
 		Parameters:  params,
 	})
-	if err != nil {
-		return
-	}
-	fmt.Println(resp.JobID)
 	return
 }
