@@ -4,7 +4,6 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/owl/internal/api/mailApi"
 	"github.com/lishimeng/owl/internal/api/messageApi"
-	"github.com/lishimeng/owl/internal/api/openApi"
 	"github.com/lishimeng/owl/internal/api/senderApi"
 	"github.com/lishimeng/owl/internal/api/smsApi"
 	"github.com/lishimeng/owl/internal/api/taskApi"
@@ -31,11 +30,6 @@ func router(root iris.Party) {
 	sendMail(root.Party("/send/mail"))
 	sms(root.Party("/send/sms"))
 
-	oauth(root.Party("/oauth2"))
-}
-
-func oauth(p iris.Party) {
-	p.Get("/token", openApi.Token) // only support client credential
 }
 
 func message(p iris.Party) {
