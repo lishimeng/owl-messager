@@ -24,6 +24,8 @@ func router(root iris.Party) {
 	mailSender(root.Party("/mail_sender"))
 	mailTemplate(root.Party("/mail_template"))
 
+	smsSender(root.Party("/sms_sender"))
+
 	mail(root.Party("/mail"))
 
 	// send message
@@ -53,6 +55,15 @@ func mailSender(p iris.Party) {
 
 	p.Get("/", senderApi.GetMailSenderList)
 	p.Get("/{id}", senderApi.GetMailSenderInfo)
+}
+
+func smsSender(p iris.Party) {
+	p.Post("/", senderApi.AddSmsSender)
+	p.Put("/{id}", senderApi.UpdateSmsSender)
+	p.Delete("/{id}", senderApi.DeleteSmsSender)
+
+	p.Get("/", senderApi.GetSmsSenderList)
+	p.Get("/{id}", senderApi.GetSmsSenderInfo)
 }
 
 func mailTemplate(p iris.Party) {
