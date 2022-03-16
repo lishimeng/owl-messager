@@ -5,7 +5,6 @@ type SmsSenderInfo struct {
 	Pk
 	Code      string    `orm:"column(code);unique"`
 	Name      string    `orm:"column(name)"`
-	Host      string    `orm:"column(host)"`
 	Vendor    SmsVendor `orm:"column(vendor)"` // 消息平台
 	AppKey    string    `orm:"column(app_key);null"`
 	AppSecret string    `orm:"column(app_secret)"`

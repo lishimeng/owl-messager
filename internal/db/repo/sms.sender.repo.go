@@ -1,0 +1,45 @@
+package repo
+
+import (
+	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/owl/internal/db/model"
+)
+
+// GetSmsSenderByCode 查询短信发送账号
+func GetSmsSenderByCode(code string) (s model.SmsSenderInfo, err error) {
+	err = app.GetOrm().Context.QueryTable(new(model.SmsSenderInfo)).Filter("Code", code).One(&s)
+	return
+}
+
+// GetSmsSenderById 查询短信发送账号
+func GetSmsSenderById(id int) (s model.SmsSenderInfo, err error) {
+	s.Id = id
+	err = app.GetOrm().Context.Read(&s)
+	return
+}
+
+func DeleteSmsSender(id int) (err error) {
+	var t model.SmsSenderInfo
+	t.Id = id
+	_, err = app.GetOrm().Context.Delete(&t)
+	return
+}
+
+// GetSmsSenderList 查询短信发送账号列表
+func GetSmsSenderList(status int, page app.Pager) (p app.Pager, senders []model.SmsSenderInfo, err error) {
+	var qs = app.GetOrm().Context.QueryTable(new(model.SmsSenderInfo))
+	if status > ConditionIgnore {
+		qs = qs.Filter("Status", status)
+	}
+	sum, err := qs.Count()
+	if err != nil {
+		return
+	}
+	page.TotalPage = calcTotalPage(page, sum)
+	_, err = qs.OrderBy("CreateTime").Offset(calcPageOffset(page)).Limit(page.PageSize).All(&senders)
+	if err != nil {
+		return
+	}
+	p = page
+	return
+}
