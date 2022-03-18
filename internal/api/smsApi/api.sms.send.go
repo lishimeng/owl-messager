@@ -47,7 +47,7 @@ func SendSms(ctx iris.Context) {
 		common.ResponseJSON(ctx, resp)
 		return
 	}
-	sender, err := repo.GetMailSenderByCode(req.Sender)
+	sender, err := repo.GetSmsSenderByCode(req.Sender)
 	if err != nil {
 		log.Debug("param sender not exist")
 		resp.Code = -1
@@ -63,7 +63,7 @@ func SendSms(ctx iris.Context) {
 		common.ResponseJSON(ctx, resp)
 		return
 	}
-	tpl, err := repo.GetMailTemplateByCode(req.Template)
+	tpl, err := repo.GetSmsTemplateByCode(req.Template)
 	if err != nil {
 		log.Debug("param template not exist")
 		resp.Code = -1
@@ -72,24 +72,24 @@ func SendSms(ctx iris.Context) {
 		return
 	}
 
-	var templateParams string
+	var tplParams string
 	switch req.TemplateParam.(type) {
 	case string:
-		templateParams = (req.TemplateParam).(string)
+		tplParams = (req.TemplateParam).(string)
 	default:
 		bs, e := json.Marshal(req.TemplateParam)
 		if e == nil {
-			templateParams = string(bs)
+			tplParams = string(bs)
 		}
 	}
 
-	m, err := service.CreateMailMessage(
+	m, err := service.CreateSmsMessage(
 		sender,
 		tpl,
-		templateParams,
-		req.Receiver, req.Cc)
+		tplParams,
+		req.Receiver)
 	if err != nil {
-		log.Info("can't create mail")
+		log.Info("can't create sms")
 		log.Info(err)
 		resp.Code = -1
 		resp.Message = "create message failed"
