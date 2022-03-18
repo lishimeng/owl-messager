@@ -76,7 +76,9 @@ func mailTemplate(p iris.Party) {
 }
 
 func mail(p iris.Party) {
-	p.Get("/message/{id}", mailApi.GetByMessage)
+	p.Get("/message/mail/{id}", mailApi.GetByMessage)
+
+	p.Get("/message/sms/{id}", smsApi.GetByMessage)
 }
 func sendMail(p iris.Party) {
 	p.Post("/", openapi.CheckAccessToken, mailApi.SendMail)

@@ -23,25 +23,7 @@ type Resp struct {
 	MessageId int `json:"messageId,omitempty"`
 }
 
-// SendMail
-/**
-@Summary send a email
-
-@Router /api/send/mail [post]
-
-@Example
-http://localhost/api/send/mail
-
-{
-	"template":"b7411049bbfe8068",
-	"params":{"content":"O35A0001"},
-	"subject":"电量低超提醒",
-	"sender":"e949ae24481a9527",
-	"receiver":"xxxx@qq.com"
-}
-
-*/
-func SendMail(ctx iris.Context) {
+func SendSms(ctx iris.Context) {
 	log.Debug("send mail api")
 	var req Req
 	var resp Resp

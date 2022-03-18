@@ -8,7 +8,7 @@ type SmsMessageInfo struct {
 
 	Params string `orm:"column(params);null"` // json params(map)
 
-	Vendor SmsVendor `orm:"column(vendor)"` // 是否指定vendor
+	Sender int `orm:"column(sender_id)"` // 指定发送者
 
 	Receivers string `orm:"column(receiver)"` // receiver list. comma split
 

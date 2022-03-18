@@ -6,6 +6,7 @@ import (
 )
 
 func GetSmsByMessageId(msgId int) (m model.SmsMessageInfo, err error) {
+	// TODO
 	return
 }
 
@@ -18,7 +19,7 @@ func CreateSmsMessage(message model.MessageInfo, sender *model.SmsSenderInfo, te
 	m.Signature = template.Signature
 	m.Receivers = receiver
 	if sender != nil {
-		m.Vendor = sender.Vendor
+		m.Sender = sender.Id
 	}
 
 	m.Status = model.SmsTemplateEnable
