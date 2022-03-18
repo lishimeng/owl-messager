@@ -2,7 +2,7 @@ package model
 
 type SmsTemplateInfo struct {
 	Pk
-	Code             string `orm:"column(code);unique"`
+	Code             string `orm:"column(code);unique"` // 发送平台的编号
 	Name             string `orm:"column(name)"`
 	Body             string `orm:"column(body)"`               // 发送的内容主体，可空
 	SenderTemplateId string `orm:"column(sender_template_id)"` // 发送平台的模板ID
