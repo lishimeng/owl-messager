@@ -4,4 +4,5 @@ const (
 	_ = iota
 	Email
 	Sms
+	Apns
 )
