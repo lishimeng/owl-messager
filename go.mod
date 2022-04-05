@@ -14,6 +14,7 @@ require (
 	github.com/go-oauth2/oauth2/v4 v4.3.0
 	github.com/go-oauth2/redis/v4 v4.1.1
 	github.com/go-redis/redis/v8 v8.11.4
+	github.com/golang-jwt/jwt/v4 v4.4.1
 	github.com/iris-contrib/jade v1.1.4
 	github.com/kataras/iris/v12 v12.2.0-alpha8
 	github.com/lib/pq v1.10.2
@@ -21,6 +22,8 @@ require (
 	github.com/lishimeng/go-log v1.0.0
 	github.com/lishimeng/go-orm v1.1.1
 	github.com/qiniu/go-sdk/v7 v7.11.1
+	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
+	golang.org/x/net v0.0.0-20220225172249-27dd8689420f
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
 )
