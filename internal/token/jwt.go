@@ -2,7 +2,7 @@ package token
 
 import (
 	"fmt"
-	proxy "github.com/dgrijalva/jwt-go"
+	proxy "github.com/golang-jwt/jwt/v4"
 	"time"
 )
 
