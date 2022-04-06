@@ -15,6 +15,7 @@ type TaskExecutor interface {
 type taskExecutor struct {
 	mailSenders Mail
 	smsSenders  Sms
+	apnsSender  Apns
 
 	ctx context.Context
 }
@@ -25,9 +26,17 @@ func New(ctx context.Context) (t TaskExecutor, err error) {
 	if err != nil {
 		return
 	}
+	apns, err := NewApnsSender(ctx)
+	if err != nil {
+		return
+	}
+	if err != nil {
+		return
+	}
 	t = &taskExecutor{
 		mailSenders: mail,
-		smsSenders:  nil,
+		smsSenders:  nil, // TODO
+		apnsSender:  apns,
 		ctx:         ctx,
 	}
 	return
