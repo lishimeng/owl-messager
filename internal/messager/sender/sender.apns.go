@@ -47,7 +47,7 @@ func (m *apnsSender) Send(p model.ApnsMessageInfo) (err error) {
 	var params map[string]interface{}
 	err = json.Unmarshal([]byte(p.Params), &params)
 	if err != nil {
-		log.Info("params of mail template is not json format:%s", p.Params)
+		log.Info("params is not json format:%s", p.Params)
 		return
 	}
 
