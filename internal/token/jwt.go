@@ -21,7 +21,7 @@ type Req struct {
 
 type Claims struct {
 	BaseToken
-	proxy.StandardClaims
+	proxy.RegisteredClaims
 }
 
 type Handler struct {
@@ -39,22 +39,22 @@ func (h *Handler) GenToken(t Req) (claims *Claims, expire time.Duration, signedT
 
 	claims = &Claims{
 		BaseToken: t.BaseToken,
-		StandardClaims: proxy.StandardClaims{
+		RegisteredClaims: proxy.RegisteredClaims{
 			Issuer: h.issuer,
 		},
 	}
 	if len(t.Audience) > 0 {
-		claims.StandardClaims.Audience = t.Audience
+		claims.RegisteredClaims.Audience = []string{t.Audience}
 	}
 	if len(t.Subject) > 0 {
-		claims.StandardClaims.Subject = t.Subject
+		claims.RegisteredClaims.Subject = t.Subject
 	}
 	if t.Expire > 0 {
 		expire = t.Expire
 	} else {
 		expire = h.expire
 	}
-	claims.ExpiresAt = time.Now().Add(expire).Unix()
+	claims.ExpiresAt = proxy.NewNumericDate(time.Now().Add(expire))
 	signedToken, success = h.CreateToken(claims)
 	return
 }
@@ -66,7 +66,7 @@ func (h *Handler) VerifyToken(signedToken string) (claims *Claims, success bool)
 		success = claims.VerifyIssuer(h.issuer, false)
 	}
 	if success {
-		success = claims.VerifyExpiresAt(time.Now().Unix(), true)
+		success = claims.VerifyExpiresAt(time.Now(), true)
 	}
 	return
 }
