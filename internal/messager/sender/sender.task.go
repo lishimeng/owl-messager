@@ -30,12 +30,16 @@ func New(ctx context.Context) (t TaskExecutor, err error) {
 	if err != nil {
 		return
 	}
+	sms, err := NewSmsSender(ctx)
+	if err != nil {
+		return
+	}
 	if err != nil {
 		return
 	}
 	t = &taskExecutor{
 		mailSenders: mail,
-		smsSenders:  nil, // TODO
+		smsSenders:  sms,
 		apnsSender:  apns,
 		ctx:         ctx,
 	}
