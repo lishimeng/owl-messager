@@ -1,5 +1,7 @@
 package sms
 
+import "github.com/lishimeng/owl/internal/db/model"
+
 // Request SMS发送请求
 type Request struct {
 	Template  string
@@ -17,4 +19,18 @@ type Response struct {
 // Provider 发短信工具
 type Provider interface {
 	Send(req Request) (resp Response, err error)
+}
+
+type ProviderManager struct {
+	factory interface{} // 创建器
+}
+
+func (pm *ProviderManager) Get(vendor model.SmsVendor) (p Provider) {
+	// TODO
+	return
+}
+
+func New() *ProviderManager {
+	pm := &ProviderManager{}
+	return pm
 }
