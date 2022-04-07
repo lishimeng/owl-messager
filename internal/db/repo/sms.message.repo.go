@@ -1,7 +1,7 @@
 package repo
 
 import (
-	"github.com/lishimeng/app-starter"
+	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl/internal/db/model"
 )
 
@@ -10,7 +10,7 @@ func GetSmsByMessageId(msgId int) (m model.SmsMessageInfo, err error) {
 	return
 }
 
-func CreateSmsMessage(message model.MessageInfo, sender *model.SmsSenderInfo, template model.SmsTemplateInfo,
+func CreateSmsMessage(ctx persistence.TxContext, message model.MessageInfo, sender *model.SmsSenderInfo, template model.SmsTemplateInfo,
 	templateParams string, receiver string) (m model.SmsMessageInfo, err error) {
 
 	m.MessageId = message.Id
@@ -24,6 +24,6 @@ func CreateSmsMessage(message model.MessageInfo, sender *model.SmsSenderInfo, te
 
 	m.Status = model.SmsTemplateEnable
 
-	_, err = app.GetOrm().Context.Insert(&m)
+	_, err = ctx.Context.Insert(&m)
 	return
 }
