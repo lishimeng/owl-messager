@@ -12,23 +12,23 @@ func CreateSmsMessage(sender model.SmsSenderInfo, template model.SmsTemplateInfo
 	receiver string) (m model.MessageInfo, err error) {
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// create message
-		m, e = repo.CreateMessage(template.Name, msg.Sms)
+		m, e = repo.CreateMessage(ctx, template.Name, msg.Sms)
 		if e != nil {
 			return
 		}
 		// create mail
-		_, _ = repo.CreateSmsMessage(m, &sender, template, templateParams, receiver)
+		_, _ = repo.CreateSmsMessage(ctx, m, &sender, template, templateParams, receiver)
 		return
 	})
 	return
 }
 
 func UpdateSmsTemplate(id, status int, body, description string) (m model.MailTemplateInfo, err error) {
+	m, err = repo.GetMailTemplateById(id)
+	if err != nil {
+		return
+	}
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
-		m, e = repo.GetMailTemplateById(id)
-		if e != nil {
-			return
-		}
 		var cols []string
 		if status > repo.ConditionIgnore {
 			m.Status = status
@@ -43,7 +43,7 @@ func UpdateSmsTemplate(id, status int, body, description string) (m model.MailTe
 			cols = append(cols, "Description")
 		}
 
-		m, e = repo.UpdateMailTemplate(m, cols...)
+		m, e = repo.UpdateMailTemplate(ctx, m, cols...)
 
 		return
 	})
