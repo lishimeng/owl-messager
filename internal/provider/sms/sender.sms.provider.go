@@ -26,7 +26,7 @@ type ProviderManager struct {
 }
 
 func (pm *ProviderManager) Get(vendor model.SmsVendor) (p Provider) {
-	// TODO
+	// TODO app key app secret
 	return
 }
 
