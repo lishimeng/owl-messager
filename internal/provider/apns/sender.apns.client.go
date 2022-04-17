@@ -172,7 +172,9 @@ func (c *Client) PushWithContext(ctx Context, n *Notification) (*Response, error
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer func() {
+		_ = response.Body.Close()
+	}()
 
 	r := &Response{}
 	r.StatusCode = response.StatusCode
