@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/kataras/iris/v12"
+	"github.com/lishimeng/owl/internal/api/apnsApi"
 	"github.com/lishimeng/owl/internal/api/mailApi"
 	"github.com/lishimeng/owl/internal/api/messageApi"
 	"github.com/lishimeng/owl/internal/api/senderApi"
@@ -31,7 +32,7 @@ func router(root iris.Party) {
 	// send message
 	sendMail(root.Party("/send/mail"))
 	sms(root.Party("/send/sms"))
-
+	apns(root.Party("/send/apns"))
 }
 
 func message(p iris.Party) {
@@ -79,6 +80,7 @@ func mail(p iris.Party) {
 	p.Get("/message/mail/{id}", mailApi.GetByMessage)
 
 	p.Get("/message/sms/{id}", smsApi.GetByMessage)
+	p.Get("/message/apns/{id}", apnsApi.GetByMessage)
 }
 func sendMail(p iris.Party) {
 	p.Post("/", openapi.CheckAccessToken, mailApi.SendMail)
@@ -86,4 +88,8 @@ func sendMail(p iris.Party) {
 
 func sms(p iris.Party) {
 	p.Post("/", smsApi.SendSms)
+}
+
+func apns(p iris.Party) {
+	p.Post("/", apnsApi.SendApns)
 }
