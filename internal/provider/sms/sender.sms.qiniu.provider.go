@@ -18,7 +18,10 @@ type QiniuSdk struct {
 
 func NewQiniu(appkey, appSecret string) (sdk Provider) {
 
-	qiniu := QiniuSdk{}
+	qiniu := QiniuSdk{
+		appKey:    appkey,
+		appSecret: appSecret,
+	}
 	sdk = &qiniu
 
 	return
