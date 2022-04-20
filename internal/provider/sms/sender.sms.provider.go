@@ -7,7 +7,7 @@ type Request struct {
 	Template  string
 	Sign      string
 	Params    map[string]interface{}
-	Receivers []string
+	Receivers string
 }
 
 // Response 服务器回复
