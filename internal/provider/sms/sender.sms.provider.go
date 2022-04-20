@@ -22,11 +22,20 @@ type Provider interface {
 }
 
 type ProviderManager struct {
-	factory interface{} // 创建器
+	factory   interface{} // 创建器
+	Providers map[model.SmsVendor]Provider
 }
 
 func (pm *ProviderManager) Get(vendor model.SmsVendor) (p Provider) {
-	// TODO app key app secret
+	p, ok := pm.Providers[vendor]
+	if !ok {
+		// TODO create
+	}
+	return
+}
+
+func (pm *ProviderManager) Add(vendor model.SmsVendor, p Provider) {
+	pm.Providers[vendor] = p
 	return
 }
 
