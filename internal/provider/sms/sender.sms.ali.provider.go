@@ -20,7 +20,8 @@ type AliProvider struct {
 func (p *AliProvider) Send(req Request) (resp Response, err error) {
 
 	to := util.Join(",", req.Receivers...)
-	params := "" // TODO 转换参数
+	bs, _ := json.Marshal(req.Params)
+	params := string(bs)
 	ret, err := p.SendSms(to, req.Template, params)
 	if err != nil {
 		return
@@ -39,10 +40,10 @@ func (p *AliProvider) Init(accessKey string, accessSecret string, region string,
 	return
 }
 
-func (p AliProvider) SendSms(toer string, tplId string, tplParams string) (resp *dysmsapi.SendSmsResponse, err error) {
+func (p AliProvider) SendSms(receiver string, tplId string, tplParams string) (resp *dysmsapi.SendSmsResponse, err error) {
 	req := dysmsapi.CreateSendSmsRequest()
 	req.Scheme = "https"
-	req.PhoneNumbers = toer
+	req.PhoneNumbers = receiver
 	req.SignName = p.signName
 	req.TemplateCode = tplId
 	req.TemplateParam = tplParams
