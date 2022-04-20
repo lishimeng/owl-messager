@@ -7,7 +7,6 @@ import (
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/provider/sms"
-	"strings"
 )
 
 type Sms interface {
@@ -53,12 +52,11 @@ func (m *smsSender) Send(p model.SmsMessageInfo) (err error) {
 		log.Info("params is not json format:%s", p.Params)
 		return
 	}
-	toers := strings.Split(p.Receivers, ",")
 	var req = sms.Request{
 		Template:  tpl.SenderTemplateId,
 		Sign:      p.Signature,
 		Params:    params,
-		Receivers: toers,
+		Receivers: p.Receivers,
 	}
 	resp, err := provider.Send(req)
 
