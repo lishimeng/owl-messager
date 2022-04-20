@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/util"
 )
 
 type AliProvider struct {
@@ -19,7 +18,7 @@ type AliProvider struct {
 
 func (p *AliProvider) Send(req Request) (resp Response, err error) {
 
-	to := util.Join(",", req.Receivers...)
+	to := req.Receivers
 	bs, _ := json.Marshal(req.Params)
 	params := string(bs)
 	ret, err := p.SendSms(to, req.Template, params)
