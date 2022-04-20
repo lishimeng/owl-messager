@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl/internal/util"
 )
 
 type AliProvider struct {
@@ -18,7 +19,7 @@ type AliProvider struct {
 
 func (p *AliProvider) Send(req Request) (resp Response, err error) {
 
-	to := ""     // TODO 转换参数
+	to := util.Join(",", req.Receivers...)
 	params := "" // TODO 转换参数
 	ret, err := p.SendSms(to, req.Template, params)
 	if err != nil {
