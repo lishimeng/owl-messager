@@ -3,6 +3,7 @@ package sms
 import (
 	"github.com/qiniu/go-sdk/v7/auth"
 	"github.com/qiniu/go-sdk/v7/sms"
+	"strings"
 )
 
 // 七牛云SMS
@@ -28,7 +29,8 @@ func NewQiniu(appkey, appSecret string) (sdk Provider) {
 }
 
 func (qiniu *QiniuSdk) Send(req Request) (resp Response, err error) {
-	ret, err := qiniu.SendSms(req.Sign, req.Template, req.Receivers, req.Params)
+	to := strings.Split(req.Receivers, ",")
+	ret, err := qiniu.SendSms(req.Sign, req.Template, to, req.Params)
 	if err != nil {
 		return
 	}
