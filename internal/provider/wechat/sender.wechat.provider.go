@@ -47,16 +47,6 @@ type To struct {
 	TemplateId string                 // tpl id on wechat open platform
 }
 
-func (p *Provider) Send(t To) (err error) {
-	err = p.refreshToken()
-	if err != nil {
-		return
-	}
-
-	// TODO send to receiver
-	return
-}
-
 func (p *Provider) getAccessToken() (t ClientCredentialToken, err error) {
 	host := fmt.Sprintf(tokenHost, p.AppId, p.AppSecret)
 	log.Info("get wx access token: %s", host)
