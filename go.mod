@@ -14,6 +14,7 @@ require (
 	github.com/go-oauth2/oauth2/v4 v4.3.0
 	github.com/go-oauth2/redis/v4 v4.1.1
 	github.com/go-redis/redis/v8 v8.11.4
+	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang-jwt/jwt/v4 v4.4.1
 	github.com/iris-contrib/jade v1.1.4
 	github.com/kataras/iris/v12 v12.2.0-alpha8
