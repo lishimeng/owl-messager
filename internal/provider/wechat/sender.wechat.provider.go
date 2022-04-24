@@ -1,7 +1,10 @@
 package wechat
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/go-resty/resty/v2"
 	"github.com/lishimeng/go-log"
 	"time"
 )
@@ -16,6 +19,8 @@ type Provider struct {
 	AppId     string
 	AppSecret string
 	token     *ClientCredentialToken
+
+	rest *resty.Client
 }
 
 type PayloadItem struct {
@@ -38,28 +43,48 @@ type ClientCredentialToken struct {
 }
 type To struct {
 	OpenId     string                 // user's open id of wechat open platform
-	Payload    map[string]PayloadItem // data 
+	Payload    map[string]PayloadItem // data
 	TemplateId string                 // tpl id on wechat open platform
 }
 
-func (p *Provider) Send(t To) {
-	p.refreshToken()
+func (p *Provider) Send(t To) (err error) {
+	err = p.refreshToken()
+	if err != nil {
+		return
+	}
 
 	// TODO send to receiver
+	return
 }
 
-func (p *Provider) getAccessToken() (t ClientCredentialToken) {
+func (p *Provider) getAccessToken() (t ClientCredentialToken, err error) {
 	host := fmt.Sprintf(tokenHost, p.AppId, p.AppSecret)
 	log.Info("get wx access token: %s", host)
 	// TODO
+	resp, err := p.rest.R().Get(host)
+	if err != nil {
+		return
+	}
+	if resp.StatusCode() != 200 {
+		err = errors.New(resp.Status())
+		return
+	}
+	err = json.Unmarshal(resp.Body(), &t)
+	if err != nil {
+		return
+	}
 	t.Timestamp = time.Now().Unix()
 	return
 }
 
-func (p *Provider) refreshToken() {
+func (p *Provider) refreshToken() (err error) {
+	var token ClientCredentialToken
 	if p.token == nil || p.token.Expired() {
 		// get token
-		token := p.getAccessToken()
+		token, err = p.getAccessToken()
+		if err != nil {
+			return
+		}
 		p.token = &token
 	}
 	return
