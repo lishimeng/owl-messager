@@ -7,35 +7,28 @@ import (
 	"github.com/lishimeng/owl/internal/provider/sms"
 )
 
-type SmsLoader interface {
-	Load(id string) sms.Provider
-	Unload(id string)
+func init() {
+	for {
+		if container.Ready() {
+			initSmsProviderManager()
+			return
+		}
+	}
 }
 
-func New() (sms SmsLoader) {
-	h := smsLoaderImpl{}
-	sms = &h
-	return
+func initSmsProviderManager() {
+	// 注册provider manager
+	var pm = sms.New()
+	container.Add(&pm)
 }
 
-type smsLoaderImpl struct {
-}
-
-func (s *smsLoaderImpl) Load(id string) (p sms.Provider) {
+// Load 加载一个sms provider
+func Load(id string, p sms.Provider) {
 	var manager, err = container.Get(new(sms.ProviderManager))
 	if err != nil {
 		log.Info(err)
 		return
 	}
-	p = manager.Get(model.SmsVendor(id))
+	manager.Add(model.SmsVendor(id), p)
 	return
-}
-
-func (s *smsLoaderImpl) Unload(id string) {
-	var _, err = container.Get(new(sms.ProviderManager))
-	if err != nil {
-		log.Info(err)
-		return
-	}
-	// TODO
 }
