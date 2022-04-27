@@ -6,7 +6,8 @@ import (
 )
 
 type container struct {
-	m map[string]map[string]interface{}
+	m     map[string]map[string]interface{}
+	ready bool
 }
 
 const (
@@ -21,8 +22,13 @@ var c container
 
 func init() {
 	c = container{
-		m: make(map[string]map[string]interface{}),
+		m:     make(map[string]map[string]interface{}),
+		ready: true,
 	}
+}
+
+func Ready() bool {
+	return c.ready
 }
 
 func Get[T any](ptrType *T, name ...string) (ptr *T, err error) {
