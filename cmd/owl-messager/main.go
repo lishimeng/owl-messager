@@ -74,7 +74,8 @@ func _main() (err error) {
 			EnableWeb(etc.Config.Web.Listen, api.Route).
 			EnableStaticWeb(static.AssetFile).
 			//ComponentBefore(setup.JobClearExpireTask).
-			ComponentBefore(setup.MessageSender)
+			ComponentBefore(setup.MessageSender).
+			ComponentAfter(setup.AfterStarted)
 
 		return err
 	}, func(s string) {
