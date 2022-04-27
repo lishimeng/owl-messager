@@ -6,7 +6,7 @@ import (
 )
 
 type container struct {
-	mn map[string]map[string]interface{}
+	m map[string]map[string]interface{}
 }
 
 const (
@@ -20,7 +20,9 @@ var (
 var c container
 
 func init() {
-	c = container{mn: make(map[string]map[string]interface{})}
+	c = container{
+		m: make(map[string]map[string]interface{}),
+	}
 }
 
 func Get[T any](ptrType *T, name ...string) (ptr *T, err error) {
@@ -31,7 +33,7 @@ func Get[T any](ptrType *T, name ...string) (ptr *T, err error) {
 		}
 	}()
 	typeName := getTypeName(ptrType)
-	var m, ok = c.mn[typeName]
+	var m, ok = c.m[typeName]
 	if !ok {
 		err = ErrNotFound
 		return
@@ -56,10 +58,10 @@ func Get[T any](ptrType *T, name ...string) (ptr *T, err error) {
 func Add[T any](o *T, name ...string) {
 
 	typeName := getTypeName(o)
-	var m, ok = c.mn[typeName]
+	var m, ok = c.m[typeName]
 	if !ok {
 		m = make(map[string]interface{})
-		c.mn[typeName] = m
+		c.m[typeName] = m
 	}
 	var id string
 	if len(name) > 0 {
