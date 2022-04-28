@@ -21,7 +21,7 @@ func Test001(t *testing.T) {
 	var aa *sampleA
 	var bb *sampleB
 	t.Log("get a")
-	aa, err = Get(aa, "sample-a")
+	aa, err = Get(new(sampleA), "sample-a")
 	if err != nil {
 		t.Fatal(err)
 		return
