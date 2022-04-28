@@ -2,6 +2,7 @@ package repo
 
 import (
 	"github.com/lishimeng/app-starter"
+	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl/internal/db/model"
 )
 
@@ -41,5 +42,45 @@ func GetSmsSenderList(status int, page app.Pager) (p app.Pager, senders []model.
 		return
 	}
 	p = page
+	return
+}
+
+func GetSmsSenders(status int) (senders []model.SmsSenderInfo, err error) {
+	_, err = app.GetOrm().Context.
+		QueryTable(new(model.SmsSenderInfo)).
+		Filter("Status", status).
+		All(&senders)
+	return
+}
+
+func SmsSenderEnable(id int) (err error) {
+	var s model.SmsSenderInfo
+	s.Id = id
+	err = app.GetOrm().Transaction(func(context persistence.TxContext) (e error) {
+		e = context.Context.Read(&s)
+		if e != nil {
+			return
+		}
+		s.Status = model.SmsSenderEnable
+		_, e = context.Context.Update(&s, "Status")
+		return
+	})
+
+	return
+}
+
+func SmsSenderDisable(id int) (err error) {
+	var s model.SmsSenderInfo
+	s.Id = id
+	err = app.GetOrm().Transaction(func(context persistence.TxContext) (e error) {
+		e = context.Context.Read(&s)
+		if e != nil {
+			return
+		}
+		s.Status = model.SmsSenderDisable
+		_, e = context.Context.Update(&s, "Status")
+		return
+	})
+
 	return
 }
