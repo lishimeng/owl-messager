@@ -23,12 +23,12 @@ func initSmsProviderManager() {
 }
 
 // Load 加载一个sms provider
-func Load(id string, p sms.Provider) {
+func Load(v model.SmsVendor, p sms.Provider) {
 	var manager, err = container.Get(new(sms.ProviderManager))
 	if err != nil {
 		log.Info(err)
 		return
 	}
-	manager.Add(model.SmsVendor(id), p)
+	manager.Add(v, p)
 	return
 }
