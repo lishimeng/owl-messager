@@ -21,6 +21,7 @@ func loadSmsProviders(_ context.Context) (err error) {
 		var p sms.Provider
 		switch v {
 		case model.SmsVendorAli:
+			log.Info("load sms provider: %d[%s]", s.Id, s.Code)
 			ali := sms.AliProvider{}
 			err = s.UnmarshalConfig()
 			if err != nil {

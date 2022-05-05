@@ -6,6 +6,7 @@ import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/api/common"
+	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/db/service"
 )
@@ -13,9 +14,8 @@ import (
 type Req struct {
 	Template      string      `json:"template,omitempty"` // template of this mail
 	TemplateParam interface{} `json:"params,omitempty"`   // template params
-	Sender        string      `json:"sender,omitempty"`   // mail send account on the platform
+	Sender        string      `json:"sender,omitempty"`   // sender空时，使用vendor
 	Receiver      string      `json:"receiver,omitempty"` // receiver list(with comma if multi)
-	Cc            string      `json:"cc,omitempty"`       // cc list(with comma if multi)
 }
 
 type Resp struct {
@@ -47,13 +47,12 @@ func SendSms(ctx iris.Context) {
 		common.ResponseJSON(ctx, resp)
 		return
 	}
-	sender, err := repo.GetSmsSenderByCode(req.Sender)
-	if err != nil {
-		log.Debug("param sender not exist")
-		resp.Code = -1
-		resp.Message = "sender not exist"
-		common.ResponseJSON(ctx, resp)
-		return
+	var sender *model.SmsSenderInfo
+	if len(req.Sender) > 0 {
+		s, err := repo.GetSmsSenderByCode(req.Sender)
+		if err == nil {
+			sender = &s
+		}
 	}
 
 	if len(req.Template) == 0 {
