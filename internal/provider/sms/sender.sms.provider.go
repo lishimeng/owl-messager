@@ -40,6 +40,8 @@ func (pm *ProviderManager) Add(vendor model.SmsVendor, p Provider) {
 }
 
 func New() *ProviderManager {
-	pm := &ProviderManager{}
+	pm := &ProviderManager{
+		Providers: make(map[model.SmsVendor]Provider),
+	}
 	return pm
 }
