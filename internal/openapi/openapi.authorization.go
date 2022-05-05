@@ -1,7 +1,7 @@
 package openapi
 
 import (
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 )
@@ -15,7 +15,6 @@ func AuthorizationCk(ctx iris.Context) {
 	}
 	ctx.Next()
 }
-
 
 func Authorization(ctx iris.Context) (claims *jwt.Claims, success bool) {
 
