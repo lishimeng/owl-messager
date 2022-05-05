@@ -8,7 +8,7 @@ import (
 	"github.com/lishimeng/owl/internal/messager/msg"
 )
 
-func CreateSmsMessage(sender model.SmsSenderInfo, template model.SmsTemplateInfo, templateParams string,
+func CreateSmsMessage(sender *model.SmsSenderInfo, template model.SmsTemplateInfo, templateParams string,
 	receiver string) (m model.MessageInfo, err error) {
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// create message
@@ -17,7 +17,7 @@ func CreateSmsMessage(sender model.SmsSenderInfo, template model.SmsTemplateInfo
 			return
 		}
 		// create mail
-		_, _ = repo.CreateSmsMessage(ctx, m, &sender, template, templateParams, receiver)
+		_, _ = repo.CreateSmsMessage(ctx, m, sender, template, templateParams, receiver)
 		return
 	})
 	return
