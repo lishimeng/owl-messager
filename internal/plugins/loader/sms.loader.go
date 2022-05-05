@@ -19,7 +19,7 @@ func init() {
 func initSmsProviderManager() {
 	// 注册provider manager
 	var pm = sms.New()
-	container.Add(&pm)
+	container.Add(pm)
 }
 
 // Load 加载一个sms provider
