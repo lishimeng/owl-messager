@@ -5,7 +5,8 @@ go 1.18
 require (
 	github.com/alibabacloud-go/darabonba-openapi v0.1.14
 	github.com/alibabacloud-go/dingtalk v1.3.14
-	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1142
+	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.9
+	github.com/alibabacloud-go/tea v1.1.17
 	github.com/aymerick/raymond v2.0.3-0.20180322193309-b565731e1464+incompatible
 	github.com/baidubce/bce-sdk-go v0.9.73
 	github.com/go-gomail/gomail v0.0.0-20160411212932-81ebce5c23df
@@ -32,8 +33,8 @@ require (
 	github.com/Shopify/goreferrer v0.0.0-20210630161223-536fa16abd6f // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.2 // indirect
 	github.com/alibabacloud-go/debug v0.0.0-20190504072949-9472017b5c68 // indirect
+	github.com/alibabacloud-go/endpoint-util v1.1.0 // indirect
 	github.com/alibabacloud-go/openapi-util v0.0.10 // indirect
-	github.com/alibabacloud-go/tea v1.1.17 // indirect
 	github.com/alibabacloud-go/tea-utils v1.4.3 // indirect
 	github.com/aliyun/credentials-go v1.1.2 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
@@ -60,7 +61,6 @@ require (
 	github.com/iris-contrib/go.uuid v2.0.0+incompatible // indirect
 	github.com/iris-contrib/schema v0.0.6 // indirect
 	github.com/jeremywohl/flatten v1.0.1 // indirect
-	github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kataras/blocks v0.0.5 // indirect
