@@ -6,14 +6,10 @@ package model
 
 // ApnsSenderInfo apns发送账号，
 type ApnsSenderInfo struct {
-	Pk
-	Code         string `orm:"column(code);unique"`
-	Name         string `orm:"column(name)"`
+	SenderInfo
 	BundleId     string `orm:"column(bundle_id)"`     // app bundle id
 	Cert         string `orm:"column(cert)"`          // 证书 base64
 	CertPassword string `orm:"column(cert_password)"` // 证书密码， “”为空
 	AppKey       string `orm:"column(app_key);null"`
 	AppSecret    string `orm:"column(app_secret)"`
-
-	TableChangeInfo
 }
