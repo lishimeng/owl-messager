@@ -6,7 +6,6 @@ require (
 	github.com/alibabacloud-go/darabonba-openapi v0.1.14
 	github.com/alibabacloud-go/dingtalk v1.3.14
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.9
-	github.com/alibabacloud-go/tea v1.1.17
 	github.com/aymerick/raymond v2.0.3-0.20180322193309-b565731e1464+incompatible
 	github.com/baidubce/bce-sdk-go v0.9.73
 	github.com/go-gomail/gomail v0.0.0-20160411212932-81ebce5c23df
@@ -35,6 +34,7 @@ require (
 	github.com/alibabacloud-go/debug v0.0.0-20190504072949-9472017b5c68 // indirect
 	github.com/alibabacloud-go/endpoint-util v1.1.0 // indirect
 	github.com/alibabacloud-go/openapi-util v0.0.10 // indirect
+	github.com/alibabacloud-go/tea v1.1.17 // indirect
 	github.com/alibabacloud-go/tea-utils v1.4.3 // indirect
 	github.com/aliyun/credentials-go v1.1.2 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
