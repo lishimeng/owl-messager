@@ -4,13 +4,10 @@ import "encoding/json"
 
 // SmsSenderInfo 短信发送账号
 type SmsSenderInfo struct {
-	Pk
-	Code      string            `orm:"column(code);unique"`
-	Name      string            `orm:"column(name)"`
+	SenderInfo
 	Vendor    SmsVendor         `orm:"column(vendor)"` // 消息平台
 	Config    string            `orm:"column(config)"` // json 配置(map: key-value)
 	ConfigMap map[string]string `orm:"-"`
-	TableChangeInfo
 }
 
 func (s *SmsSenderInfo) UnmarshalConfig() (err error) {
