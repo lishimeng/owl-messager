@@ -4,7 +4,9 @@ package sms
 
 import (
 	"encoding/json"
-	"github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
+	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
+	dysmsapi "github.com/alibabacloud-go/dysmsapi-20170525/v2/client"
+	"github.com/alibabacloud-go/tea/tea"
 	"github.com/lishimeng/go-log"
 )
 
@@ -25,8 +27,8 @@ func (p *AliProvider) Send(req Request) (resp Response, err error) {
 	if err != nil {
 		return
 	}
-	resp.RequestId = ret.RequestId
-	resp.Payload, err = json.Marshal(ret)
+	resp.RequestId = *ret.Body.RequestId
+	resp.Payload = ret.String()
 	return
 }
 
@@ -35,17 +37,33 @@ func (p *AliProvider) Init(accessKey string, accessSecret string, region string,
 	p.accessSecret = accessSecret
 	p.region = region
 	p.signName = signName
-	p.client, err = dysmsapi.NewClientWithAccessKey(p.region, p.accessKey, p.accessSecret)
+
+	config := &openapi.Config{
+		// 您的AccessKey ID
+		AccessKeyId: &accessKey,
+		// 您的AccessKey Secret
+		AccessKeySecret: &accessSecret,
+		RegionId:        &region,
+	}
+	config.Endpoint = tea.String("dysmsapi.aliyuncs.com")
+
+	p.client, err = dysmsapi.NewClient(config)
+	//p.client, err = dysmsapi.NewClientWithAccessKey(p.region, p.accessKey, p.accessSecret)
 	return
 }
 
 func (p AliProvider) SendSms(receiver string, tplId string, tplParams string) (resp *dysmsapi.SendSmsResponse, err error) {
-	req := dysmsapi.CreateSendSmsRequest()
-	req.Scheme = "https"
-	req.PhoneNumbers = receiver
-	req.SignName = p.signName
-	req.TemplateCode = tplId
-	req.TemplateParam = tplParams
+	var req *dysmsapi.SendSmsRequest
+	//req.Scheme = "https"
+	req.PhoneNumbers = &receiver
+	req.SignName = &p.signName
+	req.TemplateCode = &tplId
+	req.TemplateParam = &tplParams
+
+	req = req.SetPhoneNumbers(receiver).
+		SetSignName(p.signName).
+		SetTemplateCode(tplId).
+		SetTemplateParam(tplParams)
 
 	resp, err = p.client.SendSms(req)
 	if err != nil {
