@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
 	dysmsapi "github.com/alibabacloud-go/dysmsapi-20170525/v2/client"
-	"github.com/alibabacloud-go/tea/tea"
 	"github.com/lishimeng/go-log"
 )
 
@@ -17,6 +16,10 @@ type AliProvider struct {
 	client       *dysmsapi.Client
 	signName     string
 }
+
+var (
+	aliyunHost = "dysmsapi.aliyuncs.com"
+)
 
 func (p *AliProvider) Send(req Request) (resp Response, err error) {
 
@@ -39,22 +42,18 @@ func (p *AliProvider) Init(accessKey string, accessSecret string, region string,
 	p.signName = signName
 
 	config := &openapi.Config{
-		// 您的AccessKey ID
-		AccessKeyId: &accessKey,
-		// 您的AccessKey Secret
+		AccessKeyId:     &accessKey,
 		AccessKeySecret: &accessSecret,
 		RegionId:        &region,
 	}
-	config.Endpoint = tea.String("dysmsapi.aliyuncs.com")
+	config.Endpoint = &aliyunHost
 
 	p.client, err = dysmsapi.NewClient(config)
-	//p.client, err = dysmsapi.NewClientWithAccessKey(p.region, p.accessKey, p.accessSecret)
 	return
 }
 
 func (p AliProvider) SendSms(receiver string, tplId string, tplParams string) (resp *dysmsapi.SendSmsResponse, err error) {
 	var req *dysmsapi.SendSmsRequest
-	//req.Scheme = "https"
 	req.PhoneNumbers = &receiver
 	req.SignName = &p.signName
 	req.TemplateCode = &tplId
