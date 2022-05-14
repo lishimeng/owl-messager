@@ -7,5 +7,10 @@ func AfterStarted(ctx context.Context) (err error) {
 	if err != nil {
 		return
 	}
+
+	err = messageSendProcess(ctx)
+	if err != nil {
+		return
+	}
 	return
 }
