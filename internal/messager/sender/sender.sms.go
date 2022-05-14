@@ -25,14 +25,14 @@ func NewSmsSender(ctx context.Context) (m Sms, err error) {
 		provider:  sms.New(),
 		maxWorker: 1,
 	}
-
 	return
 }
 
 func (m *smsSender) Send(p model.SmsMessageInfo) (err error) {
 	// sender info
 	log.Info("send sms:%d", p.Id)
-	si, err := repo.GetSmsSenderById(p.Sender)
+	//si, err := repo.GetSmsSenderById(p.Sender)
+	si, err := repo.GetDefaultSmsSender(0)
 	if err != nil {
 		log.Info("sms sender not exist:%d", p.Sender)
 		return
