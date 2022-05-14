@@ -6,7 +6,6 @@ import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/api/common"
-	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/db/service"
 )
@@ -14,7 +13,6 @@ import (
 type Req struct {
 	Template      string      `json:"template,omitempty"` // template of this mail
 	TemplateParam interface{} `json:"params,omitempty"`   // template params
-	Sender        string      `json:"sender,omitempty"`   // sender空时，使用vendor
 	Receiver      string      `json:"receiver,omitempty"` // receiver list(with comma if multi)
 }
 
@@ -39,21 +37,6 @@ func SendSms(ctx iris.Context) {
 
 	// check params
 	log.Debug("check params")
-
-	if len(req.Sender) == 0 {
-		log.Debug("param sender code nil")
-		resp.Code = -1
-		resp.Message = "sender nil"
-		common.ResponseJSON(ctx, resp)
-		return
-	}
-	var sender *model.SmsSenderInfo
-	if len(req.Sender) > 0 {
-		s, err := repo.GetSmsSenderByCode(req.Sender)
-		if err == nil {
-			sender = &s
-		}
-	}
 
 	if len(req.Template) == 0 {
 		log.Debug("param template code nil")
@@ -83,7 +66,7 @@ func SendSms(ctx iris.Context) {
 	}
 
 	m, err := service.CreateSmsMessage(
-		sender,
+		nil,
 		tpl,
 		tplParams,
 		req.Receiver)
