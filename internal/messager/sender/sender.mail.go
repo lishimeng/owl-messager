@@ -32,7 +32,8 @@ func NewMailSender(ctx context.Context) (m Mail, err error) {
 func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 	// sender info
 	log.Info("send mail:%d", p.Id)
-	si, err := repo.GetMailSenderById(p.Sender)
+	//si, err := repo.GetMailSenderById(p.Sender)
+	si, err := repo.GetDefaultMailSender("")
 	if err != nil {
 		log.Info("mail sender not exist:%d", p.Sender)
 		return
@@ -46,9 +47,9 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 			Port: si.Port,
 		},
 		Sender: mail.MetaSender{
-			Email:  si.Email,
-			Name:   si.Alias,
-			Passwd: si.Passwd,
+			Email:      si.Email,
+			Name:       si.Alias,
+			Passwd:     si.Passwd,
 			EmailAlias: si.EmailAlias,
 		},
 		Receiver: mail.MetaReceiver{
