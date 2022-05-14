@@ -18,6 +18,14 @@ func GetMailSenderById(id int) (s model.MailSenderInfo, err error) {
 	return
 }
 
+func GetDefaultMailSender(org string) (s model.MailSenderInfo, err error) {
+	err = app.GetOrm().Context.
+		QueryTable(new(model.MailSenderInfo)).
+		Filter("Default", model.DefaultSenderEnable).
+		One(&s)
+	return
+}
+
 func DeleteMailSender(id int) (err error) {
 	var t model.MailSenderInfo
 	t.Id = id
