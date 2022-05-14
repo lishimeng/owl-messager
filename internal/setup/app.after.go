@@ -8,9 +8,9 @@ func AfterStarted(ctx context.Context) (err error) {
 		return
 	}
 
-	//err = messageSendProcess(ctx)
-	//if err != nil {
-	//	return
-	//}
+	err = messageSendProcess(ctx)
+	if err != nil {
+		return
+	}
 	return
 }
