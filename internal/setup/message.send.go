@@ -8,7 +8,7 @@ import (
 
 var taskExecutor sender.TaskExecutor
 
-func MessageSendProcess(ctx context.Context) (err error) {
+func messageSendProcess(ctx context.Context) (err error) {
 	taskExecutor, err = sender.New(ctx)
 	if err != nil {
 		return
