@@ -6,7 +6,7 @@ import "github.com/lishimeng/owl/internal/db/model"
 type Request struct {
 	Template  string
 	Sign      string
-	Params    map[string]interface{}
+	Params    string
 	Receivers string
 }
 
