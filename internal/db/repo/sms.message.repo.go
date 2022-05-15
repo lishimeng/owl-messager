@@ -1,12 +1,16 @@
 package repo
 
 import (
+	"github.com/lishimeng/app-starter"
 	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl/internal/db/model"
 )
 
 func GetSmsByMessageId(msgId int) (m model.SmsMessageInfo, err error) {
-	// TODO
+	err = app.GetOrm().Context.
+		QueryTable(new(model.SmsMessageInfo)).
+		Filter("MessageId", msgId).
+		One(&m)
 	return
 }
 
