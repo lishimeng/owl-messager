@@ -3,7 +3,6 @@ package sms
 // 阿里云SMS
 
 import (
-	"encoding/json"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
 	dysmsapi "github.com/alibabacloud-go/dysmsapi-20170525/v2/client"
 	"github.com/lishimeng/go-log"
@@ -24,9 +23,7 @@ var (
 func (p *AliProvider) Send(req Request) (resp Response, err error) {
 
 	to := req.Receivers
-	bs, _ := json.Marshal(req.Params)
-	params := string(bs)
-	ret, err := p.SendSms(to, req.Template, params)
+	ret, err := p.SendSms(to, req.Template, req.Params)
 	if err != nil {
 		return
 	}
@@ -53,18 +50,19 @@ func (p *AliProvider) Init(accessKey string, accessSecret string, region string,
 }
 
 func (p AliProvider) SendSms(receiver string, tplId string, tplParams string) (resp *dysmsapi.SendSmsResponse, err error) {
-	var req *dysmsapi.SendSmsRequest
+	var req dysmsapi.SendSmsRequest
+	var request *dysmsapi.SendSmsRequest
 	req.PhoneNumbers = &receiver
 	req.SignName = &p.signName
 	req.TemplateCode = &tplId
 	req.TemplateParam = &tplParams
 
-	req = req.SetPhoneNumbers(receiver).
+	request = req.SetPhoneNumbers(receiver).
 		SetSignName(p.signName).
 		SetTemplateCode(tplId).
 		SetTemplateParam(tplParams)
 
-	resp, err = p.client.SendSms(req)
+	resp, err = p.client.SendSms(request)
 	if err != nil {
 		log.Info("send sms failed(ali sdk)")
 		log.Info(err)
