@@ -32,3 +32,13 @@ func Load(v model.SmsVendor, p sms.Provider) {
 	manager.Add(v, p)
 	return
 }
+
+func Get(v model.SmsVendor) (p sms.Provider) {
+	var manager, err = container.Get(new(sms.ProviderManager))
+	if err != nil {
+		log.Info(err)
+		return
+	}
+	p = manager.Get(v)
+	return
+}
