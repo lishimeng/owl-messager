@@ -67,21 +67,21 @@ func SendMail(ctx iris.Context) {
 		req.Subject = DefaultMailSubject
 	}
 
-	if len(req.Sender) == 0 {
-		log.Debug("param sender code nil")
-		resp.Code = -1
-		resp.Message = "sender nil"
-		common.ResponseJSON(ctx, resp)
-		return
-	}
-	sender, err := repo.GetMailSenderByCode(req.Sender)
-	if err != nil {
-		log.Debug("param sender not exist")
-		resp.Code = -1
-		resp.Message = "sender not exist"
-		common.ResponseJSON(ctx, resp)
-		return
-	}
+	//if len(req.Sender) == 0 {
+	//	log.Debug("param sender code nil")
+	//	resp.Code = -1
+	//	resp.Message = "sender nil"
+	//	common.ResponseJSON(ctx, resp)
+	//	return
+	//}
+	//sender, err := repo.GetMailSenderByCode(req.Sender)
+	//if err != nil {
+	//	log.Debug("param sender not exist")
+	//	resp.Code = -1
+	//	resp.Message = "sender not exist"
+	//	common.ResponseJSON(ctx, resp)
+	//	return
+	//}
 
 	if len(req.Template) == 0 {
 		log.Debug("param template code nil")
@@ -111,7 +111,8 @@ func SendMail(ctx iris.Context) {
 	}
 
 	m, err := service.CreateMailMessage(
-		sender,
+		//sender,
+		nil,
 		tpl,
 		templateParams,
 		req.Subject, req.Receiver, req.Cc)
