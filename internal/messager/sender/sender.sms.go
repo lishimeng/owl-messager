@@ -2,10 +2,10 @@ package sender
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
+	"github.com/lishimeng/owl/internal/plugins/loader"
 	"github.com/lishimeng/owl/internal/provider/sms"
 )
 
@@ -34,7 +34,8 @@ func (m *smsSender) Send(p model.SmsMessageInfo) (err error) {
 	//si, err := repo.GetSmsSenderById(p.Sender)
 	si, err := repo.GetDefaultSmsSender(0)
 	if err != nil {
-		log.Info("sms sender not exist:%d", p.Sender)
+		log.Info("sms sender not exist")
+		log.Info(err)
 		return
 	}
 
@@ -44,18 +45,12 @@ func (m *smsSender) Send(p model.SmsMessageInfo) (err error) {
 		return
 	}
 
-	provider := m.provider.Get(si.Vendor)
+	provider := loader.Get(si.Vendor)
 
-	var params map[string]interface{}
-	err = json.Unmarshal([]byte(p.Params), &params)
-	if err != nil {
-		log.Info("params is not json format:%s", p.Params)
-		return
-	}
 	var req = sms.Request{
 		Template:  tpl.SenderTemplateId,
 		Sign:      p.Signature,
-		Params:    params,
+		Params:    p.Params,
 		Receivers: p.Receivers,
 	}
 	resp, err := provider.Send(req)
