@@ -32,8 +32,12 @@ func NewMailSender(ctx context.Context) (m Mail, err error) {
 func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 	// sender info
 	log.Info("send mail:%d", p.Id)
-	//si, err := repo.GetMailSenderById(p.Sender)
-	si, err := repo.GetDefaultMailSender("")
+	var si model.MailSenderInfo
+	if p.Sender > 0 {
+		si, err = repo.GetMailSenderById(p.Sender) // 使用指定的sender
+	} else {
+		si, err = repo.GetDefaultMailSender("") // 使用默认sender
+	}
 	if err != nil {
 		log.Info("mail sender not exist:%d", p.Sender)
 		return
