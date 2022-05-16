@@ -6,14 +6,17 @@ import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/api/common"
+	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/db/service"
 )
 
 type Req struct {
-	Template      string      `json:"template,omitempty"` // template of this mail
-	TemplateParam interface{} `json:"params,omitempty"`   // template params
-	Receiver      string      `json:"receiver,omitempty"` // receiver list(with comma if multi)
+	Template      string      `json:"template"`         // template of this mail
+	TemplateParam interface{} `json:"params"`           // template params
+	Sender        string      `json:"sender,omitempty"` // sms send account on the platform
+	Signature     string      `json:"signature,omitempty"`
+	Receiver      string      `json:"receiver"` // receiver list(with comma if multi)
 }
 
 type Resp struct {
@@ -38,6 +41,14 @@ func SendSms(ctx iris.Context) {
 	// check params
 	log.Debug("check params")
 
+	if len(req.Receiver) == 0 {
+		log.Debug("param receiver nil")
+		resp.Code = -1
+		resp.Message = "receiver nil"
+		common.ResponseJSON(ctx, resp)
+		return
+	}
+
 	if len(req.Template) == 0 {
 		log.Debug("param template code nil")
 		resp.Code = -1
@@ -45,6 +56,19 @@ func SendSms(ctx iris.Context) {
 		common.ResponseJSON(ctx, resp)
 		return
 	}
+
+	var sender *model.SmsSenderInfo
+	if len(req.Sender) > 0 { // 如果指定sender，应检查sender是否配置了
+		*sender, err = repo.GetSmsSenderByCode(req.Sender)
+		if err != nil {
+			log.Debug("sms sender not exist: %s", req.Sender)
+			resp.Code = -1
+			resp.Message = "sender not exist"
+			common.ResponseJSON(ctx, resp)
+			return
+		}
+	}
+
 	tpl, err := repo.GetSmsTemplateByCode(req.Template)
 	if err != nil {
 		log.Debug("param template not exist")
@@ -66,10 +90,11 @@ func SendSms(ctx iris.Context) {
 	}
 
 	m, err := service.CreateSmsMessage(
-		nil,
+		sender,
 		tpl,
 		tplParams,
-		req.Receiver)
+		req.Receiver,
+		req.Signature)
 	if err != nil {
 		log.Info("can't create sms")
 		log.Info(err)
