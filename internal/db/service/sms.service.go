@@ -9,7 +9,7 @@ import (
 )
 
 func CreateSmsMessage(sender *model.SmsSenderInfo, template model.SmsTemplateInfo, templateParams string,
-	receiver string) (m model.MessageInfo, err error) {
+	receiver string, signature string) (m model.MessageInfo, err error) {
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// create message
 		m, e = repo.CreateMessage(ctx, template.Name, msg.Sms)
@@ -17,7 +17,7 @@ func CreateSmsMessage(sender *model.SmsSenderInfo, template model.SmsTemplateInf
 			return
 		}
 		// create mail
-		_, _ = repo.CreateSmsMessage(ctx, m, sender, template, templateParams, receiver)
+		_, _ = repo.CreateSmsMessage(ctx, m, sender, template, templateParams, receiver, signature)
 		return
 	})
 	return
