@@ -23,7 +23,11 @@ var (
 func (p *AliProvider) Send(req Request) (resp Response, err error) {
 
 	to := req.Receivers
-	ret, err := p.SendSms(to, req.Template, req.Params)
+	var signature = p.signName // sender 中的signature优先级最低
+	if len(req.Sign) > 0 {
+		signature = req.Sign
+	}
+	ret, err := p.SendSms(to, signature, req.Template, req.Params)
 	if err != nil {
 		return
 	}
@@ -49,11 +53,11 @@ func (p *AliProvider) Init(accessKey string, accessSecret string, region string,
 	return
 }
 
-func (p AliProvider) SendSms(receiver string, tplId string, tplParams string) (resp *dysmsapi.SendSmsResponse, err error) {
+func (p AliProvider) SendSms(receiver string, signName string, tplId string, tplParams string) (resp *dysmsapi.SendSmsResponse, err error) {
 	var req dysmsapi.SendSmsRequest
 	var request *dysmsapi.SendSmsRequest
 	req.PhoneNumbers = &receiver
-	req.SignName = &p.signName
+	req.SignName = &signName
 	req.TemplateCode = &tplId
 	req.TemplateParam = &tplParams
 
