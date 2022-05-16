@@ -6,6 +6,7 @@ import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/api/common"
+	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/db/service"
 )
@@ -15,7 +16,7 @@ const (
 )
 
 type Req struct {
-	Template      string      `json:"template,omitempty"` // template of this mail
+	Template      string      `json:"template"`           // template of this mail
 	TemplateParam interface{} `json:"params,omitempty"`   // template params
 	Subject       string      `json:"subject,omitempty"`  // mail's subject
 	Sender        string      `json:"sender,omitempty"`   // mail send account on the platform
@@ -67,21 +68,25 @@ func SendMail(ctx iris.Context) {
 		req.Subject = DefaultMailSubject
 	}
 
-	//if len(req.Sender) == 0 {
-	//	log.Debug("param sender code nil")
-	//	resp.Code = -1
-	//	resp.Message = "sender nil"
-	//	common.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//sender, err := repo.GetMailSenderByCode(req.Sender)
-	//if err != nil {
-	//	log.Debug("param sender not exist")
-	//	resp.Code = -1
-	//	resp.Message = "sender not exist"
-	//	common.ResponseJSON(ctx, resp)
-	//	return
-	//}
+	if len(req.Receiver) == 0 {
+		log.Debug("param receiver nil")
+		resp.Code = -1
+		resp.Message = "receiver nil"
+		common.ResponseJSON(ctx, resp)
+		return
+	}
+
+	var sender *model.MailSenderInfo
+	if len(req.Sender) > 0 { // 如果指定sender，应检查sender是否配置了
+		*sender, err = repo.GetMailSenderByCode(req.Sender)
+		if err != nil {
+			log.Debug("mail sender not exist: %s", req.Sender)
+			resp.Code = -1
+			resp.Message = "sender not exist"
+			common.ResponseJSON(ctx, resp)
+			return
+		}
+	}
 
 	if len(req.Template) == 0 {
 		log.Debug("param template code nil")
@@ -111,8 +116,7 @@ func SendMail(ctx iris.Context) {
 	}
 
 	m, err := service.CreateMailMessage(
-		//sender,
-		nil,
+		sender,
 		tpl,
 		templateParams,
 		req.Subject, req.Receiver, req.Cc)
