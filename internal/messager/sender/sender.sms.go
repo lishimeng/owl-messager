@@ -31,8 +31,13 @@ func NewSmsSender(ctx context.Context) (m Sms, err error) {
 func (m *smsSender) Send(p model.SmsMessageInfo) (err error) {
 	// sender info
 	log.Info("send sms:%d", p.Id)
-	//si, err := repo.GetSmsSenderById(p.Sender)
-	si, err := repo.GetDefaultSmsSender(0)
+	var si model.SmsSenderInfo
+	if p.Sender > 0 {
+		si, err = repo.GetSmsSenderById(p.Sender) // 指定sender
+		// TODO org
+	} else {
+		si, err = repo.GetDefaultSmsSender(0) // 默认sender
+	}
 	if err != nil {
 		log.Info("sms sender not exist")
 		log.Info(err)
@@ -52,6 +57,10 @@ func (m *smsSender) Send(p model.SmsMessageInfo) (err error) {
 		Sign:      p.Signature,
 		Params:    p.Params,
 		Receivers: p.Receivers,
+	}
+	req.Sign = p.Signature  // 优先使用参数中的sign
+	if len(req.Sign) <= 0 { // 次级使用模板中的sign
+		req.Sign = tpl.Signature
 	}
 	resp, err := provider.Send(req)
 
