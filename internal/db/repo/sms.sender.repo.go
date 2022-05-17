@@ -20,6 +20,8 @@ func GetSmsSenderById(id int) (s model.SmsSenderInfo, err error) {
 }
 
 func GetDefaultSmsSender(org int) (s model.SmsSenderInfo, err error) {
+
+	// TODO org
 	err = app.GetOrm().Context.
 		QueryTable(new(model.SmsSenderInfo)).
 		Filter("Default", model.DefaultSenderEnable).
