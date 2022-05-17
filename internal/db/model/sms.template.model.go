@@ -29,7 +29,7 @@ func (t *SmsTemplateInfo) AddParam(name string, dataType string) {
 
 func (t *SmsTemplateInfo) Build() {
 
-	bs, err := json.Marshal(t)
+	bs, err := json.Marshal(t.paramList)
 	if err != nil {
 		// TODO
 		return
