@@ -8,7 +8,7 @@ type MailMessageInfo struct {
 
 	Params string `orm:"column(params);null"` // json params
 
-	Sender int `orm:"column(sender_id)"` // sender's Id
+	Sender int `orm:"column(sender_id);null"` // sender's Id
 
 	Receivers string `orm:"column(receiver)"` // receiver list. comma split
 
