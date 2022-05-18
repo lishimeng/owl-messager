@@ -1,10 +1,17 @@
 package model
 
-// 邮件
+// SmsMessageInfo 短信
 type SmsMessageInfo struct {
 	MessageHeader
-	// 主题
-	Subject string `orm:"column(subject)"`
-	// 正文
-	Body string `orm:"column(body)"`
+
+	Template int `orm:"column(template_id)"` // sms template
+
+	Params string `orm:"column(params);null"` // json params(map)
+
+	Sender int `orm:"column(sender_id);null"` // 指定发送者
+
+	Receivers string `orm:"column(receiver)"` // receiver list. comma split
+
+	Signature string `orm:"column(signature);null"` // signature
+
 }

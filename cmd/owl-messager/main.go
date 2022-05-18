@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
 	etc2 "github.com/lishimeng/app-starter/etc"
 	"github.com/lishimeng/go-log"
@@ -19,7 +18,7 @@ import (
 import _ "github.com/lib/pq"
 
 func main() {
-	orm.Debug = true
+	//orm.Debug = true
 
 	defer func() {
 		if err := recover(); err != nil {
@@ -63,18 +62,13 @@ func _main() (err error) {
 		}
 
 		builder.EnableDatabase(dbConfig.Build(),
-			new(model.MessageInfo),
-			new(model.MailMessageInfo),
-			new(model.SmsMessageInfo),
-			new(model.MailSenderInfo),
-			new(model.MailTemplateInfo),
-			new(model.MessageTask),
-			new(model.MessageRunningTask)).
+			model.Tables()...).
 			//SetWebLogLevel("debug").
 			EnableWeb(etc.Config.Web.Listen, api.Route).
 			EnableStaticWeb(static.AssetFile).
 			//ComponentBefore(setup.JobClearExpireTask).
-			ComponentBefore(setup.MessageSender)
+			ComponentBefore(setup.BeforeStarted).
+			ComponentAfter(setup.AfterStarted)
 
 		return err
 	}, func(s string) {

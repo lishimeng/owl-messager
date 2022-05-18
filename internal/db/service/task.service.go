@@ -14,17 +14,17 @@ func HandleExpiredTask(runningTask model.MessageRunningTask) (err error) {
 	// start transmission
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// remove from running runningTask
-		e = repo.DeleteRunningTask(runningTask.Id)
+		e = repo.DeleteRunningTask(ctx, runningTask.Id)
 		if e != nil {
 			return
 		}
 		// set runningTask status expired
-		task, e := repo.UpdateTaskStatus(runningTask.TaskId, model.MessageTaskSendExpired)
+		task, e := repo.UpdateTaskStatus(ctx, runningTask.TaskId, model.MessageTaskSendExpired)
 		if e != nil {
 			return
 		}
 		// set message status expired
-		_, e = repo.UpdateMessageStatus(task.MessageId, model.MessageSendExpired)
+		_, e = repo.UpdateMessageStatus(ctx, task.MessageId, model.MessageSendExpired)
 		// TODO add log
 
 		return e
@@ -36,17 +36,17 @@ func OnTaskHandleFail(task model.MessageTask) (err error) {
 	log.Debug("on task handle failed")
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// message status -> fail
-		_, e = repo.UpdateMessageStatus(task.MessageId, model.MessageSendFailed)
+		_, e = repo.UpdateMessageStatus(ctx, task.MessageId, model.MessageSendFailed)
 		if e != nil {
 			return
 		}
 		// task status -> fail
-		_, e = repo.UpdateTaskStatus(task.Id, model.MessageTaskSendFailed)
+		_, e = repo.UpdateTaskStatus(ctx, task.Id, model.MessageTaskSendFailed)
 		if e != nil {
 			return
 		}
 		// delete running task
-		e = repo.DeleteRunningTaskByTaskId(task.Id)
+		e = repo.DeleteRunningTaskByTaskId(ctx, task.Id)
 		return
 	})
 
@@ -57,17 +57,17 @@ func OnTaskHandleSuccess(task model.MessageTask) (err error) {
 	log.Debug("on task handle success")
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// message status -> success
-		_, e = repo.UpdateMessageStatus(task.MessageId, model.MessageSendSuccess)
+		_, e = repo.UpdateMessageStatus(ctx, task.MessageId, model.MessageSendSuccess)
 		if e != nil {
 			return
 		}
 		// task status -> success
-		_, e = repo.UpdateTaskStatus(task.Id, model.MessageTaskSendSuccess)
+		_, e = repo.UpdateTaskStatus(ctx, task.Id, model.MessageTaskSendSuccess)
 		if e != nil {
 			return
 		}
 		// delete running success
-		e = repo.DeleteRunningTaskByTaskId(task.Id)
+		e = repo.DeleteRunningTaskByTaskId(ctx, task.Id)
 		return
 	})
 
@@ -78,20 +78,20 @@ func CreateMessageTask(message model.MessageInfo, messageInstanceId int) (task m
 
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// 创建task
-		task, e = repo.AddMessageTask(message.Id, messageInstanceId)
+		task, e = repo.AddMessageTask(ctx, message.Id, messageInstanceId)
 		if e != nil {
 			log.Info("create message task failed")
 			return
 		}
 		// task添加进running task表
-		runningTask, e := repo.AddRunningTask(task)
+		runningTask, e := repo.AddRunningTask(ctx, task)
 		if e != nil {
 			log.Info("create message running task failed")
 			return
 		}
 		log.Info("running task create success [%d]", runningTask.Id)
 		// message status->sending
-		_, e = repo.UpdateMessageStatus(message.Id, model.MessageSending)
+		_, e = repo.UpdateMessageStatus(ctx, message.Id, model.MessageSending)
 		if e != nil {
 			log.Info("change message [status -> sending] failed")
 			return

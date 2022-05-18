@@ -27,7 +27,7 @@ type SendMonitor interface {
 type sendMonitor struct {
 	subscribers map[string]*websocket.Conn
 	messageChan chan MonitorData
-	ctx context.Context
+	ctx         context.Context
 
 	mux sync.Locker
 }
@@ -39,6 +39,7 @@ func InitMonitor(ctx context.Context) {
 	s.ctx = ctx
 	s.messageChan = make(chan MonitorData, 10)
 	s.subscribers = make(map[string]*websocket.Conn)
+	s.mux = new(sync.Mutex)
 	singleton = s
 	go s.pubLoop()
 }
@@ -67,7 +68,7 @@ func (s *sendMonitor) pubLoop() {
 		select {
 		case <-s.ctx.Done():
 			return
-		case d := <- s.messageChan:
+		case d := <-s.messageChan:
 			s.pub(d)
 		}
 	}
@@ -90,6 +91,6 @@ func (s *sendMonitor) pub(msg MonitorData) {
 	}
 }
 
-func(s *sendMonitor) Pub(msg MonitorData) {
+func (s *sendMonitor) Pub(msg MonitorData) {
 	s.messageChan <- msg
 }

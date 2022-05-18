@@ -2,6 +2,7 @@ package repo
 
 import (
 	"github.com/lishimeng/app-starter"
+	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl/internal/db/model"
 )
 
@@ -60,8 +61,8 @@ func CreateMailTemplate(code, name, body, description string, category int) (m m
 	return
 }
 
-func UpdateMailTemplate(ori model.MailTemplateInfo, cols ...string) (m model.MailTemplateInfo, err error) {
-	_, err = app.GetOrm().Context.Update(&ori, cols...)
+func UpdateMailTemplate(ctx persistence.TxContext, ori model.MailTemplateInfo, cols ...string) (m model.MailTemplateInfo, err error) {
+	_, err = ctx.Context.Update(&ori, cols...)
 	m = ori
 	return
 }

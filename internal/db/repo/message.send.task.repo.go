@@ -2,19 +2,20 @@ package repo
 
 import (
 	"github.com/lishimeng/app-starter"
+	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl/internal/db/model"
 	"time"
 )
 
 // 创建投送task
 // 从未投送的message中取出一个
-func AddMessageTask(messageId int, messageInstanceId int) (task model.MessageTask, err error) {
+func AddMessageTask(ctx persistence.TxContext, messageId int, messageInstanceId int) (task model.MessageTask, err error) {
 	task = model.MessageTask{
 		MessageId:         messageId,
 		MessageInstanceId: messageInstanceId,
 	}
 	task.Status = model.MessageTaskInit
-	_, err = app.GetOrm().Context.Insert(&task)
+	_, err = ctx.Context.Insert(&task)
 	return
 }
 
@@ -46,11 +47,11 @@ func CancelExpiredTask(taskId int) {
 	// TODO 是否用数据库函数执行
 }
 
-func UpdateTaskStatus(taskId int, status int) (task model.MessageTask, err error) {
+func UpdateTaskStatus(ctx persistence.TxContext, taskId int, status int) (task model.MessageTask, err error) {
 	task.Id = taskId
 	task.Status = status
 	task.UpdateTime = time.Now()
-	_, err = app.GetOrm().Context.Update(&task, "Status")
+	_, err = ctx.Context.Update(&task, "Status")
 	return
 }
 
@@ -65,28 +66,28 @@ func GetExpiredTasks(size int, timeLatest time.Time) (tasks []model.MessageRunni
 	return
 }
 
-func AddRunningTask(task model.MessageTask) (runningTask model.MessageRunningTask, err error) {
+func AddRunningTask(ctx persistence.TxContext, task model.MessageTask) (runningTask model.MessageRunningTask, err error) {
 	runningTask = model.MessageRunningTask{
 		TaskId: task.Id,
 	}
-	_, err = app.GetOrm().Context.Insert(&runningTask)
+	_, err = ctx.Context.Insert(&runningTask)
 	return
 }
 
-func DeleteRunningTaskByTaskId(taskId int) (err error) {
+func DeleteRunningTaskByTaskId(ctx persistence.TxContext, taskId int) (err error) {
 	var runningTask model.MessageRunningTask
-	err = app.GetOrm().Context.QueryTable(new(model.MessageRunningTask)).Filter("TaskId", taskId).One(&runningTask)
+	err = ctx.Context.QueryTable(new(model.MessageRunningTask)).Filter("TaskId", taskId).One(&runningTask)
 	if err != nil {
 		return
 	}
-	_, err = app.GetOrm().Context.Delete(&runningTask)
+	_, err = ctx.Context.Delete(&runningTask)
 	return
 }
 
-func DeleteRunningTask(id int) (err error) {
+func DeleteRunningTask(ctx persistence.TxContext, id int) (err error) {
 	var runningTask model.MessageRunningTask
 	runningTask.Id = id
-	_, err = app.GetOrm().Context.Delete(runningTask)
+	_, err = ctx.Context.Delete(runningTask)
 	return
 }
 

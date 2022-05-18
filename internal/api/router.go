@@ -2,9 +2,9 @@ package api
 
 import (
 	"github.com/kataras/iris/v12"
+	"github.com/lishimeng/owl/internal/api/apnsApi"
 	"github.com/lishimeng/owl/internal/api/mailApi"
 	"github.com/lishimeng/owl/internal/api/messageApi"
-	"github.com/lishimeng/owl/internal/api/openApi"
 	"github.com/lishimeng/owl/internal/api/senderApi"
 	"github.com/lishimeng/owl/internal/api/smsApi"
 	"github.com/lishimeng/owl/internal/api/taskApi"
@@ -25,17 +25,14 @@ func router(root iris.Party) {
 	mailSender(root.Party("/mail_sender"))
 	mailTemplate(root.Party("/mail_template"))
 
+	smsSender(root.Party("/sms_sender"))
+
 	mail(root.Party("/mail"))
 
 	// send message
 	sendMail(root.Party("/send/mail"))
 	sms(root.Party("/send/sms"))
-
-	oauth(root.Party("/oauth2"))
-}
-
-func oauth(p iris.Party) {
-	p.Get("/token", openApi.Token) // only support client credential
+	apns(root.Party("/send/apns"))
 }
 
 func message(p iris.Party) {
@@ -61,6 +58,15 @@ func mailSender(p iris.Party) {
 	p.Get("/{id}", senderApi.GetMailSenderInfo)
 }
 
+func smsSender(p iris.Party) {
+	p.Post("/", senderApi.AddSmsSender)
+	p.Put("/{id}", senderApi.UpdateSmsSender)
+	p.Delete("/{id}", senderApi.DeleteSmsSender)
+
+	p.Get("/", senderApi.GetSmsSenderList)
+	p.Get("/{id}", senderApi.GetSmsSenderInfo)
+}
+
 func mailTemplate(p iris.Party) {
 	p.Post("/", templateApi.AddMailTemplate)
 	p.Put("/{id}", templateApi.UpdateMailTemplate)
@@ -71,7 +77,10 @@ func mailTemplate(p iris.Party) {
 }
 
 func mail(p iris.Party) {
-	p.Get("/message/{id}", mailApi.GetByMessage)
+	p.Get("/message/mail/{id}", mailApi.GetByMessage)
+
+	p.Get("/message/sms/{id}", smsApi.GetByMessage)
+	p.Get("/message/apns/{id}", apnsApi.GetByMessage)
 }
 func sendMail(p iris.Party) {
 	p.Post("/", openapi.CheckAccessToken, mailApi.SendMail)
@@ -79,4 +88,8 @@ func sendMail(p iris.Party) {
 
 func sms(p iris.Party) {
 	p.Post("/", smsApi.SendSms)
+}
+
+func apns(p iris.Party) {
+	p.Post("/", apnsApi.SendApns)
 }

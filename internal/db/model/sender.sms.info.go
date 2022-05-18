@@ -1,16 +1,18 @@
 package model
 
+import "encoding/json"
+
 // SmsSenderInfo 短信发送账号
 type SmsSenderInfo struct {
-	Pk
-	Code      string    `orm:"column(code);unique"`
-	Name      string    `orm:"column(name)"`
-	Host      string    `orm:"column(host)"`
-	Vendor    SmsVendor `orm:"column(vendor)"` // 消息平台
-	AppKey    string    `orm:"column(app_key);null"`
-	AppSecret string    `orm:"column(app_secret)"`
+	SenderInfo
+	Vendor    SmsVendor         `orm:"column(vendor)"` // 消息平台
+	Config    string            `orm:"column(config)"` // json 配置(map: key-value)
+	ConfigMap map[string]string `orm:"-"`
+}
 
-	TableChangeInfo
+func (s *SmsSenderInfo) UnmarshalConfig() (err error) {
+	err = json.Unmarshal([]byte(s.Config), &(s.ConfigMap))
+	return
 }
 
 type SmsVendor string
@@ -41,3 +43,8 @@ func (s SmsSenderInfo) Support() bool {
 	val, ok := SmsVendors[s.Vendor]
 	return ok && (val > 0)
 }
+
+const (
+	SmsSenderEnable  = 1 // enable
+	SmsSenderDisable = 0 // disable
+)

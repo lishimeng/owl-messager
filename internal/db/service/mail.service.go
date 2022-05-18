@@ -8,27 +8,27 @@ import (
 	"github.com/lishimeng/owl/internal/messager/msg"
 )
 
-func CreateMailMessage(sender model.MailSenderInfo, template model.MailTemplateInfo, templateParams string,
+func CreateMailMessage(sender *model.MailSenderInfo, template model.MailTemplateInfo, templateParams string,
 	subject, receiver, cc string) (m model.MessageInfo, err error) {
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// create message
-		m, e = repo.CreateMessage(subject, msg.Email)
+		m, e = repo.CreateMessage(ctx, subject, msg.Email)
 		if e != nil {
 			return
 		}
 		// create mail
-		_, _ = repo.CreateMailMessage(m, sender, template, templateParams, subject, receiver, cc)
+		_, _ = repo.CreateMailMessage(ctx, m, sender, template, templateParams, subject, receiver, cc)
 		return
 	})
 	return
 }
 
 func UpdateMailTemplate(id, status int, body, description string) (m model.MailTemplateInfo, err error) {
+	m, err = repo.GetMailTemplateById(id)
+	if err != nil {
+		return
+	}
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
-		m, e = repo.GetMailTemplateById(id)
-		if e != nil {
-			return
-		}
 		var cols []string
 		if status > repo.ConditionIgnore {
 			m.Status = status
@@ -43,7 +43,7 @@ func UpdateMailTemplate(id, status int, body, description string) (m model.MailT
 			cols = append(cols, "Description")
 		}
 
-		m, e = repo.UpdateMailTemplate(m, cols...)
+		m, e = repo.UpdateMailTemplate(ctx, m, cols...)
 
 		return
 	})

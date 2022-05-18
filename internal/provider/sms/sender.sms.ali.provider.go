@@ -3,8 +3,8 @@ package sms
 // 阿里云SMS
 
 import (
-	"encoding/json"
-	"github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
+	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
+	dysmsapi "github.com/alibabacloud-go/dysmsapi-20170525/v2/client"
 	"github.com/lishimeng/go-log"
 )
 
@@ -16,16 +16,23 @@ type AliProvider struct {
 	signName     string
 }
 
+var (
+	aliyunHost = "dysmsapi.aliyuncs.com"
+)
+
 func (p *AliProvider) Send(req Request) (resp Response, err error) {
 
-	to := ""     // TODO 转换参数
-	params := "" // TODO 转换参数
-	ret, err := p.SendSms(to, req.Template, params)
+	to := req.Receivers
+	var signature = p.signName // sender 中的signature优先级最低
+	if len(req.Sign) > 0 {
+		signature = req.Sign
+	}
+	ret, err := p.SendSms(to, signature, req.Template, req.Params)
 	if err != nil {
 		return
 	}
-	resp.RequestId = ret.RequestId
-	resp.Payload, err = json.Marshal(ret)
+	resp.RequestId = *ret.Body.RequestId
+	resp.Payload = ret.String()
 	return
 }
 
@@ -34,19 +41,32 @@ func (p *AliProvider) Init(accessKey string, accessSecret string, region string,
 	p.accessSecret = accessSecret
 	p.region = region
 	p.signName = signName
-	p.client, err = dysmsapi.NewClientWithAccessKey(p.region, p.accessKey, p.accessSecret)
+
+	config := &openapi.Config{
+		AccessKeyId:     &accessKey,
+		AccessKeySecret: &accessSecret,
+		RegionId:        &region,
+	}
+	config.Endpoint = &aliyunHost
+
+	p.client, err = dysmsapi.NewClient(config)
 	return
 }
 
-func (p AliProvider) SendSms(toer string, tplId string, tplParams string) (resp *dysmsapi.SendSmsResponse, err error) {
-	req := dysmsapi.CreateSendSmsRequest()
-	req.Scheme = "https"
-	req.PhoneNumbers = toer
-	req.SignName = p.signName
-	req.TemplateCode = tplId
-	req.TemplateParam = tplParams
+func (p AliProvider) SendSms(receiver string, signName string, tplId string, tplParams string) (resp *dysmsapi.SendSmsResponse, err error) {
+	var req dysmsapi.SendSmsRequest
+	var request *dysmsapi.SendSmsRequest
+	req.PhoneNumbers = &receiver
+	req.SignName = &signName
+	req.TemplateCode = &tplId
+	req.TemplateParam = &tplParams
 
-	resp, err = p.client.SendSms(req)
+	request = req.SetPhoneNumbers(receiver).
+		SetSignName(p.signName).
+		SetTemplateCode(tplId).
+		SetTemplateParam(tplParams)
+
+	resp, err = p.client.SendSms(request)
 	if err != nil {
 		log.Info("send sms failed(ali sdk)")
 		log.Info(err)
