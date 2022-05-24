@@ -67,7 +67,7 @@ func (p AliProvider) SendSms(receiver string, signName string, tplId string, tpl
 		SetTemplateCode(tplId).
 		SetTemplateParam(tplParams)
 
-	var opts = util.RuntimeOptions{}
+	var opts util.RuntimeOptions
 	opts.SetIgnoreSSL(true) // 忽略ssl验证
 	resp, err = p.client.SendSmsWithOptions(request, &opts)
 	if err != nil {
