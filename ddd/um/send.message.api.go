@@ -7,10 +7,11 @@ import (
 )
 
 type Req struct {
-	Template      string      `json:"template"` // 模板
-	TemplateParam interface{} `json:"params"`   // 参数
-	Receiver      string      `json:"receiver"` // 接收者，多个时用逗号分隔
-	Category      int         `json:"category"` // 消息类型
+	Template      string      `json:"template"`          // 模板
+	TemplateParam interface{} `json:"params"`            // 参数
+	Title         string      `json:"subject,omitempty"` // 标题
+	Receiver      string      `json:"receiver"`          // 接收者，多个时用逗号分隔
+	Category      int         `json:"category"`          // 消息类型
 }
 
 type Resp struct {
