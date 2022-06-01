@@ -15,11 +15,11 @@ require (
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang-jwt/jwt/v4 v4.4.1
 	github.com/iris-contrib/jade v1.1.4
-	github.com/kataras/iris/v12 v12.2.0-beta1
+	github.com/kataras/iris/v12 v12.2.0-beta2
 	github.com/lib/pq v1.10.2
-	github.com/lishimeng/app-starter v1.6.7
+	github.com/lishimeng/app-starter v1.6.8
 	github.com/lishimeng/go-log v1.0.0
-	github.com/lishimeng/go-orm v1.1.1
+	github.com/lishimeng/go-orm v1.2.1
 	github.com/qiniu/go-sdk/v7 v7.11.1
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
 	golang.org/x/net v0.0.0-20220412020605-290c469a71a5
