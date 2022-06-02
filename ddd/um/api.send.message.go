@@ -2,6 +2,7 @@ package um
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/go-log"
@@ -78,7 +79,8 @@ func sendMessage(ctx iris.Context) {
 		message, err = serviceAddSms(req.Template, req.Template, req.Receiver)
 	case msg.Apns:
 	default:
-
+		err = fmt.Errorf("unkown message category")
+		resp.Code = -1
 	}
 
 	if err != nil {
@@ -95,11 +97,15 @@ func sendMessage(ctx iris.Context) {
 	common.ResponseJSON(ctx, resp)
 }
 
-func createMail(req Req, params string) (m model.MessageInfo, errResponse Resp, err error) {
+func createMail(req Req, params string) (m model.MessageInfo, resp Resp, err error) {
 	if len(req.Title) == 0 {
 		log.Debug("no title, use default: %s", DefaultTitle)
 		req.Title = DefaultTitle
 	}
 	m, err = serviceAddMail(req.Template, params, req.Title, req.Receiver)
+	if err != nil {
+		resp.Code = -1
+		resp.Message = "create message failed"
+	}
 	return
 }
