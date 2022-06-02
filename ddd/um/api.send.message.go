@@ -5,6 +5,7 @@ import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/api/common"
+	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/messager/msg"
 )
 
@@ -53,6 +54,7 @@ func sendMessage(ctx iris.Context) {
 	}
 
 	// 检查消息类型(是否支持)
+	var message model.MessageInfo
 	switch req.Category {
 	case msg.Email:
 	case msg.Sms:
@@ -69,4 +71,10 @@ func sendMessage(ctx iris.Context) {
 		common.ResponseJSON(ctx, resp)
 		return
 	}
+
+	log.Debug("create message success, id:%d", message.Id)
+	resp.MessageId = message.Id
+
+	resp.Code = common.RespCodeSuccess
+	common.ResponseJSON(ctx, resp)
 }
