@@ -9,6 +9,10 @@ import (
 	"github.com/lishimeng/owl/internal/messager/msg"
 )
 
+const (
+	DefaultTitle = ""
+)
+
 type Req struct {
 	Template      string      `json:"template"`          // 模板
 	TemplateParam interface{} `json:"params"`            // 参数
