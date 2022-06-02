@@ -57,7 +57,7 @@ func sendMessage(ctx iris.Context) {
 	var message model.MessageInfo
 	switch req.Category {
 	case msg.Email:
-		message, err = serviceAddMail(req.Template, req.Template, req.Template, req.Receiver)
+		message, resp, err = createMail(req)
 	case msg.Sms:
 		message, err = serviceAddSms(req.Template, req.Template, req.Receiver)
 	case msg.Apns:
@@ -68,8 +68,6 @@ func sendMessage(ctx iris.Context) {
 	if err != nil {
 		log.Info("can't create message")
 		log.Info(err)
-		resp.Code = -1
-		resp.Message = "create message failed"
 		common.ResponseJSON(ctx, resp)
 		return
 	}
@@ -79,4 +77,10 @@ func sendMessage(ctx iris.Context) {
 
 	resp.Code = common.RespCodeSuccess
 	common.ResponseJSON(ctx, resp)
+}
+
+func createMail(req Req) (m model.MessageInfo, errResponse Resp, err error) {
+
+	m, err = serviceAddMail(req.Template, req.Template, req.Template, req.Receiver)
+	return
 }
