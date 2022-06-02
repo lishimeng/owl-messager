@@ -1,6 +1,7 @@
 package um
 
 import (
+	"encoding/json"
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/go-log"
@@ -57,11 +58,22 @@ func sendMessage(ctx iris.Context) {
 		return
 	}
 
+	var params string
+	switch req.TemplateParam.(type) {
+	case string:
+		params = (req.TemplateParam).(string)
+	default:
+		bs, e := json.Marshal(req.TemplateParam)
+		if e == nil {
+			params = string(bs)
+		}
+	}
+
 	// 检查消息类型(是否支持)
 	var message model.MessageInfo
 	switch req.Category {
 	case msg.Email:
-		message, resp, err = createMail(req)
+		message, resp, err = createMail(req, params)
 	case msg.Sms:
 		message, err = serviceAddSms(req.Template, req.Template, req.Receiver)
 	case msg.Apns:
@@ -83,11 +95,11 @@ func sendMessage(ctx iris.Context) {
 	common.ResponseJSON(ctx, resp)
 }
 
-func createMail(req Req) (m model.MessageInfo, errResponse Resp, err error) {
+func createMail(req Req, params string) (m model.MessageInfo, errResponse Resp, err error) {
 	if len(req.Title) == 0 {
 		log.Debug("no title, use default: %s", DefaultTitle)
 		req.Title = DefaultTitle
 	}
-	m, err = serviceAddMail(req.Template, req.Template, req.Title, req.Receiver)
+	m, err = serviceAddMail(req.Template, params, req.Title, req.Receiver)
 	return
 }
