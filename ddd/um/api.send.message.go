@@ -76,7 +76,7 @@ func sendMessage(ctx iris.Context) {
 	case msg.Email:
 		message, resp, err = createMail(req, params)
 	case msg.Sms:
-		message, err = serviceAddSms(req.Template, req.Template, req.Receiver)
+		message, resp, err = createSms(req, params)
 	case msg.Apns:
 	default:
 		err = fmt.Errorf("unkown message category")
@@ -105,7 +105,16 @@ func createMail(req Req, params string) (m model.MessageInfo, resp Resp, err err
 	m, err = serviceAddMail(req.Template, params, req.Title, req.Receiver)
 	if err != nil {
 		resp.Code = -1
-		resp.Message = "create message failed"
+		resp.Message = "create mail message failed"
+	}
+	return
+}
+
+func createSms(req Req, params string) (m model.MessageInfo, resp Resp, err error) {
+	m, err = serviceAddSms(req.Template, params, req.Receiver)
+	if err != nil {
+		resp.Code = -1
+		resp.Message = "create sms message failed"
 	}
 	return
 }
