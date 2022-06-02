@@ -84,7 +84,10 @@ func sendMessage(ctx iris.Context) {
 }
 
 func createMail(req Req) (m model.MessageInfo, errResponse Resp, err error) {
-
-	m, err = serviceAddMail(req.Template, req.Template, req.Template, req.Receiver)
+	if len(req.Title) == 0 {
+		log.Debug("no title, use default: %s", DefaultTitle)
+		req.Title = DefaultTitle
+	}
+	m, err = serviceAddMail(req.Template, req.Template, req.Title, req.Receiver)
 	return
 }
