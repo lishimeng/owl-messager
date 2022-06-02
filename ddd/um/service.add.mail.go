@@ -6,7 +6,7 @@ import (
 	"github.com/lishimeng/owl/internal/db/service"
 )
 
-func addMailService(templateCode, params, subject, receiver string) (m model.MessageInfo, err error) {
+func serviceAddMail(templateCode, params, subject, receiver string) (m model.MessageInfo, err error) {
 	tpl, err := repo.GetMailTemplateByCode(templateCode)
 	if err != nil {
 		return
