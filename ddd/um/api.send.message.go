@@ -58,6 +58,7 @@ func sendMessage(ctx iris.Context) {
 	switch req.Category {
 	case msg.Email:
 	case msg.Sms:
+		message, err = serviceAddSms(req.Template, req.Template, req.Receiver)
 	case msg.Apns:
 	default:
 
