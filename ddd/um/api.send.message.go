@@ -60,4 +60,13 @@ func sendMessage(ctx iris.Context) {
 	default:
 
 	}
+
+	if err != nil {
+		log.Info("can't create message")
+		log.Info(err)
+		resp.Code = -1
+		resp.Message = "create message failed"
+		common.ResponseJSON(ctx, resp)
+		return
+	}
 }
