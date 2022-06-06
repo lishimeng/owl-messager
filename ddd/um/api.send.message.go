@@ -42,6 +42,8 @@ func sendMessage(ctx iris.Context) {
 		return
 	}
 
+	var category = ctx.Params().Get("category")
+
 	// 检查收信人
 	if len(req.Receiver) == 0 {
 		log.Debug("param receiver nil")
@@ -72,12 +74,15 @@ func sendMessage(ctx iris.Context) {
 
 	// 检查消息类型(是否支持)
 	var message model.MessageInfo
-	switch req.Category {
-	case msg.Email:
+	switch category {
+	case msg.EmailCategory:
 		message, resp, err = createMail(req, params)
-	case msg.Sms:
+	case msg.SmsCategory:
 		message, resp, err = createSms(req, params)
-	case msg.Apns:
+	case msg.ApnsCategory:
+		// TODO
+		err = fmt.Errorf("unkown message category")
+		resp.Code = -1
 	default:
 		err = fmt.Errorf("unkown message category")
 		resp.Code = -1
