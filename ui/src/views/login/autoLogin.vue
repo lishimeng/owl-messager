@@ -50,7 +50,7 @@ function genUserInfo(uid) {
 	}).catch(() => {
 		signInFailed();
 	})
-};
+}
 function signInSuccess() {
 	router.push('/');
 	setTimeout(() => {
