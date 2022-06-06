@@ -123,3 +123,24 @@ func createSms(req Req, params string) (m model.MessageInfo, resp Resp, err erro
 	}
 	return
 }
+
+func createApns(req Req, params string) (m model.MessageInfo, resp Resp, err error) {
+	if len(req.Title) == 0 {
+		log.Debug("no title, use default: %s", DefaultTitle)
+		req.Title = DefaultTitle
+	}
+
+	if len(req.BundleId) == 0 {
+		log.Debug("param bundle id nil")
+		resp.Code = -1
+		resp.Message = "bundleId nil"
+		return
+	}
+
+	m, err = serviceAddApns(req.Template, params, req.Title, req.Receiver)
+	if err != nil {
+		resp.Code = -1
+		resp.Message = "create sms message failed"
+	}
+	return
+}
