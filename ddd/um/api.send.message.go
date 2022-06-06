@@ -16,10 +16,11 @@ const (
 )
 
 type Req struct {
-	Template      string      `json:"template"`          // 模板
-	TemplateParam interface{} `json:"params"`            // 参数
-	Title         string      `json:"subject,omitempty"` // 标题
-	Receiver      string      `json:"receiver"`          // 接收者，多个时用逗号分隔
+	BundleId      string      `json:"bundleId,omitempty"` // bundle id
+	Template      string      `json:"template"`           // 模板
+	TemplateParam interface{} `json:"params"`             // 参数
+	Title         string      `json:"subject,omitempty"`  // 标题
+	Receiver      string      `json:"receiver"`           // 接收者，多个时用逗号分隔
 }
 
 type Resp struct {
