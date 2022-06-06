@@ -80,9 +80,7 @@ func sendMessage(ctx iris.Context) {
 	case msg.SmsCategory:
 		message, resp, err = createSms(req, params)
 	case msg.ApnsCategory:
-		// TODO
-		err = fmt.Errorf("unkown message category")
-		resp.Code = -1
+		message, resp, err = createApns(req, params)
 	default:
 		err = fmt.Errorf("unkown message category")
 		resp.Code = -1
