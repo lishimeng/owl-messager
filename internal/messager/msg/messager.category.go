@@ -6,3 +6,9 @@ const (
 	Sms
 	Apns
 )
+
+const (
+	EmailCategory = "mail"
+	SmsCategory   = "sms"
+	ApnsCategory  = "apns"
+)
