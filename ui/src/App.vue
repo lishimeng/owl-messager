@@ -18,7 +18,7 @@ import LockScreen from '/@/layout/lockScreen/index.vue';
 import Setings from '/@/layout/navBars/breadcrumb/setings.vue';
 import CloseFull from '/@/layout/navBars/breadcrumb/closeFull.vue';
 import axios from 'axios';
-import { getI18nSourceApi } from '/@/api/configuration'
+import {  } from '/@/api/configuration'
 export default defineComponent({
 	name: 'app',
 	components: { LockScreen, Setings, CloseFull },

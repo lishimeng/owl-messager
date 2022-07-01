@@ -11,7 +11,6 @@
           inactive-text="关闭"
           :active-value="false"
           :inactive-value="true"
-          @change="changeSwitchStatus()"
         />
       </el-form-item>
     </el-form>
@@ -19,9 +18,8 @@
 </template>
 
 <script setup>
-import { getCurrentSwitchStatusApi, changeSwitchStatusApi } from '/@/api/mail'
 import { reactive, onMounted } from "vue"
-import { ElMessage } from 'element-plus';
+import {  } from 'element-plus';
 const state = reactive({
   form: {
     debug: ''
@@ -30,26 +28,6 @@ const state = reactive({
 onMounted(() => {
 })
 onMounted(()=> {
-  getCurrentSwitchStatus()
 })
-function getCurrentSwitchStatus() {
-  getCurrentSwitchStatusApi({
-    operaterId: window.localStorage.getItem('userId')
-  }).then(res => {
-    state.form.debug = res
-  })
-}
-function changeSwitchStatus() {
-  changeSwitchStatusApi({
-    debug: state.form.debug,
-    operaterId: window.localStorage.getItem('userId')
-  }).then(res => {
-    if (res && res.code === 0) {
-      ElMessage.success(res.message)
-    } else {
-      ElMessage.error(res.message)
-    }
-    getCurrentSwitchStatus()
-  })
-}
+
 </script>

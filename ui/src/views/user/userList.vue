@@ -198,7 +198,6 @@
 </template>
 <script  setup>
 import {
-  getUserListApi,
   getInfo,
   setUserStatusApi,
   addUserRoleApi,
@@ -207,12 +206,10 @@ import {
   resetPwdByAdminApi
 } from "/@/api/user"
 import AddUser from "/@/views/user/userAdd.vue"
-import {
-  getDictDataApi,
-} from "/@/api/index"
-import { ElAlert, ElMessage, ElMessageBox } from "element-plus"
+import {} from "/@/api/index"
+import { ElMessage, ElMessageBox } from "element-plus"
 import { reactive, onMounted, getCurrentInstance } from "vue"
-import { done } from "nprogress"
+import { } from "nprogress"
 import { copyText } from 'vue3-clipboard'
 const { proxy } = getCurrentInstance()
 const state = reactive({
