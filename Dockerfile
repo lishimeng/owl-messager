@@ -7,12 +7,12 @@ FROM golang:1.18 as build
 ENV GOPROXY=https://goproxy.cn,direct
 WORKDIR /release
 ADD . .
-# add go bindata
-COPY --from=ui /ui_build/dist /release/ui/dist
+
+COPY --from=ui /ui_build/dist /release/static/
 
 RUN go mod download && go mod verify
 
-RUN go generate static/static.go
+#RUN go generate static/static.go
 
 RUN go build -v -o owl-messager cmd/owl-messager/main.go
 

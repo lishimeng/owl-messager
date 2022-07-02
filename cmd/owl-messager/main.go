@@ -13,6 +13,7 @@ import (
 	"github.com/lishimeng/owl/internal/etc"
 	"github.com/lishimeng/owl/internal/setup"
 	"github.com/lishimeng/owl/static"
+	"net/http"
 	"time"
 )
 import _ "github.com/lib/pq"
@@ -65,7 +66,9 @@ func _main() (err error) {
 			model.Tables()...).
 			//SetWebLogLevel("debug").
 			EnableWeb(etc.Config.Web.Listen, api.Route).
-			EnableStaticWeb(static.AssetFile).
+			EnableStaticWeb(func() http.FileSystem {
+				return http.FS(static.Static)
+			}).
 			//ComponentBefore(setup.JobClearExpireTask).
 			ComponentBefore(setup.BeforeStarted).
 			ComponentAfter(setup.AfterStarted)

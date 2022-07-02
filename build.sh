@@ -5,6 +5,7 @@ APP_NAME="owl-messager"
 TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 
 build_application(){
+  git checkout "${TAG}"
   docker build -t lishimeng/owl-messager:"$TAG" .
 }
 
