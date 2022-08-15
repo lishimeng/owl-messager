@@ -40,8 +40,7 @@
 </template>
 
 <script setup>
-import { reactive, onMounted, getCurrentInstance } from "vue"
-import clipboard from '/@/utils/clipboard.ts'
+import { reactive } from "vue"
 import svgIcons from './svg-icons'
 import elementIcons from './element-icons'
 const state = reactive({
@@ -55,8 +54,8 @@ function generateIconCode(symbol) {
 function generateElementIconCode(symbol) {
   return `<i class="el-icon-${symbol}" />`
 }
-function handleClipboard(text, event) {
-  clipboard(text, event)
+function handleClipboard( ) {
+
 }
 </script>
 

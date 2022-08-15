@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/kataras/iris/v12"
+	"github.com/lishimeng/owl/ddd"
 	"github.com/lishimeng/owl/internal/api/apnsApi"
 	"github.com/lishimeng/owl/internal/api/mailApi"
 	"github.com/lishimeng/owl/internal/api/messageApi"
@@ -33,6 +34,8 @@ func router(root iris.Party) {
 	sendMail(root.Party("/send/mail"))
 	sms(root.Party("/send/sms"))
 	apns(root.Party("/send/apns"))
+
+	ddd.Router(root)
 }
 
 func message(p iris.Party) {
