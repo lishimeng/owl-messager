@@ -24,7 +24,7 @@ type AzureGraphProvider struct {
 	Config AzureAuthConfig
 }
 
-func (h *AzureGraphProvider) Send(subject string, body string, receivers ...string) {
+func (h *AzureGraphProvider) Send(subject string, body string, receivers ...string) (err error) {
 
 	msg, err := BuildMessage(subject, body, receivers...)
 	if err != nil {
@@ -75,4 +75,5 @@ func (h *AzureGraphProvider) Send(subject string, body string, receivers ...stri
 		log.Info("resp failure: %+v", err)
 		return
 	}
+	return
 }
