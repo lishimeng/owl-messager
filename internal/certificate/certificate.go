@@ -30,7 +30,7 @@ func FromP12(p12 []byte, password string) (tls.Certificate, error) {
 	}, nil
 }
 
-func FromPemBytes(bytes []byte, password string) (tls.Certificate, error) {
+func FromPemBytes(bytes []byte) (tls.Certificate, error) {
 	var cert tls.Certificate
 	var block *pem.Block
 	for {
@@ -42,7 +42,7 @@ func FromPemBytes(bytes []byte, password string) (tls.Certificate, error) {
 			cert.Certificate = append(cert.Certificate, block.Bytes)
 		}
 		if strings.HasSuffix(block.Type, "PRIVATE KEY") {
-			key, err := unencryptPrivateKey(block, password)
+			key, err := unencryptPrivateKey(block)
 			if err != nil {
 				return tls.Certificate{}, err
 			}
@@ -61,14 +61,46 @@ func FromPemBytes(bytes []byte, password string) (tls.Certificate, error) {
 	return cert, nil
 }
 
-func unencryptPrivateKey(block *pem.Block, password string) (crypto.PrivateKey, error) {
-	if x509.IsEncryptedPEMBlock(block) {
-		bytes, err := x509.DecryptPEMBlock(block, []byte(password))
-		if err != nil {
-			return nil, ErrFailedToDecryptKey
+func CertFromPem(pemBytes []byte, password string) (certs []*x509.Certificate, err error) {
+	var cert tls.Certificate
+	var block *pem.Block
+	for {
+		block, _ = pem.Decode(pemBytes)
+		if block == nil {
+			break
 		}
-		return parsePrivateKey(bytes)
+		if block.Type == "CERTIFICATE" {
+			cert.Certificate = append(cert.Certificate, block.Bytes)
+		}
+		if strings.HasSuffix(block.Type, "PRIVATE KEY") {
+			key, err := unencryptPrivateKey(block)
+			if err != nil {
+				return
+			}
+			cert.PrivateKey = key
+		}
 	}
+
+	if len(cert.Certificate) == 0 {
+		err = ErrNoCertificate
+		return
+	}
+	if cert.PrivateKey == nil {
+		err = ErrNoPrivateKey
+		return
+	}
+	for _, bs := range cert.Certificate {
+		var c *x509.Certificate
+		c, err = x509.ParseCertificate(bs)
+		if err != nil {
+			return
+		}
+		certs = append(certs, c)
+	}
+	return
+}
+
+func unencryptPrivateKey(block *pem.Block) (crypto.PrivateKey, error) {
 	return parsePrivateKey(block.Bytes)
 }
 
