@@ -3,6 +3,8 @@ module github.com/lishimeng/owl
 go 1.18
 
 require (
+	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.1.0
+	github.com/Azure/go-autorest/autorest v0.11.27
 	github.com/alibabacloud-go/darabonba-openapi v0.1.14
 	github.com/alibabacloud-go/dingtalk v1.3.14
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.9
@@ -16,17 +18,28 @@ require (
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang-jwt/jwt/v4 v4.4.1
 	github.com/iris-contrib/jade v1.1.4
+	github.com/jongio/azidext/go/azidext v0.4.0
 	github.com/kataras/iris/v12 v12.2.0-beta2
 	github.com/lib/pq v1.10.2
 	github.com/lishimeng/app-starter v1.6.9
 	github.com/lishimeng/go-log v1.0.0
 	github.com/lishimeng/go-orm v1.2.1
+	github.com/microsoft/kiota-authentication-azure-go v0.3.1
+	github.com/microsoftgraph/msgraph-sdk-go v0.34.0
 	github.com/qiniu/go-sdk/v7 v7.11.1
-	golang.org/x/crypto v0.0.0-20220507011949-2cf3adece122
+	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
 	golang.org/x/net v0.0.0-20220425223048-2871e0cb64e4
 )
 
 require (
+	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.1.1 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/internal v1.0.0 // indirect
+	github.com/Azure/go-autorest v14.2.0+incompatible // indirect
+	github.com/Azure/go-autorest/autorest/adal v0.9.20 // indirect
+	github.com/Azure/go-autorest/autorest/date v0.3.0 // indirect
+	github.com/Azure/go-autorest/logger v0.2.1 // indirect
+	github.com/Azure/go-autorest/tracing v0.6.0 // indirect
+	github.com/AzureAD/microsoft-authentication-library-for-go v0.5.1 // indirect
 	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/CloudyKit/jet/v6 v6.1.0 // indirect
@@ -41,6 +54,8 @@ require (
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/beego/beego/v2 v2.0.2 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/cjlapao/common-go v0.0.25 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/eknkc/amber v0.0.0-20171010120322-cdade1c07385 // indirect
@@ -52,6 +67,7 @@ require (
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.1.0 // indirect
 	github.com/goccy/go-json v0.9.8-0.20220506185958-23bd66f4c0d5 // indirect
+	github.com/golang-jwt/jwt v3.2.1+incompatible // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
@@ -70,6 +86,7 @@ require (
 	github.com/kataras/sitemap v0.0.5 // indirect
 	github.com/kataras/tunnel v0.0.3 // indirect
 	github.com/klauspost/compress v1.15.3 // indirect
+	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/lishimeng/go-app-shutdown v1.0.1 // indirect
 	github.com/lishimeng/log4go v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
@@ -77,6 +94,11 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mediocregopher/radix/v3 v3.8.0 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.18 // indirect
+	github.com/microsoft/kiota-abstractions-go v0.8.2 // indirect
+	github.com/microsoft/kiota-http-go v0.5.2 // indirect
+	github.com/microsoft/kiota-serialization-json-go v0.5.5 // indirect
+	github.com/microsoft/kiota-serialization-text-go v0.4.1 // indirect
+	github.com/microsoftgraph/msgraph-sdk-go-core v0.27.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
@@ -84,7 +106,9 @@ require (
 	github.com/nats-io/nkeys v0.3.0 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
+	github.com/pkg/browser v0.0.0-20210115035449-ce105d075bb4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/schollz/closestmatch v2.1.0+incompatible // indirect
 	github.com/shiena/ansicolor v0.0.0-20200904210342-c7312218db18 // indirect
@@ -94,6 +118,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.10.1 // indirect
+	github.com/stretchr/testify v1.8.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/tdewolff/minify/v2 v2.11.2 // indirect
 	github.com/tdewolff/parse/v2 v2.5.29 // indirect
@@ -104,6 +129,7 @@ require (
 	github.com/vmihailenco/go-tinylfu v0.2.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
+	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	github.com/yosssi/ace v0.0.5 // indirect
 	golang.org/x/exp v0.0.0-20201221025956-e89b829e73ea // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
@@ -116,5 +142,5 @@ require (
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
