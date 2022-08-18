@@ -26,7 +26,7 @@ type MetaSender struct {
 	// 发件人名称
 	Name string
 	// 发件人邮箱密码（注意，这里是明文形式），TODO：如果设置成密文？
-	Passwd string
+	Passwd     string
 	EmailAlias string
 }
 
@@ -41,16 +41,16 @@ type Sender interface {
 	Send(metas MetaInfo, subject string, body string) error
 }
 
-type sender struct {
+type gomailSender struct {
 }
 
 func New() (s Sender) {
 
-	s = &sender{}
+	s = &gomailSender{}
 	return
 }
 
-func (s *sender) Send(metas MetaInfo, subject string, body string) (err error) {
+func (s *gomailSender) Send(metas MetaInfo, subject string, body string) (err error) {
 
 	log.Debug("mail body:%s", body)
 	err = s.chkParam(metas)
@@ -95,7 +95,7 @@ func (s *sender) Send(metas MetaInfo, subject string, body string) (err error) {
 	return
 }
 
-func (s sender) chkParam(metas MetaInfo) (err error) {
+func (s gomailSender) chkParam(metas MetaInfo) (err error) {
 
 	if len(metas.Server.Host) == 0 {
 		err = errors.New("Server.Host nil")
