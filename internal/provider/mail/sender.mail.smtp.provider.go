@@ -10,7 +10,7 @@ type smtpSender struct {
 	proxy *smtp.MailSmtpProvider
 }
 
-func New(config string) (s email.Sender, err error) {
+func NewSmtp(config string) (s email.Sender, err error) {
 
 	var p *smtp.MailSmtpProvider
 	var h = smtpSender{}
