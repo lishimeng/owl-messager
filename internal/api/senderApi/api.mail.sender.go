@@ -11,11 +11,7 @@ import (
 type Info struct {
 	Id         int    `json:"id,omitempty"`
 	SenderCode string `json:"senderCode,omitempty"`
-	Host       string `json:"host,omitempty"`
-	Port       int    `json:"port,omitempty"`
-	Email      string `json:"email,omitempty"`
-	Alias      string `json:"alias,omitempty"`
-	Passwd     string `json:"password,omitempty"`
+	Config     string `json:"config,omitempty"`
 	Status     int    `json:"status,omitempty,omitempty"`
 	CreateTime string `json:"createTime,omitempty,omitempty"`
 	UpdateTime string `json:"updateTime,omitempty,omitempty"`
@@ -50,11 +46,7 @@ func GetMailSenderList(ctx iris.Context) {
 			var tmpInfo = Info{
 				Id:         ms.Id,
 				SenderCode: ms.Code,
-				Host:       ms.Host,
-				Port:       ms.Port,
-				Email:      ms.Email,
-				Alias:      ms.Alias,
-				Passwd:     ms.Passwd,
+				Config:     ms.Config,
 				Status:     ms.Status,
 				CreateTime: common.FormatTime(ms.CreateTime),
 				UpdateTime: common.FormatTime(ms.UpdateTime),
@@ -98,11 +90,7 @@ func GetMailSenderInfo(ctx iris.Context) {
 	var tmpInfo = Info{
 		Id:         ms.Id,
 		SenderCode: ms.Code,
-		Host:       ms.Host,
-		Port:       ms.Port,
-		Email:      ms.Email,
-		Alias:      ms.Alias,
-		Passwd:     ms.Passwd,
+		Config:     ms.Config,
 		Status:     ms.Status,
 		CreateTime: common.FormatTime(ms.CreateTime),
 		UpdateTime: common.FormatTime(ms.UpdateTime),
