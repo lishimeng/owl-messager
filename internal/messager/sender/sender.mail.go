@@ -79,7 +79,7 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 		return
 	}
 	if len(c) > 0 {
-		s := mail.New()
+		s := mail.NewSmtp()
 		err = s.Send(metas, p.Subject, c)
 	}
 	return
