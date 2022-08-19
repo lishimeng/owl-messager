@@ -1,6 +1,8 @@
 package setup
 
-import "context"
+import (
+	"context"
+)
 
 func AfterStarted(ctx context.Context) (err error) {
 	err = loadSmsProviders(ctx)
