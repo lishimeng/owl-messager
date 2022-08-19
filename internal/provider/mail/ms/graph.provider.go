@@ -109,9 +109,9 @@ func (h *AzureGraphProvider) Send(subject string, body string, receivers ...stri
 func (h *AzureGraphProvider) printConfig() {
 
 	log.Info("---config info start---------------------")
-	log.Info("%s: %s", tenantKey, h.Config.Tenant)
-	log.Info("%s: %s", clientIdKey, h.Config.ClientId)
-	log.Info("%s: %s", scopeKey, h.Config.Scope)
-	log.Info("%s: %s", senderKey, h.Config.Sender)
+	log.Info("%s: %s", "tenant", h.Config.Tenant)
+	log.Info("%s: %s", "clientId", h.Config.ClientId)
+	log.Info("%s: %s", "scope", h.Config.Scope)
+	log.Info("%s: %s", "sender", h.Config.Sender)
 	log.Info("---config info end---------------------")
 }

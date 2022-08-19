@@ -3,78 +3,42 @@ package ms
 import (
 	"crypto"
 	"crypto/x509"
+	"encoding/json"
 	"errors"
 	"github.com/lishimeng/owl/internal/certificate"
+	"github.com/lishimeng/owl/internal/db/model"
 )
 
-const (
-	clientIdKey    = "clientId"
-	tenantKey      = "tenant"
-	scopeKey       = "scope"
-	certificateKey = "certificate"
-	privateKey     = "certificateKey"
-	senderKey      = "sender"
-)
+func New(config string) (p *AzureGraphProvider, err error) {
 
-func New(config map[string]string) (p *AzureGraphProvider, err error) {
+	var cc model.GraphConfig
+	err = json.Unmarshal([]byte(config), &cc)
+	if err != nil {
+		err = errors.New("config err")
+		return
+	}
 
 	var c AzureAuthConfig
+	c.Sender = cc.Sender
+	c.Tenant = cc.Tenant
+	c.ClientId = cc.ClientId
+	c.Scope = cc.Scope
 
-	if sender, ok := config[senderKey]; ok && len(sender) > 0 {
-		c.Sender = sender
-	} else {
-		err = errors.New("sender nil")
+	var crt *x509.Certificate
+	h := certificate.PemHandler{Pem: cc.Certificate}
+	crt, err = h.ParseCrt()
+	if err != nil {
 		return
 	}
+	c.Certificate = append(c.Certificate, crt)
 
-	if tenant, ok := config[tenantKey]; ok && len(tenant) > 0 {
-		c.Tenant = tenant
-	} else {
-		err = errors.New("tenant nil")
+	var certKey crypto.PrivateKey
+	h = certificate.PemHandler{Pem: cc.CertificateKey}
+	certKey, err = h.ParseKey()
+	if err != nil {
 		return
 	}
-
-	if clientId, ok := config[clientIdKey]; ok && len(clientId) > 0 {
-		c.ClientId = clientId
-	} else {
-		err = errors.New("client nil")
-		return
-	}
-
-	if scope, ok := config[scopeKey]; ok && len(scope) > 0 {
-		c.Scope = scope
-	} else {
-		err = errors.New("scope nil")
-		return
-	}
-
-	if certPem, ok := config[certificateKey]; ok && len(certPem) > 0 {
-
-		var crt *x509.Certificate
-		h := certificate.PemHandler{Pem: certPem}
-		crt, err = h.ParseCrt()
-		if err != nil {
-			return
-		}
-		c.Certificate = append(c.Certificate, crt)
-	} else {
-		err = errors.New("cert nil")
-		return
-	}
-
-	if certKeyPem, ok := config[privateKey]; ok && len(certKeyPem) > 0 {
-
-		var certKey crypto.PrivateKey
-		h := certificate.PemHandler{Pem: certKeyPem}
-		certKey, err = h.ParseKey()
-		if err != nil {
-			return
-		}
-		c.CertificateKey = certKey
-	} else {
-		err = errors.New("tenant nil")
-		return
-	}
+	c.CertificateKey = certKey
 
 	p = &AzureGraphProvider{Config: c}
 	return
