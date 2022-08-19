@@ -10,8 +10,8 @@ type MailSenderInfo struct {
 type MailVendor string
 
 const (
-	MailVendorBaidu MailVendor = "smtp"
-	MailVendorAli   MailVendor = "microsoft"
+	MailVendorSmtp      MailVendor = "smtp"
+	MailVendorMicrosoft MailVendor = "microsoft"
 )
 
 // MailVendors vendor:enable?1:0
@@ -19,8 +19,8 @@ var MailVendors map[MailVendor]byte
 
 func init() {
 	MailVendors = make(map[MailVendor]byte)
-	MailVendors[MailVendorBaidu] = 0x01
-	MailVendors[MailVendorAli] = 0x01
+	MailVendors[MailVendorSmtp] = 0x01
+	MailVendors[MailVendorMicrosoft] = 0x01
 }
 
 // Support 数据库记录的vendor是否被支持
