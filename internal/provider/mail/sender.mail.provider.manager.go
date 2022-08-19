@@ -9,6 +9,12 @@ import (
 type Factory struct {
 }
 
+var F *Factory
+
+func init() {
+	F = &Factory{}
+}
+
 func (f *Factory) Create(vendor model.MailVendor, config string) (s email.Sender, err error) {
 
 	switch vendor {
