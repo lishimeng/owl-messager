@@ -3,6 +3,7 @@ package sender
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
@@ -44,22 +45,6 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 	}
 
 	toers := strings.Split(p.Receivers, ",")
-	// TODO delete toer:""
-	metas := mail.MetaInfo{
-		Server: mail.MetaServer{
-			Host: si.Host,
-			Port: si.Port,
-		},
-		Sender: mail.MetaSender{
-			Email:      si.Email,
-			Name:       si.Alias,
-			Passwd:     si.Passwd,
-			EmailAlias: si.EmailAlias,
-		},
-		Receiver: mail.MetaReceiver{
-			To: toers,
-		},
-	}
 
 	tpl, err := repo.GetMailTemplateById(p.Template)
 	if err != nil {
@@ -72,15 +57,25 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 		log.Info("params of mail template is not json format:%s", p.Params)
 		return
 	}
-	c, err := template.Rend(params, tpl.Body, tpl.Category)
+	mailBody, err := template.Rend(params, tpl.Body, tpl.Category)
 	if err != nil {
 		log.Info("template render failed")
 		log.Info(err)
 		return
 	}
-	if len(c) > 0 {
-		s := mail.NewSmtp()
-		err = s.Send(metas, p.Subject, c)
+	if len(mailBody) <= 0 {
+		log.Info("mail body empty")
+		err = errors.New("mail body empty")
+		return
 	}
+	if len(mailBody) > 0 {
+
+	}
+	s, err := mail.F.Create(si.Vendor, si.Config)
+	if err != nil {
+		log.Info("create mail sender failure:%d", si.Id)
+		return
+	}
+	err = s.Send(p.Subject, mailBody, toers...)
 	return
 }
