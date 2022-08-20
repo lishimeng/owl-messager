@@ -7,7 +7,7 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
-	"github.com/lishimeng/owl/internal/provider/mail"
+	"github.com/lishimeng/owl/internal/provider"
 	"github.com/lishimeng/owl/internal/provider/template"
 	"strings"
 )
@@ -46,7 +46,7 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 		return
 	}
 
-	s, err := mail.F.Create(si.Vendor, si.Config)
+	s, err := provider.DefaultMailFactory.Create(si.Vendor, si.Config)
 	if err != nil {
 		log.Info("create mail sender failure:%d", si.Id)
 		return
