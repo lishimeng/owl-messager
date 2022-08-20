@@ -17,8 +17,7 @@ type Mail interface {
 }
 
 type mailSender struct {
-	ctx context.Context
-
+	ctx       context.Context
 	maxWorker int
 }
 
@@ -33,19 +32,33 @@ func NewMailSender(ctx context.Context) (m Mail, err error) {
 func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 	// sender info
 	log.Info("send mail:%d", p.Id)
-	var si model.MailSenderInfo
-	if p.Sender > 0 {
-		si, err = repo.GetMailSenderById(p.Sender) // 使用指定的sender
-	} else {
-		si, err = repo.GetDefaultMailSender("") // 使用默认sender
-	}
+
+	si, err := repo.GetDefaultMailSender("") // 使用默认sender
+
 	if err != nil {
-		log.Info("mail sender not exist:%d", p.Sender)
+		log.Info("mail sender not exist")
 		return
 	}
 
-	toers := strings.Split(p.Receivers, ",")
+	mailBody, err := m.buildMailBody(p)
+	if err != nil {
+		log.Info("build mail body failure")
+		return
+	}
 
+	s, err := mail.F.Create(si.Vendor, si.Config)
+	if err != nil {
+		log.Info("create mail sender failure:%d", si.Id)
+		return
+	}
+
+	receivers := strings.Split(p.Receivers, ",")
+
+	err = s.Send(p.Subject, mailBody, receivers...)
+	return
+}
+
+func (m *mailSender) buildMailBody(p model.MailMessageInfo) (body string, err error) {
 	tpl, err := repo.GetMailTemplateById(p.Template)
 	if err != nil {
 		log.Info("mail template not exist:%d", p.Template)
@@ -68,14 +81,5 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 		err = errors.New("mail body empty")
 		return
 	}
-	if len(mailBody) > 0 {
-
-	}
-	s, err := mail.F.Create(si.Vendor, si.Config)
-	if err != nil {
-		log.Info("create mail sender failure:%d", si.Id)
-		return
-	}
-	err = s.Send(p.Subject, mailBody, toers...)
 	return
 }
