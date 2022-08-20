@@ -49,3 +49,20 @@ func UpdateMailTemplate(id, status int, body, description string) (m model.MailT
 	})
 	return
 }
+
+// SetDefaultMailSender 设置默认发送账号
+func SetDefaultMailSender(id int, org int) (err error) {
+
+	senders, err := repo.GetMailSenders(org)
+	if err != nil {
+		return
+	}
+	for _, s := range senders {
+		if s.Id == id {
+			s.Default = model.DefaultSenderEnable
+		} else {
+			s.Default = model.DefaultSenderDisable
+		}
+	}
+	return
+}
