@@ -12,3 +12,8 @@ const (
 	DefaultSenderDisable = 0
 	DefaultSenderEnable  = 1
 )
+
+const (
+	SenderCategoryMail = "mail"
+	SenderCategorySms  = "sms"
+)

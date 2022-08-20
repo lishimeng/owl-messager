@@ -51,3 +51,18 @@ func GetMailSenderList(status int, page app.Pager) (p app.Pager, senders []model
 	p = page
 	return
 }
+
+func GetMailSenders(org int) (senders []model.MailSenderInfo, err error) {
+	var qs = app.GetOrm().Context.QueryTable(new(model.MailSenderInfo))
+
+	if err != nil {
+		return
+	}
+	_, err = qs.OrderBy("CreateTime").
+		// ORG filter
+		All(&senders)
+	if err != nil {
+		return
+	}
+	return
+}
