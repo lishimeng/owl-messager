@@ -2,7 +2,7 @@ package mail
 
 import (
 	"errors"
-	"github.com/lishimeng/owl/internal/provider/mail/email"
+	"github.com/lishimeng/owl/internal/messager"
 	"github.com/lishimeng/owl/internal/provider/mail/ms"
 )
 
@@ -10,7 +10,7 @@ type msSender struct {
 	proxy *ms.AzureGraphProvider
 }
 
-func NewMicrosoft(config string) (s email.Sender, err error) {
+func NewMicrosoft(config string) (s messager.MailProvider, err error) {
 	var p *ms.AzureGraphProvider
 	var h = msSender{}
 	p, err = ms.New(config)

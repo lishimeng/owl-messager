@@ -5,8 +5,8 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
+	"github.com/lishimeng/owl/internal/messager"
 	"github.com/lishimeng/owl/internal/provider"
-	"github.com/lishimeng/owl/internal/provider/sms"
 )
 
 type Sms interface {
@@ -15,14 +15,12 @@ type Sms interface {
 
 type smsSender struct {
 	ctx       context.Context
-	provider  *sms.ProviderManager
 	maxWorker int
 }
 
 func NewSmsSender(ctx context.Context) (m Sms, err error) {
 	m = &smsSender{
 		ctx:       ctx,
-		provider:  sms.New(),
 		maxWorker: 1,
 	}
 	return
@@ -51,7 +49,7 @@ func (m *smsSender) Send(mi model.SmsMessageInfo) (err error) {
 		return
 	}
 
-	var req = sms.Request{
+	var req = messager.Request{
 		Template:  tpl.SenderTemplateId,
 		Sign:      mi.Signature,
 		Params:    mi.Params,

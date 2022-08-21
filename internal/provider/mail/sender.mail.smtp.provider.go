@@ -2,7 +2,7 @@ package mail
 
 import (
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/provider/mail/email"
+	"github.com/lishimeng/owl/internal/messager"
 	"github.com/lishimeng/owl/internal/provider/mail/smtp"
 )
 
@@ -10,7 +10,7 @@ type smtpSender struct {
 	proxy *smtp.MailSmtpProvider
 }
 
-func NewSmtp(config string) (s email.Sender, err error) {
+func NewSmtp(config string) (s messager.MailProvider, err error) {
 
 	var p *smtp.MailSmtpProvider
 	var h = smtpSender{}

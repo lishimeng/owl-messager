@@ -2,6 +2,7 @@ package sms
 
 import (
 	"encoding/json"
+	"github.com/lishimeng/owl/internal/messager"
 	"github.com/qiniu/go-sdk/v7/auth"
 	"github.com/qiniu/go-sdk/v7/sms"
 	"strings"
@@ -18,7 +19,7 @@ type QiniuSdk struct {
 	manager *sms.Manager
 }
 
-func NewQiniu(appkey, appSecret string) (sdk Provider) {
+func NewQiniu(appkey, appSecret string) (sdk messager.SmsProvider) {
 
 	qiniu := QiniuSdk{
 		appKey:    appkey,
@@ -29,7 +30,7 @@ func NewQiniu(appkey, appSecret string) (sdk Provider) {
 	return
 }
 
-func (qiniu *QiniuSdk) Send(req Request) (resp Response, err error) {
+func (qiniu *QiniuSdk) Send(req messager.Request) (resp messager.Response, err error) {
 	to := strings.Split(req.Receivers, ",")
 
 	var params map[string]interface{}

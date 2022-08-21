@@ -3,8 +3,8 @@ package provider
 import (
 	"errors"
 	"github.com/lishimeng/owl/internal/db/model"
+	"github.com/lishimeng/owl/internal/messager"
 	"github.com/lishimeng/owl/internal/provider/mail"
-	"github.com/lishimeng/owl/internal/provider/mail/email"
 )
 
 type MailFactory struct {
@@ -16,7 +16,7 @@ func init() {
 	DefaultMailFactory = &MailFactory{}
 }
 
-func (f *MailFactory) Create(vendor model.MailVendor, config string) (s email.Sender, err error) {
+func (f *MailFactory) Create(vendor model.MailVendor, config string) (s messager.MailProvider, err error) {
 
 	switch vendor {
 	case model.MailVendorSmtp:

@@ -8,6 +8,7 @@ import (
 	util "github.com/alibabacloud-go/tea-utils/service"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
+	"github.com/lishimeng/owl/internal/messager"
 )
 
 type AliProvider struct {
@@ -22,7 +23,7 @@ var (
 	aliyunHost = "dysmsapi.aliyuncs.com"
 )
 
-func (p *AliProvider) Send(req Request) (resp Response, err error) {
+func (p *AliProvider) Send(req messager.Request) (resp messager.Response, err error) {
 
 	to := req.Receivers
 	var signature = p.signName // sender 中的signature优先级最低

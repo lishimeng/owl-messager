@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
+	"github.com/lishimeng/owl/internal/messager"
 	"github.com/lishimeng/owl/internal/provider/sms"
 )
 
@@ -17,7 +18,7 @@ func init() {
 	DefaultSmsFactory = &SmsFactory{}
 }
 
-func (f *SmsFactory) Create(vendor model.SmsVendor, config string) (p sms.Provider, err error) {
+func (f *SmsFactory) Create(vendor model.SmsVendor, config string) (p messager.SmsProvider, err error) {
 
 	switch vendor {
 	case model.SmsVendorAli:
