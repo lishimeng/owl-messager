@@ -48,3 +48,10 @@ const (
 	SmsSenderEnable  = 1 // enable
 	SmsSenderDisable = 0 // disable
 )
+
+type AliSmsConfig struct {
+	AppKey    string `json:"appKey,omitempty"`
+	AppSecret string `json:"appSecret,omitempty"`
+	Region    string `json:"region,omitempty"`
+	SignName  string `json:"signName,omitempty"`
+}
