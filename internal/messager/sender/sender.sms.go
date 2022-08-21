@@ -5,7 +5,7 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
-	"github.com/lishimeng/owl/internal/plugins/loader"
+	"github.com/lishimeng/owl/internal/provider"
 	"github.com/lishimeng/owl/internal/provider/sms"
 )
 
@@ -28,41 +28,40 @@ func NewSmsSender(ctx context.Context) (m Sms, err error) {
 	return
 }
 
-func (m *smsSender) Send(p model.SmsMessageInfo) (err error) {
+func (m *smsSender) Send(mi model.SmsMessageInfo) (err error) {
 	// sender info
-	log.Info("send sms:%d", p.Id)
+	log.Info("send sms:%d", mi.Id)
 	var si model.SmsSenderInfo
-	if p.Sender > 0 {
-		si, err = repo.GetSmsSenderById(p.Sender) // 指定sender
-		// TODO org
-	} else {
-		si, err = repo.GetDefaultSmsSender(0) // 默认sender
-	}
+	si, err = repo.GetDefaultSmsSender(0) // 默认sender
 	if err != nil {
 		log.Info("sms sender not exist")
 		log.Info(err)
 		return
 	}
 
-	tpl, err := repo.GetSmsTemplateById(p.Template)
+	tpl, err := repo.GetSmsTemplateById(mi.Template)
 	if err != nil {
-		log.Info("sms template not exist:%d", p.Template)
+		log.Info("sms template not exist:%d", mi.Template)
 		return
 	}
 
-	provider := loader.Get(si.Vendor)
+	p, err := provider.DefaultSmsFactory.Create(si.Vendor, si.Config)
+	if err != nil {
+		log.Info("create sms provider failure:%d", si.Id)
+		return
+	}
 
 	var req = sms.Request{
 		Template:  tpl.SenderTemplateId,
-		Sign:      p.Signature,
-		Params:    p.Params,
-		Receivers: p.Receivers,
+		Sign:      mi.Signature,
+		Params:    mi.Params,
+		Receivers: mi.Receivers,
 	}
-	req.Sign = p.Signature  // 优先使用参数中的sign
+	req.Sign = mi.Signature // 优先使用参数中的sign
 	if len(req.Sign) <= 0 { // 次级使用模板中的sign
 		req.Sign = tpl.Signature
 	}
-	resp, err := provider.Send(req)
+	resp, err := p.Send(req)
 
 	if err != nil {
 		log.Info(err)
