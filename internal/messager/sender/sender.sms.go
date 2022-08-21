@@ -51,14 +51,11 @@ func (m *smsSender) Send(mi model.SmsMessageInfo) (err error) {
 
 	var req = messager.Request{
 		Template:  tpl.SenderTemplateId,
-		Sign:      mi.Signature,
 		Params:    mi.Params,
 		Receivers: mi.Receivers,
+		Sign:      tpl.Signature,
 	}
-	req.Sign = mi.Signature // 优先使用参数中的sign
-	if len(req.Sign) <= 0 { // 次级使用模板中的sign
-		req.Sign = tpl.Signature
-	}
+
 	resp, err := p.Send(req)
 
 	if err != nil {
