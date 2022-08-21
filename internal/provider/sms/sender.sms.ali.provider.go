@@ -7,6 +7,7 @@ import (
 	dysmsapi "github.com/alibabacloud-go/dysmsapi-20170525/v2/client"
 	util "github.com/alibabacloud-go/tea-utils/service"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl/internal/db/model"
 )
 
 type AliProvider struct {
@@ -28,7 +29,7 @@ func (p *AliProvider) Send(req Request) (resp Response, err error) {
 	if len(req.Sign) > 0 {
 		signature = req.Sign
 	}
-	ret, err := p.SendSms(to, signature, req.Template, req.Params)
+	ret, err := p.sendSms(to, signature, req.Template, req.Params)
 	if err != nil {
 		return
 	}
@@ -37,7 +38,11 @@ func (p *AliProvider) Send(req Request) (resp Response, err error) {
 	return
 }
 
-func (p *AliProvider) Init(accessKey string, accessSecret string, region string, signName string) (err error) {
+func (p *AliProvider) Init(conf model.AliSmsConfig) (err error) {
+	var accessKey = conf.AppKey
+	var accessSecret = conf.AppSecret
+	var region = conf.Region
+	var signName = conf.SignName
 	p.accessKey = accessKey
 	p.accessSecret = accessSecret
 	p.region = region
@@ -54,7 +59,7 @@ func (p *AliProvider) Init(accessKey string, accessSecret string, region string,
 	return
 }
 
-func (p AliProvider) SendSms(receiver string, signName string, tplId string, tplParams string) (resp *dysmsapi.SendSmsResponse, err error) {
+func (p *AliProvider) sendSms(receiver string, signName string, tplId string, tplParams string) (resp *dysmsapi.SendSmsResponse, err error) {
 	var req dysmsapi.SendSmsRequest
 	var request *dysmsapi.SendSmsRequest
 	req.PhoneNumbers = &receiver

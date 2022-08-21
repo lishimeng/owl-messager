@@ -1,30 +1,42 @@
 package provider
 
 import (
+	"encoding/json"
 	"errors"
+	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
-	"github.com/lishimeng/owl/internal/provider/mail"
-	"github.com/lishimeng/owl/internal/provider/mail/email"
+	"github.com/lishimeng/owl/internal/provider/sms"
 )
 
-type MailFactory struct {
+type SmsFactory struct {
 }
 
-var DefaultMailFactory *MailFactory
+var DefaultSmsFactory *SmsFactory
 
 func init() {
-	DefaultMailFactory = &MailFactory{}
+	DefaultSmsFactory = &SmsFactory{}
 }
 
-func (f *MailFactory) Create(vendor model.MailVendor, config string) (s email.Sender, err error) {
+func (f *SmsFactory) Create(vendor model.SmsVendor, config string) (p sms.Provider, err error) {
 
 	switch vendor {
-	case model.MailVendorSmtp:
-		s, err = mail.NewSmtp(config)
-	case model.MailVendorMicrosoft:
-		s, err = mail.NewMicrosoft(config)
+	case model.SmsVendorAli:
+		var aliSmsConf model.AliSmsConfig
+		h := sms.AliProvider{}
+		err = json.Unmarshal([]byte(config), &aliSmsConf)
+		if err != nil {
+			return
+		}
+		err = h.Init(aliSmsConf)
+		if err != nil {
+			return
+		}
+		p = &h
 	default:
 		err = errors.New("unknown mail vendor")
 	}
+
+	log.Info("create sms provider")
+
 	return
 }
