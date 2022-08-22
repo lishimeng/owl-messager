@@ -70,13 +70,13 @@ func (m *mailSender) buildMailBody(p model.MailMessageInfo) (body string, err er
 		log.Info("params of mail template is not json format:%s", p.Params)
 		return
 	}
-	mailBody, err := template.Rend(params, tpl.Body, tpl.Category)
+	body, err = template.Rend(params, tpl.Body, tpl.Category)
 	if err != nil {
 		log.Info("template render failed")
 		log.Info(err)
 		return
 	}
-	if len(mailBody) <= 0 {
+	if len(body) <= 0 {
 		log.Info("mail body empty")
 		err = errors.New("mail body empty")
 		return
