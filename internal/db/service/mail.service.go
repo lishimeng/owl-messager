@@ -17,7 +17,7 @@ func CreateMailMessage(sender *model.MailSenderInfo, template model.MailTemplate
 			return
 		}
 		// create mail
-		_, _ = repo.CreateMailMessage(ctx, m, sender, template, templateParams, subject, receiver, cc)
+		_, _ = repo.CreateMailMessage(ctx, m, template, templateParams, subject, receiver)
 		return
 	})
 	return
