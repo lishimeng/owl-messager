@@ -50,7 +50,6 @@ func GetByMessage(ctx iris.Context) {
 		Id:         ms.Id,
 		MessageId:  ms.MessageId,
 		TemplateId: ms.Template,
-		SenderId:   ms.Sender,
 		Params:     ms.Params,
 		Status:     ms.Status,
 		CreateTime: common.FormatTime(ms.CreateTime),
