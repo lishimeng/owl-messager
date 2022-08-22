@@ -90,11 +90,10 @@ func SendSms(ctx iris.Context) {
 	}
 
 	m, err := service.CreateSmsMessage(
-		sender,
 		tpl,
 		tplParams,
 		req.Receiver,
-		req.Signature)
+	)
 	if err != nil {
 		log.Info("can't create sms")
 		log.Info(err)
