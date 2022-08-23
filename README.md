@@ -31,6 +31,39 @@ owl messager is a platform:
 1. Support Multi-tenant.
 1. Support Account list(mail sender).
 
+Usage
+--------------
+send an email
+```shell
+http://localhost/api/v2/messages/mail/
+```
+Parameter
+```json
+{
+"template":"{tpl_id}",
+"params": {
+"code":"{code}"
+},
+"subject": "MFA email code",
+"receiver":"{mail_address}"
+}
+```
+
+send a sms
+```shell
+http://localhost/api/v2/messages/sms/
+```
+Parameter
+```json
+{
+"template":"{tpl_id}",
+"params": {
+"code":"652442"
+},
+"receiver":"{phone_number}"
+}
+```
+
 Build & Install
 --------------
 
