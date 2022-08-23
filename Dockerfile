@@ -15,7 +15,7 @@ ARG MAIN_PATH
 ENV GOPROXY=https://goproxy.cn,direct
 WORKDIR /release
 ADD . .
-COPY --from=ui /ui_build/static/dist/ ./static/
+COPY --from=ui /ui_build/dist/ static/
 RUN go mod download && go mod verify
 RUN go build -v --ldflags "-X cmd.AppName=${NAME} -X cmd.Version=${VERSION} -X cmd.Commit=${COMMIT} -X cmd.Build=${BUILD_TIME}" -o ${NAME} ${MAIN_PATH}
 
