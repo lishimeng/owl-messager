@@ -67,14 +67,14 @@ Parameter
 Build & Install
 --------------
 
-To build owl as a application just run:
+To build owl as an application just run:
 
 ```bash
 go build
 ```
 
 1. A config file is written to `/etc/owl-messager/config.yaml` and the service is automatically started or restarted.
-1. Run server:
+2. Run server:
 
 ```bash
 sudo owl-messager
