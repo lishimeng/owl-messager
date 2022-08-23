@@ -3,6 +3,7 @@ package senderApi
 import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/api/common"
 	"github.com/lishimeng/owl/internal/db/repo"
@@ -37,7 +38,7 @@ func GetMailSenderList(ctx iris.Context) {
 		log.Debug(err)
 		resp.Code = -1
 		resp.Message = "get senders failed"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -48,8 +49,8 @@ func GetMailSenderList(ctx iris.Context) {
 				SenderCode: ms.Code,
 				Config:     ms.Config,
 				Status:     ms.Status,
-				CreateTime: common.FormatTime(ms.CreateTime),
-				UpdateTime: common.FormatTime(ms.UpdateTime),
+				CreateTime: tool.FormatTime(ms.CreateTime),
+				UpdateTime: tool.FormatTime(ms.UpdateTime),
 			}
 
 			page.Data = append(page.Data, tmpInfo)
@@ -57,8 +58,8 @@ func GetMailSenderList(ctx iris.Context) {
 	}
 
 	resp.Pager = page
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }
 
 // GetMailSenderInfo
@@ -71,9 +72,9 @@ func GetMailSenderInfo(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
-		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgIdNum
-		common.ResponseJSON(ctx, resp)
+		resp.Response.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgIdNum
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	log.Debug("id:%d", id)
@@ -81,9 +82,9 @@ func GetMailSenderInfo(ctx iris.Context) {
 	if err != nil {
 		log.Debug("get mail sender account failed")
 		log.Debug(err)
-		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgNotFount
-		common.ResponseJSON(ctx, resp)
+		resp.Response.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgNotFount
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -92,24 +93,24 @@ func GetMailSenderInfo(ctx iris.Context) {
 		SenderCode: ms.Code,
 		Config:     ms.Config,
 		Status:     ms.Status,
-		CreateTime: common.FormatTime(ms.CreateTime),
-		UpdateTime: common.FormatTime(ms.UpdateTime),
+		CreateTime: tool.FormatTime(ms.CreateTime),
+		UpdateTime: tool.FormatTime(ms.UpdateTime),
 	}
 	resp.Info = tmpInfo
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }
 
 func AddMailSender(_ iris.Context) {
-	code := common.GetRandomString(common.DefaultCodeLen)
+	code := tool.GetRandomString(common.DefaultCodeLen)
 	code = "sender_" + code
 }
 
 func UpdateMailSender(ctx iris.Context) {
 	log.Debug("update mail sender")
 	var resp app.Response
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }
 
 func DeleteMailSender(ctx iris.Context) {
@@ -118,9 +119,9 @@ func DeleteMailSender(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
-		resp.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgIdNum
-		common.ResponseJSON(ctx, resp)
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgIdNum
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	err = repo.DeleteMailSender(id)
@@ -129,10 +130,10 @@ func DeleteMailSender(ctx iris.Context) {
 		log.Debug(err)
 		resp.Code = -1
 		resp.Message = "delete sender failed"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }

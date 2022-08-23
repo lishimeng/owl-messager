@@ -3,8 +3,8 @@ package messageApi
 import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/api/common"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
 )
@@ -48,7 +48,7 @@ func GetMessageList(ctx iris.Context) {
 		log.Debug(err)
 		resp.Code = -1
 		resp.Message = "get messages failed"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	if len(messages) > 0 {
@@ -58,18 +58,18 @@ func GetMessageList(ctx iris.Context) {
 				Category:     ms.Category,
 				Subject:      ms.Subject,
 				Priority:     ms.Priority,
-				NextSendTime: common.FormatTime(ms.NextSendTime),
+				NextSendTime: tool.FormatTime(ms.NextSendTime),
 				Status:       ms.Status,
-				CreateTime:   common.FormatTime(ms.CreateTime),
-				UpdateTime:   common.FormatTime(ms.UpdateTime),
+				CreateTime:   tool.FormatTime(ms.CreateTime),
+				UpdateTime:   tool.FormatTime(ms.UpdateTime),
 			}
 			page.Data = append(page.Data, tmpInfo)
 		}
 	}
 
 	resp.Pager = page
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 
 }
 
@@ -79,9 +79,9 @@ func GetMessageInfo(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
-		resp.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgIdNum
-		common.ResponseJSON(ctx, resp)
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgIdNum
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	log.Debug("id:%d", id)
@@ -89,9 +89,9 @@ func GetMessageInfo(ctx iris.Context) {
 	if err != nil {
 		log.Debug("get message failed")
 		log.Debug(err)
-		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgNotFount
-		common.ResponseJSON(ctx, resp)
+		resp.Response.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgNotFount
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -100,14 +100,14 @@ func GetMessageInfo(ctx iris.Context) {
 		Category:     ms.Category,
 		Subject:      ms.Subject,
 		Priority:     ms.Priority,
-		NextSendTime: common.FormatTime(ms.NextSendTime),
+		NextSendTime: tool.FormatTime(ms.NextSendTime),
 		Status:       ms.Status,
-		CreateTime:   common.FormatTime(ms.CreateTime),
-		UpdateTime:   common.FormatTime(ms.UpdateTime),
+		CreateTime:   tool.FormatTime(ms.CreateTime),
+		UpdateTime:   tool.FormatTime(ms.UpdateTime),
 	}
 	resp.RespMessageInfo = tmpInfo
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }
 
 // Send
@@ -122,9 +122,9 @@ func Send(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
-		resp.Code = common.RespMsgNotFount
-		resp.Message = common.RespMsgNotFount
-		common.ResponseJSON(ctx, resp)
+		resp.Code = tool.RespMsgNotFount
+		resp.Message = tool.RespMsgNotFount
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	log.Info("set message high priority:%d", id)
@@ -134,9 +134,9 @@ func Send(ctx iris.Context) {
 		log.Info(err)
 		resp.Code = -1
 		resp.Message = "failed"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }

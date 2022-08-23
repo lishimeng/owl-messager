@@ -3,6 +3,7 @@ package templateApi
 import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/api/common"
 	"github.com/lishimeng/owl/internal/db/model"
@@ -40,7 +41,7 @@ func GetMailTemplateList(ctx iris.Context) {
 		log.Debug(err)
 		resp.Code = -1
 		resp.Message = "get templates failed"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -50,15 +51,15 @@ func GetMailTemplateList(ctx iris.Context) {
 			TemplateCode: tpl.Code,
 			TemplateBody: tpl.Body,
 			Status:       tpl.Status,
-			CreateTime:   common.FormatTime(tpl.CreateTime),
-			UpdateTime:   common.FormatTime(tpl.UpdateTime),
+			CreateTime:   tool.FormatTime(tpl.CreateTime),
+			UpdateTime:   tool.FormatTime(tpl.UpdateTime),
 		}
 		page.Data = append(page.Data, tmpInfo)
 	}
 
 	resp.Pager = page
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }
 
 func GetMailTemplateInfo(ctx iris.Context) {
@@ -67,9 +68,9 @@ func GetMailTemplateInfo(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
-		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgIdNum
-		common.ResponseJSON(ctx, resp)
+		resp.Response.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgIdNum
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	log.Debug("id:%d", id)
@@ -77,9 +78,9 @@ func GetMailTemplateInfo(ctx iris.Context) {
 	if err != nil {
 		log.Debug("get mail template failed")
 		log.Debug(err)
-		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgNotFount
-		common.ResponseJSON(ctx, resp)
+		resp.Response.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgNotFount
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -88,12 +89,12 @@ func GetMailTemplateInfo(ctx iris.Context) {
 		TemplateCode: tpl.Code,
 		TemplateBody: tpl.Body,
 		Status:       tpl.Status,
-		CreateTime:   common.FormatTime(tpl.CreateTime),
-		UpdateTime:   common.FormatTime(tpl.UpdateTime),
+		CreateTime:   tool.FormatTime(tpl.CreateTime),
+		UpdateTime:   tool.FormatTime(tpl.UpdateTime),
 	}
 	resp.Info = tmpInfo
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }
 
 type MailTemplateReq struct {
@@ -129,7 +130,7 @@ func AddMailTemplate(ctx iris.Context) {
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		resp.Code = -1
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -138,14 +139,14 @@ func AddMailTemplate(ctx iris.Context) {
 		log.Debug("param name nil")
 		resp.Code = -1
 		resp.Message = "name nil"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	if len(req.Body) == 0 {
 		log.Debug("param body nil")
 		resp.Code = -1
 		resp.Message = "body nil"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -154,7 +155,7 @@ func AddMailTemplate(ctx iris.Context) {
 		req.Category = model.MailTemplateCategoryDefault
 	}
 
-	code := common.GetRandomString(common.DefaultCodeLen)
+	code := tool.GetRandomString(common.DefaultCodeLen)
 	code = "tpl_" + code
 
 	m, err := repo.CreateMailTemplate(code, req.Name, req.Body, req.Description, req.Category)
@@ -163,7 +164,7 @@ func AddMailTemplate(ctx iris.Context) {
 		log.Info(err)
 		resp.Code = -1
 		resp.Message = "create template failed"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -175,12 +176,12 @@ func AddMailTemplate(ctx iris.Context) {
 		TemplateCode: m.Code,
 		TemplateBody: m.Body,
 		Status:       m.Status,
-		CreateTime:   common.FormatTime(m.CreateTime),
-		UpdateTime:   common.FormatTime(m.UpdateTime),
+		CreateTime:   tool.FormatTime(m.CreateTime),
+		UpdateTime:   tool.FormatTime(m.UpdateTime),
 	}
 	resp.Info = tmpInfo
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }
 
 func UpdateMailTemplate(ctx iris.Context) {
@@ -193,7 +194,7 @@ func UpdateMailTemplate(ctx iris.Context) {
 		log.Debug(err)
 		resp.Code = -1
 		resp.Message = "req err"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -202,14 +203,14 @@ func UpdateMailTemplate(ctx iris.Context) {
 		log.Debug("param id nil")
 		resp.Code = -1
 		resp.Message = "id nil"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	if len(req.Body) == 0 {
 		log.Debug("param body nil")
 		resp.Code = -1
 		resp.Message = "body nil"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -219,7 +220,7 @@ func UpdateMailTemplate(ctx iris.Context) {
 		log.Info(err)
 		resp.Code = -1
 		resp.Message = "create update failed"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -231,12 +232,12 @@ func UpdateMailTemplate(ctx iris.Context) {
 		TemplateCode: m.Code,
 		TemplateBody: m.Body,
 		Status:       m.Status,
-		CreateTime:   common.FormatTime(m.CreateTime),
-		UpdateTime:   common.FormatTime(m.UpdateTime),
+		CreateTime:   tool.FormatTime(m.CreateTime),
+		UpdateTime:   tool.FormatTime(m.UpdateTime),
 	}
 	resp.Info = tmpInfo
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }
 
 func DeleteMailTemplate(ctx iris.Context) {
@@ -246,9 +247,9 @@ func DeleteMailTemplate(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
-		resp.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgIdNum
-		common.ResponseJSON(ctx, resp)
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgIdNum
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	err = repo.DeleteMailTemplate(id)
@@ -256,9 +257,9 @@ func DeleteMailTemplate(ctx iris.Context) {
 		log.Info("delete mail template failed")
 		resp.Code = -1
 		resp.Message = "delete template failed"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }

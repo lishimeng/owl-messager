@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/api/common"
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/db/service"
 )
@@ -38,7 +38,7 @@ func SendApns(ctx iris.Context) {
 		log.Info(err)
 		resp.Code = -1
 		resp.Message = "req error"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -53,7 +53,7 @@ func SendApns(ctx iris.Context) {
 		log.Debug("param sender code nil")
 		resp.Code = -1
 		resp.Message = "sender nil"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	sender, err := repo.GetApnsSenderByCode(req.Sender)
@@ -61,7 +61,7 @@ func SendApns(ctx iris.Context) {
 		log.Debug("param sender not exist")
 		resp.Code = -1
 		resp.Message = "sender not exist"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -69,7 +69,7 @@ func SendApns(ctx iris.Context) {
 		log.Debug("param bundle id nil")
 		resp.Code = -1
 		resp.Message = "bundleId nil"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -95,13 +95,13 @@ func SendApns(ctx iris.Context) {
 		log.Info(err)
 		resp.Code = -1
 		resp.Message = "create message failed"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
 	log.Debug("create message success, id:%d", m.Id)
 	resp.MessageId = m.Id
 
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }
