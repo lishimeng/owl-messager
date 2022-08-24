@@ -11,17 +11,17 @@ ARG VERSION
 ARG COMMIT
 ARG MAIN_PATH
 ENV GOPROXY=https://goproxy.cn,direct
+ENV LDFLAGS=" \
+    -X 'github.com/lishimeng/app-starter/version.AppName=${NAME}' \
+    -X 'github.com/lishimeng/app-starter/version.Version=${VERSION}' \
+    -X 'github.com/lishimeng/app-starter/version.Commit=${COMMIT}' \
+    -X 'github.com/lishimeng/app-starter/version.Build=`date +%FT%T%z`' \
+    -X 'github.com/lishimeng/app-starter/version.Compiler=`go version`' \
+    "
 WORKDIR /release
 ADD . .
 COPY --from=ui /ui_build/dist/ static/
 RUN go mod download && go mod verify
-ENV LDFLAGS=" \
-    -X github.com/lishimeng/app-starter/version.AppName=${NAME} \
-    -X github.com/lishimeng/app-starter/version.Version=${VERSION} \
-    -X github.com/lishimeng/app-starter/version.Commit=${COMMIT} \
-    -X github.com/lishimeng/app-starter/version.Build=`date +%FT%T%z` \
-    -X github.com/lishimeng/app-starter/version.Compiler=`go version` \
-    "
 RUN go build -v --ldflags "${LDFLAGS}" -o ${NAME} ${MAIN_PATH}
 
 FROM ubuntu:22.04 as prod
