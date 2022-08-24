@@ -12,12 +12,13 @@ ARG COMMIT
 ARG TAG
 ARG BUILD_TIME
 ARG MAIN_PATH
+ARG COMPILER
 ENV GOPROXY=https://goproxy.cn,direct
 WORKDIR /release
 ADD . .
 COPY --from=ui /ui_build/dist/ static/
 RUN go mod download && go mod verify
-RUN go build -v --ldflags "-X cmd.AppName=${NAME} -X cmd.Version=${VERSION} -X cmd.Commit=${COMMIT} -X cmd.Build=${BUILD_TIME}" -o ${NAME} ${MAIN_PATH}
+RUN go build -v --ldflags "-X github.com/lishimeng/app-starter/version.AppName=${NAME} -X github.com/lishimeng/app-starter/version.Version=${VERSION} -X github.com/lishimeng/app-starter/version.Commit=${COMMIT} -X github.com/lishimeng/app-starter/version.Build=${BUILD_TIME}" -X github.com/lishimeng/app-starter/version.Compiler=${COMPILER}" -o ${NAME} ${MAIN_PATH}
 
 FROM ubuntu:22.04 as prod
 ARG NAME
