@@ -5,6 +5,8 @@ ORG="lishimeng"
 
 # shellcheck disable=SC2046
 VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))
+# shellcheck disable=SC2034
+COMPILER=$(go version)
 # shellcheck disable=SC2154
 COMMIT=$(git log --pretty=format:"%h" -1)
 BUILD_TIME=$(date +%FT%T%z)
@@ -16,6 +18,7 @@ build_application(){
   --build-arg VERSION="${VERSION}" \
   --build-arg COMMIT="${COMMIT}" \
   --build-arg BUILD_TIME="${BUILD_TIME}" \
+  --build-arg COMPILER="${COMPILER}" \
   --build-arg MAIN_PATH="${MAIN_PATH}" .
 }
 
@@ -25,6 +28,7 @@ print_app_info(){
   echo "Version:${VERSION}"
   echo "Commit:${COMMIT}"
   echo "BuildTime:${BUILD_TIME}"
+  echo "Compiler:${COMPILER}"
   echo "Main_Path:${MAIN_PATH}"
   echo "****************************************"
   echo ""
