@@ -35,7 +35,8 @@ func router(root iris.Party) {
 	sms(root.Party("/send/sms"))
 	apns(root.Party("/send/apns"))
 
-	ddd.Router(root)
+	// api v2
+	ddd.Router(root.Party("/v2"))
 }
 
 func message(p iris.Party) {

@@ -17,7 +17,7 @@ func CreateMailMessage(sender *model.MailSenderInfo, template model.MailTemplate
 			return
 		}
 		// create mail
-		_, _ = repo.CreateMailMessage(ctx, m, sender, template, templateParams, subject, receiver, cc)
+		_, _ = repo.CreateMailMessage(ctx, m, template, templateParams, subject, receiver)
 		return
 	})
 	return
@@ -47,5 +47,22 @@ func UpdateMailTemplate(id, status int, body, description string) (m model.MailT
 
 		return
 	})
+	return
+}
+
+// SetDefaultMailSender 设置默认发送账号
+func SetDefaultMailSender(id int, org int) (err error) {
+
+	senders, err := repo.GetMailSenders(org)
+	if err != nil {
+		return
+	}
+	for _, s := range senders {
+		if s.Id == id {
+			s.Default = model.DefaultSenderEnable
+		} else {
+			s.Default = model.DefaultSenderDisable
+		}
+	}
 	return
 }

@@ -7,7 +7,6 @@ import (
 	etc2 "github.com/lishimeng/app-starter/etc"
 	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
-	"github.com/lishimeng/owl/cmd"
 	"github.com/lishimeng/owl/internal/api"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/etc"
@@ -19,16 +18,12 @@ import (
 import _ "github.com/lib/pq"
 
 func main() {
-	//orm.Debug = true
 
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Println(err)
 		}
 	}()
-
-	fmt.Println(cmd.AppName)
-	fmt.Println(cmd.Version)
 
 	err := _main()
 	if err != nil {
@@ -65,6 +60,7 @@ func _main() (err error) {
 		builder.EnableDatabase(dbConfig.Build(),
 			model.Tables()...).
 			//SetWebLogLevel("debug").
+			PrintVersion().
 			EnableWeb(etc.Config.Web.Listen, api.Route).
 			EnableStaticWeb(func() http.FileSystem {
 				return http.FS(static.Static)

@@ -3,6 +3,7 @@ package senderApi
 import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/api/common"
 	"github.com/lishimeng/owl/internal/db/repo"
@@ -37,7 +38,7 @@ func GetSmsSenderList(ctx iris.Context) {
 		log.Debug(err)
 		resp.Code = -1
 		resp.Message = "get senders failed"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -48,8 +49,8 @@ func GetSmsSenderList(ctx iris.Context) {
 				SenderCode: ms.Code,
 				Vendor:     string(ms.Vendor),
 				Status:     ms.Status,
-				CreateTime: common.FormatTime(ms.CreateTime),
-				UpdateTime: common.FormatTime(ms.UpdateTime),
+				CreateTime: tool.FormatTime(ms.CreateTime),
+				UpdateTime: tool.FormatTime(ms.UpdateTime),
 			}
 
 			page.Data = append(page.Data, tmpInfo)
@@ -57,8 +58,8 @@ func GetSmsSenderList(ctx iris.Context) {
 	}
 
 	resp.Pager = page
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }
 
 // GetSmsSenderInfo
@@ -71,9 +72,9 @@ func GetSmsSenderInfo(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
-		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgIdNum
-		common.ResponseJSON(ctx, resp)
+		resp.Response.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgIdNum
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	log.Debug("id:%d", id)
@@ -81,9 +82,9 @@ func GetSmsSenderInfo(ctx iris.Context) {
 	if err != nil {
 		log.Debug("get sms sender account failed")
 		log.Debug(err)
-		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgNotFount
-		common.ResponseJSON(ctx, resp)
+		resp.Response.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgNotFount
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -92,16 +93,16 @@ func GetSmsSenderInfo(ctx iris.Context) {
 		SenderCode: ms.Code,
 		Vendor:     string(ms.Vendor),
 		Status:     ms.Status,
-		CreateTime: common.FormatTime(ms.CreateTime),
-		UpdateTime: common.FormatTime(ms.UpdateTime),
+		CreateTime: tool.FormatTime(ms.CreateTime),
+		UpdateTime: tool.FormatTime(ms.UpdateTime),
 	}
 	resp.SmsSenderInfo = tmpInfo
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }
 
 func AddSmsSender(_ iris.Context) {
-	code := common.GetRandomString(common.DefaultCodeLen)
+	code := tool.GetRandomString(common.DefaultCodeLen)
 	code = "sms_sender_" + code
 
 	// TODO
@@ -112,8 +113,8 @@ func UpdateSmsSender(ctx iris.Context) {
 	var resp app.Response
 
 	// TODO
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }
 
 func DeleteSmsSender(ctx iris.Context) {
@@ -122,9 +123,9 @@ func DeleteSmsSender(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
-		resp.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgIdNum
-		common.ResponseJSON(ctx, resp)
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgIdNum
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	err = repo.DeleteSmsSender(id)
@@ -133,10 +134,10 @@ func DeleteSmsSender(ctx iris.Context) {
 		log.Debug(err)
 		resp.Code = -1
 		resp.Message = "delete sms sender failed"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }

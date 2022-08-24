@@ -3,8 +3,8 @@ package taskApi
 import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/api/common"
 	"github.com/lishimeng/owl/internal/db/repo"
 )
 
@@ -39,7 +39,7 @@ func GetTaskList(ctx iris.Context) {
 		log.Debug(err)
 		resp.Code = -1
 		resp.Message = "get templates failed"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	if len(tasks) > 0 {
@@ -49,16 +49,16 @@ func GetTaskList(ctx iris.Context) {
 				MessageId:         ms.MessageId,
 				MessageInstanceId: ms.MessageInstanceId,
 				Status:            ms.Status,
-				CreateTime:        common.FormatTime(ms.CreateTime),
-				UpdateTime:        common.FormatTime(ms.UpdateTime),
+				CreateTime:        tool.FormatTime(ms.CreateTime),
+				UpdateTime:        tool.FormatTime(ms.UpdateTime),
 			}
 			page.Data = append(page.Data, tmpInfo)
 		}
 	}
 
-	resp.Code = common.RespCodeSuccess
+	resp.Code = tool.RespCodeSuccess
 	resp.Pager = page
-	common.ResponseJSON(ctx, resp)
+	tool.ResponseJSON(ctx, resp)
 }
 
 func GetTaskInfo(ctx iris.Context) {
@@ -68,9 +68,9 @@ func GetTaskInfo(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
-		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgIdNum
-		common.ResponseJSON(ctx, resp)
+		resp.Response.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgIdNum
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	log.Debug("id:%d", id)
@@ -78,9 +78,9 @@ func GetTaskInfo(ctx iris.Context) {
 	if err != nil {
 		log.Debug("get task failed")
 		log.Debug(err)
-		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgNotFount
-		common.ResponseJSON(ctx, resp)
+		resp.Response.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgNotFount
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -89,12 +89,12 @@ func GetTaskInfo(ctx iris.Context) {
 		MessageId:         ms.MessageId,
 		MessageInstanceId: ms.MessageInstanceId,
 		Status:            ms.Status,
-		CreateTime:        common.FormatTime(ms.CreateTime),
-		UpdateTime:        common.FormatTime(ms.UpdateTime),
+		CreateTime:        tool.FormatTime(ms.CreateTime),
+		UpdateTime:        tool.FormatTime(ms.UpdateTime),
 	}
 	resp.TaskInfoResp = tmpInfo
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }
 
 func GetByMessage(ctx iris.Context) {
@@ -103,9 +103,9 @@ func GetByMessage(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
-		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgIdNum
-		common.ResponseJSON(ctx, resp)
+		resp.Response.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgIdNum
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	log.Debug("id:%d", id)
@@ -113,9 +113,9 @@ func GetByMessage(ctx iris.Context) {
 	if err != nil {
 		log.Debug("get task failed")
 		log.Debug(err)
-		resp.Response.Code = common.RespCodeNotFound
-		resp.Message = common.RespMsgNotFount
-		common.ResponseJSON(ctx, resp)
+		resp.Response.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgNotFount
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -124,10 +124,10 @@ func GetByMessage(ctx iris.Context) {
 		MessageId:         ms.MessageId,
 		MessageInstanceId: ms.MessageInstanceId,
 		Status:            ms.Status,
-		CreateTime:        common.FormatTime(ms.CreateTime),
-		UpdateTime:        common.FormatTime(ms.UpdateTime),
+		CreateTime:        tool.FormatTime(ms.CreateTime),
+		UpdateTime:        tool.FormatTime(ms.UpdateTime),
 	}
 	resp.TaskInfoResp = tmpInfo
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }

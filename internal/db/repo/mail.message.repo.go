@@ -12,21 +12,16 @@ func GetMailByMessageId(msgId int) (m model.MailMessageInfo, err error) {
 	return
 }
 
-func CreateMailMessage(ctx persistence.TxContext, message model.MessageInfo, sender *model.MailSenderInfo, template model.MailTemplateInfo,
+func CreateMailMessage(ctx persistence.TxContext, message model.MessageInfo, template model.MailTemplateInfo,
 	templateParams string,
-	subject, receiver, cc string) (m model.MailMessageInfo, err error) {
+	subject, receiver string) (m model.MailMessageInfo, err error) {
 
 	m.MessageId = message.Id
 	m.Template = template.Id
 	m.Params = templateParams
-	if sender != nil {
-		m.Sender = sender.Id
-	}
+
 	m.Subject = subject
 	m.Receivers = receiver
-	if len(cc) > 0 {
-		m.Cc = cc
-	}
 
 	m.Status = model.MailTemplateEnable
 	m.CreateTime = time.Now()

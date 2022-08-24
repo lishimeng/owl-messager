@@ -13,10 +13,9 @@ func serviceAddSms(smsTemplate, tplParams, receiver string) (m model.MessageInfo
 		return
 	}
 	m, err = service.CreateSmsMessage(
-		nil,
 		tpl,
 		tplParams,
 		receiver,
-		"")
+	)
 	return
 }

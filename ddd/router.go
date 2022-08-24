@@ -8,6 +8,6 @@ import (
 
 func Router(root iris.Party) {
 
-	um.Route(root.Party("/union_message"))
+	um.Route(root.Party("/messages"))
 	sender.Route(root.Party("/sender"))
 }

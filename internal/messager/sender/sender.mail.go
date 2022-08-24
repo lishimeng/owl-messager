@@ -3,10 +3,11 @@ package sender
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
-	"github.com/lishimeng/owl/internal/provider/mail"
+	"github.com/lishimeng/owl/internal/provider"
 	"github.com/lishimeng/owl/internal/provider/template"
 	"strings"
 )
@@ -16,8 +17,7 @@ type Mail interface {
 }
 
 type mailSender struct {
-	ctx context.Context
-
+	ctx       context.Context
 	maxWorker int
 }
 
@@ -32,35 +32,33 @@ func NewMailSender(ctx context.Context) (m Mail, err error) {
 func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 	// sender info
 	log.Info("send mail:%d", p.Id)
-	var si model.MailSenderInfo
-	if p.Sender > 0 {
-		si, err = repo.GetMailSenderById(p.Sender) // 使用指定的sender
-	} else {
-		si, err = repo.GetDefaultMailSender("") // 使用默认sender
-	}
+
+	si, err := repo.GetDefaultMailSender("") // 使用默认sender
+
 	if err != nil {
-		log.Info("mail sender not exist:%d", p.Sender)
+		log.Info("mail sender not exist")
 		return
 	}
 
-	toers := strings.Split(p.Receivers, ",")
-	// TODO delete toer:""
-	metas := mail.MetaInfo{
-		Server: mail.MetaServer{
-			Host: si.Host,
-			Port: si.Port,
-		},
-		Sender: mail.MetaSender{
-			Email:      si.Email,
-			Name:       si.Alias,
-			Passwd:     si.Passwd,
-			EmailAlias: si.EmailAlias,
-		},
-		Receiver: mail.MetaReceiver{
-			To: toers,
-		},
+	mailBody, err := m.buildMailBody(p)
+	if err != nil {
+		log.Info("build mail body failure")
+		return
 	}
 
+	s, err := provider.DefaultMailFactory.Create(si.Vendor, si.Config)
+	if err != nil {
+		log.Info("create mail sender failure:%d", si.Id)
+		return
+	}
+
+	receivers := strings.Split(p.Receivers, ",")
+
+	err = s.Send(p.Subject, mailBody, receivers...)
+	return
+}
+
+func (m *mailSender) buildMailBody(p model.MailMessageInfo) (body string, err error) {
 	tpl, err := repo.GetMailTemplateById(p.Template)
 	if err != nil {
 		log.Info("mail template not exist:%d", p.Template)
@@ -72,15 +70,16 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 		log.Info("params of mail template is not json format:%s", p.Params)
 		return
 	}
-	c, err := template.Rend(params, tpl.Body, tpl.Category)
+	body, err = template.Rend(params, tpl.Body, tpl.Category)
 	if err != nil {
 		log.Info("template render failed")
 		log.Info(err)
 		return
 	}
-	if len(c) > 0 {
-		s := mail.New()
-		err = s.Send(metas, p.Subject, c)
+	if len(body) <= 0 {
+		log.Info("mail body empty")
+		err = errors.New("mail body empty")
+		return
 	}
 	return
 }

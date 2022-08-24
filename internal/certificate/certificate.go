@@ -6,7 +6,6 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
-	"golang.org/x/crypto/pkcs12"
 	"strings"
 )
 
@@ -17,18 +16,6 @@ var (
 	ErrNoPrivateKey             = errors.New("no private key")
 	ErrNoCertificate            = errors.New("no certificate")
 )
-
-func FromP12(p12 []byte, password string) (tls.Certificate, error) {
-	key, cert, err := pkcs12.Decode(p12, password)
-	if err != nil {
-		return tls.Certificate{}, err
-	}
-	return tls.Certificate{
-		Certificate: [][]byte{cert.Raw},
-		PrivateKey:  key,
-		Leaf:        cert,
-	}, nil
-}
 
 func FromPemBytes(bytes []byte, password string) (tls.Certificate, error) {
 	var cert tls.Certificate
@@ -42,7 +29,7 @@ func FromPemBytes(bytes []byte, password string) (tls.Certificate, error) {
 			cert.Certificate = append(cert.Certificate, block.Bytes)
 		}
 		if strings.HasSuffix(block.Type, "PRIVATE KEY") {
-			key, err := unencryptPrivateKey(block, password)
+			key, err := unencryptPrivateKey(block)
 			if err != nil {
 				return tls.Certificate{}, err
 			}
@@ -61,26 +48,55 @@ func FromPemBytes(bytes []byte, password string) (tls.Certificate, error) {
 	return cert, nil
 }
 
-func unencryptPrivateKey(block *pem.Block, password string) (crypto.PrivateKey, error) {
-	if x509.IsEncryptedPEMBlock(block) {
-		bytes, err := x509.DecryptPEMBlock(block, []byte(password))
-		if err != nil {
-			return nil, ErrFailedToDecryptKey
-		}
-		return parsePrivateKey(bytes)
-	}
-	return parsePrivateKey(block.Bytes)
+func unencryptPrivateKey(block *pem.Block) (crypto.PrivateKey, error) {
+	return ParsePrivateKey(block.Bytes)
 }
 
-func parsePrivateKey(bytes []byte) (crypto.PrivateKey, error) {
-	var key crypto.PrivateKey
-	key, err := x509.ParsePKCS1PrivateKey(bytes)
-	if err == nil {
-		return key, nil
-	}
+func ParsePrivateKey(bytes []byte) (key crypto.PrivateKey, err error) {
 	key, err = x509.ParsePKCS8PrivateKey(bytes)
 	if err == nil {
-		return key, nil
+		return
 	}
-	return nil, ErrFailedToParsePrivateKey
+	return
+}
+
+func ParseCertificateFromPem(pemContent []byte) (crt *x509.Certificate, err error) {
+	var rest = pemContent
+	var block *pem.Block
+	block, rest = pem.Decode(rest)
+	crt, err = x509.ParseCertificate(block.Bytes)
+	return
+}
+
+func ParsePrivateKeyFromPem(pemContent []byte) (crt crypto.PrivateKey, err error) {
+	var rest = pemContent
+	var block *pem.Block
+	block, rest = pem.Decode(rest)
+	crt, err = x509.ParsePKCS8PrivateKey(block.Bytes)
+	return
+}
+
+func ParseCertificatesFromPem(pemContent []byte) (crt *x509.Certificate, err error) {
+
+	var rest = pemContent
+	var block *pem.Block
+	var blocks []*pem.Block
+	for {
+		block, rest = pem.Decode(rest)
+		if block == nil {
+			break
+		} else {
+			blocks = append(blocks, block)
+		}
+	}
+
+	for _, b := range blocks {
+		if strings.Contains(b.Type, "CERTIFICATE") {
+			crt, err = x509.ParseCertificate(b.Bytes)
+		} else if strings.Contains(b.Type, "KEY") {
+
+		}
+	}
+
+	return
 }

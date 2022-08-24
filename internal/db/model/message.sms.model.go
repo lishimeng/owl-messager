@@ -8,10 +8,5 @@ type SmsMessageInfo struct {
 
 	Params string `orm:"column(params);null"` // json params(map)
 
-	Sender int `orm:"column(sender_id);null"` // 指定发送者
-
 	Receivers string `orm:"column(receiver)"` // receiver list. comma split
-
-	Signature string `orm:"column(signature);null"` // signature
-
 }

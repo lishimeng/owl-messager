@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/api/common"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/db/service"
@@ -57,7 +57,7 @@ func SendMail(ctx iris.Context) {
 		log.Info(err)
 		resp.Code = -1
 		resp.Message = "req error"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -72,7 +72,7 @@ func SendMail(ctx iris.Context) {
 		log.Debug("param receiver nil")
 		resp.Code = -1
 		resp.Message = "receiver nil"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -83,7 +83,7 @@ func SendMail(ctx iris.Context) {
 			log.Debug("mail sender not exist: %s", req.Sender)
 			resp.Code = -1
 			resp.Message = "sender not exist"
-			common.ResponseJSON(ctx, resp)
+			tool.ResponseJSON(ctx, resp)
 			return
 		}
 	}
@@ -92,7 +92,7 @@ func SendMail(ctx iris.Context) {
 		log.Debug("param template code nil")
 		resp.Code = -1
 		resp.Message = "template nil"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	tpl, err := repo.GetMailTemplateByCode(req.Template)
@@ -100,7 +100,7 @@ func SendMail(ctx iris.Context) {
 		log.Debug("param template not exist")
 		resp.Code = -1
 		resp.Message = "template not exist"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -125,13 +125,13 @@ func SendMail(ctx iris.Context) {
 		log.Info(err)
 		resp.Code = -1
 		resp.Message = "create message failed"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
 	log.Debug("create message success, id:%d", m.Id)
 	resp.MessageId = m.Id
 
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }

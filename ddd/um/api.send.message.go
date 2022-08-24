@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/api/common"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/messager/msg"
 )
@@ -38,7 +38,7 @@ func sendMessage(ctx iris.Context) {
 		log.Info(err)
 		resp.Code = -1
 		resp.Message = "req error"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -49,7 +49,7 @@ func sendMessage(ctx iris.Context) {
 		log.Debug("param receiver nil")
 		resp.Code = -1
 		resp.Message = "receiver nil"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -57,7 +57,7 @@ func sendMessage(ctx iris.Context) {
 		log.Debug("param template code nil")
 		resp.Code = -1
 		resp.Message = "template nil"
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
@@ -89,15 +89,15 @@ func sendMessage(ctx iris.Context) {
 	if err != nil {
 		log.Info("can't create message")
 		log.Info(err)
-		common.ResponseJSON(ctx, resp)
+		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
 	log.Debug("create message success, id:%d", message.Id)
 	resp.MessageId = message.Id
 
-	resp.Code = common.RespCodeSuccess
-	common.ResponseJSON(ctx, resp)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }
 
 func createMail(req Req, params string) (m model.MessageInfo, resp Resp, err error) {
