@@ -54,6 +54,8 @@ func (h *PemHandler) parseKey(category string) (key crypto.PrivateKey, err error
 		key, err = x509.ParsePKCS8PrivateKey(b.Bytes)
 	case KeyTypeEC:
 		key, err = x509.ParseECPrivateKey(b.Bytes)
+	default:
+		err = errors.New("unknown private key category")
 	}
 
 	if err != nil { // 尝试pkcs1

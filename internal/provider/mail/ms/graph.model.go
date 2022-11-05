@@ -76,7 +76,7 @@ func BuildMessage(subject string, body string, receivers ...string) (m MessageWr
 	m.Message = Message{
 		Subject: subject,
 		Body: MessageBody{
-			ContentType: "Text",
+			ContentType: "HTML", // 枚举：Text/HTML
 			Content:     body,
 		},
 	}
