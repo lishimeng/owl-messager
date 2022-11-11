@@ -23,7 +23,7 @@ func CreateMailMessage(sender *model.MailSenderInfo, template model.MailTemplate
 	return
 }
 
-func UpdateMailTemplate(id, status int, body, description string) (m model.MailTemplateInfo, err error) {
+func UpdateMailTemplate(id, status int, body, description string,name  string) (m model.MailTemplateInfo, err error) {
 	m, err = repo.GetMailTemplateById(id)
 	if err != nil {
 		return
@@ -41,6 +41,10 @@ func UpdateMailTemplate(id, status int, body, description string) (m model.MailT
 		if len(description) > 0 {
 			m.Description = description
 			cols = append(cols, "Description")
+		}
+		if len(name) > 0 {
+			m.Name = name
+			cols = append(cols, "Name")
 		}
 
 		m, e = repo.UpdateMailTemplate(ctx, m, cols...)

@@ -66,7 +66,7 @@ export /** @type {*} */
 				{
 					path: '/template',
 					name: 'template',
-					component: () => import('/@/layout/routerView/parent.vue'),
+					component: () => import('/@/views/template/index.vue'),
 					meta: {
 						title: 'message.router.template',
 						isLink: '',
@@ -77,38 +77,38 @@ export /** @type {*} */
 						auth: ['base'],
 						icon: 'iconfont icon-shouye',
 					},
-					children: [
-						{
-							path: '/template/add',
-							name: 'addTemplate',
-							component: () => import('/@/views/template/index.vue'),
-							meta: {
-								title: '新增模板',
-								isLink: '',
-								isHide: false,
-								isKeepAlive: true,
-								isAffix: false,
-								isIframe: false,
-								auth: ['base'],
-								icon: 'fa fa-list-ul',
-							},
-						},
-						{
-							path: '/template/list',
-							name: 'listTemplate',
-							component: () => import('/@/views/template/list.vue'),
-							meta: {
-								title: '模板列表',
-								isLink: '',
-								isHide: false,
-								isKeepAlive: true,
-								isAffix: false,
-								isIframe: false,
-								auth: ['base'],
-								icon: 'fa fa-list-ul',
-							},
-						},
-					]
+					// children: [
+					// 	{
+					// 		path: '/template/add',
+					// 		name: 'addTemplate',
+					// 		component: () => import('/@/views/template/index.vue'),
+					// 		meta: {
+					// 			title: '新增模板',
+					// 			isLink: '',
+					// 			isHide: false,
+					// 			isKeepAlive: true,
+					// 			isAffix: false,
+					// 			isIframe: false,
+					// 			auth: ['base'],
+					// 			icon: 'fa fa-list-ul',
+					// 		},
+					// 	},
+						// {
+						// 	path: '/template/list',
+						// 	name: 'listTemplate',
+						// 	component: () => import('/@/views/template/list.vue'),
+						// 	meta: {
+						// 		title: '模板列表',
+						// 		isLink: '',
+						// 		isHide: false,
+						// 		isKeepAlive: true,
+						// 		isAffix: false,
+						// 		isIframe: false,
+						// 		auth: ['base'],
+						// 		icon: 'fa fa-list-ul',
+						// 	},
+						// },
+					// ]
 				},
 				{
 					path: '/task',

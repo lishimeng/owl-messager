@@ -71,6 +71,19 @@ export default defineComponent({
 		});
 		// 点击登录
 		const onSignIn = async () => {
+			window.localStorage.setItem('token', '345678')
+				window.localStorage.setItem('eqRoles', JSON.stringify([1,2,3,4]))
+				window.localStorage.setItem('oid', "1")
+
+				window.localStorage.setItem('userName', "userName")
+				window.localStorage.setItem('userId', "1")
+			if (!store.state.themeConfig.themeConfig.isRequestRoutes) {
+					// 前端控制路由，2、请注意执行顺序
+					initFrontEndControlRoutes();
+					signInSuccess();
+				}
+		}
+		const onSignIn_ = async () => {
 			state.loading.signIn = true;
 			signIn({
 				loginName: state.ruleForm.userName,

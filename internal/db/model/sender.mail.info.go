@@ -4,6 +4,10 @@ package model
 type MailSenderInfo struct {
 	SenderInfo
 	Vendor MailVendor
+	Host     string `orm:"column(host)"`
+	Port     int `orm:"column(port)"`
+	Email     string `orm:"column(email)"`
+	Password     string `orm:"column(password)"`
 	Config string `orm:"column(config)"` // json 配置(map: key-value)
 }
 

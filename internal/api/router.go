@@ -54,12 +54,12 @@ func task(p iris.Party) {
 }
 
 func mailSender(p iris.Party) {
-	p.Post("/", senderApi.AddMailSender)
-	p.Put("/{id}", senderApi.UpdateMailSender)
-	p.Delete("/{id}", senderApi.DeleteMailSender)
+	p.Post("/add", senderApi.AddMailSender)
+	p.Post("/update", senderApi.UpdateMailSender)
+	p.Get("/del/{id}", senderApi.DeleteMailSender)
 
-	p.Get("/", senderApi.GetMailSenderList)
-	p.Get("/{id}", senderApi.GetMailSenderInfo)
+	p.Get("/", senderApi.GetMailSenderListNow)
+	p.Get("/one/{id}", senderApi.GetMailSenderInfoNow)
 }
 
 func smsSender(p iris.Party) {
@@ -72,12 +72,12 @@ func smsSender(p iris.Party) {
 }
 
 func mailTemplate(p iris.Party) {
-	p.Post("/", templateApi.AddMailTemplate)
-	p.Put("/{id}", templateApi.UpdateMailTemplate)
-	p.Delete("/{id}", templateApi.DeleteMailTemplate)
+	p.Post("/add", templateApi.AddMailTemplate)
+	p.Post("/update", templateApi.UpdateMailTemplate)
+	p.Get("/del/{id}", templateApi.DeleteMailTemplate)
 
 	p.Get("/", templateApi.GetMailTemplateList)
-	p.Get("/{id}", templateApi.GetMailTemplateInfo)
+	p.Get("/one/{id}", templateApi.GetMailTemplateInfo)
 }
 
 func mail(p iris.Party) {

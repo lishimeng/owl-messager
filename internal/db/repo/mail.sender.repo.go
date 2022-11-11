@@ -44,6 +44,7 @@ func GetMailSenderList(status int, page app.Pager) (p app.Pager, senders []model
 		return
 	}
 	page.TotalPage = calcTotalPage(page, sum)
+	page.More=int(sum)
 	_, err = qs.OrderBy("CreateTime").Offset(calcPageOffset(page)).Limit(page.PageSize).All(&senders)
 	if err != nil {
 		return

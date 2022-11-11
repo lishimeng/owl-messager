@@ -1,6 +1,7 @@
 package templateApi
 
 import (
+	"fmt"
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/tool"
@@ -13,9 +14,12 @@ import (
 
 type Info struct {
 	Id           int    `json:"id,omitempty"`
-	TemplateCode string `json:"templateCode,omitempty"`
-	TemplateBody string `json:"templateBody,omitempty"`
+	Codes string `json:"code,omitempty"`
+	Body        string `json:"body,omitempty"`
+	Name        string `json:"name,omitempty"`
 	Status       int    `json:"status,omitempty"`
+	Category    int    `json:"category,omitempty"`
+	Description string `json:"description,omitempty"`
 	CreateTime   string `json:"createTime,omitempty"`
 	UpdateTime   string `json:"updateTime,omitempty"`
 }
@@ -23,6 +27,11 @@ type Info struct {
 type InfoWrapper struct {
 	app.Response
 	Info
+}
+
+type InfoWrapperVo struct {
+	app.Response
+	Data interface{}  `json:"data"`
 }
 
 func GetMailTemplateList(ctx iris.Context) {
@@ -48,9 +57,12 @@ func GetMailTemplateList(ctx iris.Context) {
 	for _, tpl := range tpls {
 		var tmpInfo = Info{
 			Id:           tpl.Id,
-			TemplateCode: tpl.Code,
-			TemplateBody: tpl.Body,
+			Codes: tpl.Code,
+			Body: tpl.Body,
 			Status:       tpl.Status,
+			Description: tpl.Description,
+			Name: tpl.Name,
+			Category: tpl.Category,
 			CreateTime:   tool.FormatTime(tpl.CreateTime),
 			UpdateTime:   tool.FormatTime(tpl.UpdateTime),
 		}
@@ -64,7 +76,7 @@ func GetMailTemplateList(ctx iris.Context) {
 
 func GetMailTemplateInfo(ctx iris.Context) {
 	log.Debug("get mail template")
-	var resp InfoWrapper
+	var resp InfoWrapperVo
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
@@ -86,13 +98,16 @@ func GetMailTemplateInfo(ctx iris.Context) {
 
 	var tmpInfo = Info{
 		Id:           tpl.Id,
-		TemplateCode: tpl.Code,
-		TemplateBody: tpl.Body,
+		Codes: tpl.Code,
+		Body: tpl.Body,
 		Status:       tpl.Status,
+		Description: tpl.Description,
+		Name: tpl.Name,
+		Category: tpl.Category,
 		CreateTime:   tool.FormatTime(tpl.CreateTime),
 		UpdateTime:   tool.FormatTime(tpl.UpdateTime),
 	}
-	resp.Info = tmpInfo
+	resp.Data = tmpInfo
 	resp.Code = tool.RespCodeSuccess
 	tool.ResponseJSON(ctx, resp)
 }
@@ -129,7 +144,8 @@ func AddMailTemplate(ctx iris.Context) {
 	var resp InfoWrapper
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		resp.Code = -1
+		fmt.Println(err)
+
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
@@ -137,14 +153,14 @@ func AddMailTemplate(ctx iris.Context) {
 	// check params
 	if len(req.Name) == 0 {
 		log.Debug("param name nil")
-		resp.Code = -1
+
 		resp.Message = "name nil"
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	if len(req.Body) == 0 {
 		log.Debug("param body nil")
-		resp.Code = -1
+
 		resp.Message = "body nil"
 		tool.ResponseJSON(ctx, resp)
 		return
@@ -162,7 +178,7 @@ func AddMailTemplate(ctx iris.Context) {
 	if err != nil {
 		log.Info("can't create template")
 		log.Info(err)
-		resp.Code = -1
+
 		resp.Message = "create template failed"
 		tool.ResponseJSON(ctx, resp)
 		return
@@ -173,9 +189,12 @@ func AddMailTemplate(ctx iris.Context) {
 
 	var tmpInfo = Info{
 		Id:           m.Id,
-		TemplateCode: m.Code,
-		TemplateBody: m.Body,
+		Codes: m.Code,
+		Body: m.Body,
 		Status:       m.Status,
+		Description: m.Description,
+		Name: m.Name,
+		Category: m.Category,
 		CreateTime:   tool.FormatTime(m.CreateTime),
 		UpdateTime:   tool.FormatTime(m.UpdateTime),
 	}
@@ -214,7 +233,7 @@ func UpdateMailTemplate(ctx iris.Context) {
 		return
 	}
 
-	m, err := service.UpdateMailTemplate(req.Id, req.Status, req.Body, req.Description)
+	m, err := service.UpdateMailTemplate(req.Id, req.Status, req.Body, req.Description,req.Name)
 	if err != nil {
 		log.Info("can't update template")
 		log.Info(err)
@@ -229,9 +248,12 @@ func UpdateMailTemplate(ctx iris.Context) {
 
 	var tmpInfo = Info{
 		Id:           m.Id,
-		TemplateCode: m.Code,
-		TemplateBody: m.Body,
+		Codes: m.Code,
+		Body: m.Body,
 		Status:       m.Status,
+		Description: m.Description,
+		Name: m.Name,
+		Category: m.Category,
 		CreateTime:   tool.FormatTime(m.CreateTime),
 		UpdateTime:   tool.FormatTime(m.UpdateTime),
 	}

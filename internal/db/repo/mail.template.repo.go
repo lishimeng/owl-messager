@@ -30,6 +30,7 @@ func GetMailTemplateList(status int, page app.Pager) (p app.Pager, tpls []model.
 		return
 	}
 	page.TotalPage = calcTotalPage(page, sum)
+	page.More=int(sum)
 	_, err = qs.OrderBy("CreateTime").Offset(calcPageOffset(page)).Limit(page.PageSize).All(&tpls)
 	if err != nil {
 		return
