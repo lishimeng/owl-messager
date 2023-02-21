@@ -9,14 +9,16 @@ FROM golang:1.18 as build
 ARG NAME
 ARG VERSION
 ARG COMMIT
+ARG BUILD_TIME
 ARG MAIN_PATH
+ARG COMPILER
 ENV GOPROXY=https://goproxy.cn,direct
 ENV LDFLAGS=" \
     -X 'github.com/lishimeng/app-starter/version.AppName=${NAME}' \
     -X 'github.com/lishimeng/app-starter/version.Version=${VERSION}' \
     -X 'github.com/lishimeng/app-starter/version.Commit=${COMMIT}' \
-    -X 'github.com/lishimeng/app-starter/version.Build=`date +%FT%T%z`' \
-    -X 'github.com/lishimeng/app-starter/version.Compiler=`go version`' \
+    -X 'github.com/lishimeng/app-starter/version.Build=${BUILD_TIME}' \
+    -X 'github.com/lishimeng/app-starter/version.Compiler=${COMPILER}' \
     "
 WORKDIR /release
 ADD . .
