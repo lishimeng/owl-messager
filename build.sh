@@ -8,6 +8,7 @@ Version=$(git describe --tags $(git rev-list --tags --max-count=1))
 # shellcheck disable=SC2154
 GitCommit=$(git log --pretty=format:"%h" -1)
 BuildTime=$(date +%FT%T%z)
+# shellcheck disable=SC2154
 Compiler=${go version}
 
 build_application(){
