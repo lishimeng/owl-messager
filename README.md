@@ -13,8 +13,8 @@ Great for:
 * SMS
 * APNS
 * ARM
-* dingding
-* WeChat message(template message)
+* Ding Ding Bot
+* WeChat message Bot(template message)
 * WeChat app(MA)
 
 Support on Raspberry Pi
