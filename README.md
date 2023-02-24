@@ -1,6 +1,6 @@
 owl messager
 ===============================================
-[![GitHub version](https://badge.fury.io/gh/lishimeng%2Fowl-messager.svg)](https://github.com/lishimeng/owl-messager)
+[![Go project version](https://badge.fury.io/go/github.com%2Flishimeng%2Fowl-messager.svg)](https://badge.fury.io/go/github.com%2Flishimeng%2Fowl-messager)
 [![issues](https://img.shields.io/github/issues/lishimeng/owl-messager)](https://github.com/lishimeng/owl-messager)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lishimeng%2Fowl-messager?style=flat-square)](https://goreportcard.com/report/github.com/lishimeng%2Fowl-messager)
 [![License](https://img.shields.io/github/license/lishimeng/owl-messager)](https://github.com/lishimeng/owl-messager)
