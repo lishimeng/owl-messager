@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import { toRefs, reactive, defineComponent, computed, getCurrentInstance } from 'vue';
+import { toRefs, reactive, defineComponent, computed, getCurrentInstance,onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n';
@@ -56,6 +56,10 @@ export default defineComponent({
 		const route = useRoute();
 		const router = useRouter();
 		const state = reactive({
+      captcha:{// 验证码
+        id:'',
+        encodeb64:''
+      },
 			isShowPassword: false,
 			ruleForm: {
 				userName: '',
@@ -65,6 +69,13 @@ export default defineComponent({
 				signIn: false,
 			},
 		});
+    onMounted(()=>{
+      // 加载验证码
+      getCaptcha()
+    })
+    const getCaptcha = ()=>{
+      // TODO...
+    }
 		// 时间获取
 		const currentTime = computed(() => {
 			return formatAxis(new Date());
