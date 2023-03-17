@@ -46,7 +46,7 @@ import { initFrontEndControlRoutes } from '/@/router/frontEnd';
 import { useStore } from '/@/store/index';
 import { Session } from '/@/utils/storage';
 import { formatAxis } from '/@/utils/formatTime';
-import { signIn, getInfo } from '/@/api/user'
+import { signIn, getInfo,getCaptchaApi } from '/@/api/user'
 export default defineComponent({
 	name: 'loginAccount',
 	setup() {
@@ -56,9 +56,9 @@ export default defineComponent({
 		const route = useRoute();
 		const router = useRouter();
 		const state = reactive({
-      captcha:{// 验证码
-        id:'',
-        encodeb64:''
+      captchaCode:{
+        id:'',// 验证码id。存储reids
+        encode:'' // base64图片
       },
 			isShowPassword: false,
 			ruleForm: {
@@ -69,13 +69,12 @@ export default defineComponent({
 				signIn: false,
 			},
 		});
-    onMounted(()=>{
-      // 加载验证码
-      getCaptcha()
-    })
+    // 获取验证码，默认服务器存储10mins
     const getCaptcha = ()=>{
-      // TODO...
-    }
+      getCaptchaApi({}).then(res=>{
+        state.captchaCode.id = res.data.id
+        state.captchaCode.encode = res.data.encode
+      })
 		// 时间获取
 		const currentTime = computed(() => {
 			return formatAxis(new Date());
