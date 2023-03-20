@@ -29,6 +29,7 @@ function signInCard() {
 	signInCardApi({
 		uid: state.userId
 	}).then(res => {
+    // 根据用户id获取token存储在浏览器storage
 		Session.set('token', res.jwt)
 		window.localStorage.setItem("token", res.jwt)
 		window.localStorage.setItem('eqRoles', JSON.stringify(res.roles))
@@ -43,6 +44,7 @@ function genUserInfo(uid) {
 	getInfo({
 		userId: uid
 	}).then(res => {
+    console.log(res)
 		window.localStorage.setItem('userName', res.userName)
 		window.localStorage.setItem('userId', res.userId)
 		initFrontEndControlRoutes();

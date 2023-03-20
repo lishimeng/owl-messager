@@ -30,3 +30,5 @@ export const resetPwdApi = (p) => post(baseURL + '/user/password/change', p)
 export const resetPwdByAdminApi = (p) => post(baseURL + '/user/password/reset', p)
 // 登录
 export const signInCardApi = (p) => post(baseURL + '/user/sign_in_card', p)
+// 获取验证码
+export const getCaptchaApi = (p) => post(baseURL + '/user/getcaptcha', p)
