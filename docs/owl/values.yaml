@@ -25,7 +25,9 @@ serviceAccount:
 
 podAnnotations: {}
 
-env: {}
+existingConfigmap: owl
+
+existingSecret: owl
 
 podSecurityContext: {}
   # fsGroup: 2000
