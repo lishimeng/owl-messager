@@ -17,7 +17,7 @@ To install the chart with the release name `my-release`:
 $ helm install my-release owl/owl
 ```
 
-The command deploys Mosquitto on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
+The command deploys Owl on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
 
 > **Tip**: List all releases using `helm list`
 
