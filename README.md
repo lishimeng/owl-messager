@@ -4,6 +4,7 @@ owl messager
 [![issues](https://img.shields.io/github/issues/lishimeng/owl-messager)](https://github.com/lishimeng/owl-messager)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lishimeng%2Fowl-messager?style=flat-square)](https://goreportcard.com/report/github.com/lishimeng%2Fowl-messager)
 [![License](https://img.shields.io/github/license/lishimeng/owl-messager)](https://github.com/lishimeng/owl-messager)
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/owl)](https://artifacthub.io/packages/search?repo=owl)
 
 Message notify platform.
 
