@@ -1,6 +1,6 @@
 module github.com/lishimeng/owl
 
-go 1.18
+go 1.20
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.1.0
@@ -25,6 +25,8 @@ require (
 	github.com/lishimeng/go-log v1.0.0
 	github.com/lishimeng/go-orm v1.2.2
 	github.com/qiniu/go-sdk/v7 v7.11.1
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.622
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ses v1.0.622
 	golang.org/x/net v0.5.0
 )
 
