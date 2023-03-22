@@ -3,9 +3,9 @@ entries:
   owl:
   - apiVersion: v2
     appVersion: v0.5.7
-    created: "2023-03-22T11:29:33.3400725+08:00"
+    created: "2023-03-22T15:01:43.3209868+08:00"
     description: Message provider
-    digest: c184b93ea48bb01eafff4ff27a2e52a104f07d65e822f6c45dfcf178cb268a44
+    digest: 818a449c3d152d59a669a76bafbac33c6c6587c7c87223b06b1451a534635ae8
     keywords:
     - owl
     - message
@@ -14,6 +14,6 @@ entries:
     name: owl
     type: application
     urls:
-    - owl-0.1.3.tgz
-    version: 0.1.3
-generated: "2023-03-22T11:29:33.3389026+08:00"
+    - owl-0.1.4.tgz
+    version: 0.1.4
+generated: "2023-03-22T15:01:43.3164001+08:00"
