@@ -23,6 +23,8 @@ func (f *MailFactory) Create(vendor model.MailVendor, config string) (s messager
 		s, err = mail.NewSmtp(config)
 	case model.MailVendorMicrosoft:
 		s, err = mail.NewMicrosoft(config)
+	case model.MailVendorTencent:
+		s, err = mail.NewTencent(config)
 	default:
 		err = errors.New("unknown mail vendor")
 	}
