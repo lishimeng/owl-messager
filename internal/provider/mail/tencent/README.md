@@ -57,8 +57,8 @@ if err != nil {
 }
 
 param := map[string]interface{}{
-    "1": "value",
-    "2": "value2",
+    "key1": "value1",
+    "key2": "value2",
 }
 bs, err = json.Marshal(param)
 if err != nil {
