@@ -57,7 +57,8 @@ if err != nil {
 }
 
 param := map[string]interface{}{
-    "key": "value",
+    "1": "value",
+    "2": "value2",
 }
 bs, err = json.Marshal(param)
 if err != nil {
@@ -69,7 +70,6 @@ err = s.Send(messager.MailRequest{
     Receivers: []string{"mail_address"},
     Template:  templateId,
     Params:    param,
-    ParamsRaw: string(bs),
 })
 
 if err != nil {
