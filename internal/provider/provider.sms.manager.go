@@ -3,6 +3,7 @@ package provider
 import (
 	"encoding/json"
 	"errors"
+	"github.com/lishimeng/app-starter/factory"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/messager"
@@ -12,10 +13,13 @@ import (
 type SmsFactory struct {
 }
 
-var DefaultSmsFactory *SmsFactory
-
 func init() {
-	DefaultSmsFactory = &SmsFactory{}
+	factory.Add(&SmsFactory{})
+}
+
+func GetFactory() (f *SmsFactory) {
+	_ = factory.Get(f)
+	return
 }
 
 func (f *SmsFactory) Create(vendor model.SmsVendor, config string) (p messager.SmsProvider, err error) {
