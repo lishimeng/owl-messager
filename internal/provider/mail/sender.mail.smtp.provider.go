@@ -1,7 +1,6 @@
 package mail
 
 import (
-	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/messager"
 	"github.com/lishimeng/owl/internal/provider/mail/smtp"
 )
@@ -20,9 +19,8 @@ func NewSmtp(config string) (s messager.MailProvider, err error) {
 	return
 }
 
-func (s *smtpSender) Send(subject string, body string, to ...string) (err error) {
+func (s *smtpSender) Send(req messager.MailRequest) (err error) {
 
-	log.Debug("mail body:%s", body)
-	err = s.proxy.Send(subject, body, to...)
+	err = s.proxy.Send(req.Subject, req.TextContent, req.Receivers...)
 	return
 }

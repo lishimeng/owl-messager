@@ -33,6 +33,14 @@ func (f *SmsFactory) Create(vendor model.SmsVendor, config string) (p messager.S
 			return
 		}
 		p = &h
+	case model.SmsVendorTencent:
+		var tencentSmsConf model.TencentSmsConfig
+		err = json.Unmarshal([]byte(config), &tencentSmsConf)
+		if err != nil {
+			return
+		}
+		h := sms.NewTencent(tencentSmsConf)
+		p = h
 	default:
 		err = errors.New("unknown mail vendor")
 	}

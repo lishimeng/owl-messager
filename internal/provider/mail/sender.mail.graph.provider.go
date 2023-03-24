@@ -19,12 +19,12 @@ func NewMicrosoft(config string) (s messager.MailProvider, err error) {
 	return
 }
 
-func (h *msSender) Send(subject string, body string, to ...string) (err error) {
+func (h *msSender) Send(req messager.MailRequest) (err error) {
 
 	if h.proxy == nil {
 		err = errors.New("proxy nil")
 	}
 
-	err = h.proxy.Send(subject, body, to...)
+	err = h.proxy.Send(req.Subject, req.TextContent, req.Receivers...)
 	return
 }

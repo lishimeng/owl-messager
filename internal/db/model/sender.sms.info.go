@@ -55,3 +55,10 @@ type AliSmsConfig struct {
 	Region    string `json:"region,omitempty"`
 	SignName  string `json:"signName,omitempty"`
 }
+
+type TencentSmsConfig struct {
+	AppId    string `json:"appId,omitempty"`
+	AppKey   string `json:"appKey,omitempty"`
+	Sign     string `json:"region,omitempty"`
+	SignName string `json:"signName,omitempty"`
+}

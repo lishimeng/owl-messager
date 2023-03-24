@@ -23,6 +23,21 @@ func CreateMailMessage(sender *model.MailSenderInfo, template model.MailTemplate
 	return
 }
 
+func CreateCloudMailMessage(sender *model.MailSenderInfo, templateId string, templateParams string,
+	subject, receiver, cc string) (m model.MessageInfo, err error) {
+	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
+		// create message
+		m, e = repo.CreateMessage(ctx, subject, msg.Email)
+		if e != nil {
+			return
+		}
+		// create mail
+		_, _ = repo.CreateCloudMailMessage(ctx, m, templateId, templateParams, subject, receiver)
+		return
+	})
+	return
+}
+
 func UpdateMailTemplate(id, status int, body, description string) (m model.MailTemplateInfo, err error) {
 	m, err = repo.GetMailTemplateById(id)
 	if err != nil {

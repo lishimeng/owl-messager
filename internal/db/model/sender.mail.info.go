@@ -12,6 +12,7 @@ type MailVendor string
 const (
 	MailVendorSmtp      MailVendor = "smtp"
 	MailVendorMicrosoft MailVendor = "microsoft"
+	MailVendorTencent   MailVendor = "tencent"
 )
 
 // MailVendors vendor:enable?1:0
@@ -45,4 +46,11 @@ type GraphConfig struct {
 	Sender         string `json:"sender,omitempty"`
 	Certificate    string `json:"certificate,omitempty"`
 	CertificateKey string `json:"certificateKey,omitempty"`
+}
+
+type TencentConfig struct {
+	AppId  string `json:"appId,omitempty"`
+	Secret string `json:"secret,omitempty"`
+	Region string `json:"region,omitempty"`
+	Sender string `json:"sender,omitempty"`
 }

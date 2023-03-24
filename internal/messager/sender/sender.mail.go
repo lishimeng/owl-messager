@@ -7,6 +7,7 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
+	"github.com/lishimeng/owl/internal/messager"
 	"github.com/lishimeng/owl/internal/provider"
 	"github.com/lishimeng/owl/internal/provider/template"
 	"strings"
@@ -40,10 +41,21 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 		return
 	}
 
-	mailBody, err := m.buildMailBody(p)
+	var params map[string]interface{}
+	err = json.Unmarshal([]byte(p.Params), &params)
 	if err != nil {
-		log.Info("build mail body failure")
+		log.Info("params of mail template is not json format:%s", p.Params)
 		return
+	}
+
+	var mailBody string
+
+	if p.CloudTemplate == 0 { // 本地模板,解析邮件body
+		mailBody, err = m.buildMailBody(p, params)
+		if err != nil {
+			log.Info("build mail body failure")
+			return
+		}
 	}
 
 	s, err := provider.DefaultMailFactory.Create(si.Vendor, si.Config)
@@ -54,22 +66,25 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 
 	receivers := strings.Split(p.Receivers, ",")
 
-	err = s.Send(p.Subject, mailBody, receivers...)
+	req := messager.MailRequest{
+		Subject:     p.Subject,
+		TextContent: mailBody,
+		Receivers:   receivers,
+		Template:    p.CloudTemplateId,
+		Params:      params,
+	}
+
+	err = s.Send(req)
 	return
 }
 
-func (m *mailSender) buildMailBody(p model.MailMessageInfo) (body string, err error) {
+func (m *mailSender) buildMailBody(p model.MailMessageInfo, params map[string]interface{}) (body string, err error) {
 	tpl, err := repo.GetMailTemplateById(p.Template)
 	if err != nil {
 		log.Info("mail template not exist:%d", p.Template)
 		return
 	}
-	var params map[string]interface{}
-	err = json.Unmarshal([]byte(p.Params), &params)
-	if err != nil {
-		log.Info("params of mail template is not json format:%s", p.Params)
-		return
-	}
+
 	body, err = template.Rend(params, tpl.Body, tpl.Category)
 	if err != nil {
 		log.Info("template render failed")
