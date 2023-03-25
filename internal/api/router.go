@@ -23,10 +23,10 @@ func router(root iris.Party) {
 	task(root.Party("/task"))
 	message(root.Party("/message"))
 
-	mailSender(root.Party("/mail_sender"))
-	mailTemplate(root.Party("/mail_template"))
+	sender(root.Party("/sender"))
+	template(root.Party("/template"))
 
-	smsSender(root.Party("/sms_sender"))
+	vendor(root.Party("/vendor"))
 
 	mail(root.Party("/mail"))
 
@@ -37,6 +37,24 @@ func router(root iris.Party) {
 
 	// api v2
 	ddd.Router(root.Party("/v2"))
+}
+
+// vendor /api/vendor/
+func vendor(p iris.Party) {
+	p.Get("/mail", templateApi.GetMailVendors)
+	p.Get("/sms", templateApi.GetSmsVendors)
+}
+
+// sender /api/sender/
+func sender(p iris.Party) {
+	mailSender(p.Party("/mail"))
+	smsSender(p.Party("/sms"))
+}
+
+// template /api/template/
+func template(p iris.Party) {
+	mailTemplate(p.Party("/mail"))
+	smsTemplate(p.Party("/sms"))
 }
 
 func message(p iris.Party) {
@@ -74,6 +92,17 @@ func smsSender(p iris.Party) {
 func mailTemplate(p iris.Party) {
 	p.Post("/", templateApi.AddMailTemplate)
 	p.Put("/{id}", templateApi.UpdateMailTemplate)
+	p.Put("/{id}/status", templateApi.ChangeMailTemplateStatus)
+	p.Delete("/{id}", templateApi.DeleteMailTemplate)
+
+	p.Get("/", templateApi.GetMailTemplateList)
+	p.Get("/{id}", templateApi.GetMailTemplateInfo)
+}
+
+func smsTemplate(p iris.Party) {
+	p.Post("/", templateApi.AddSmsTemplate)
+	p.Put("/{id}", templateApi.UpdateMailTemplate)
+	p.Put("/{id}/status", templateApi.ChangeSmsTemplateStatus)
 	p.Delete("/{id}", templateApi.DeleteMailTemplate)
 
 	p.Get("/", templateApi.GetMailTemplateList)
