@@ -1,6 +1,7 @@
 package templateApi
 
 import (
+	"fmt"
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/tool"
@@ -9,6 +10,7 @@ import (
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
 	"github.com/lishimeng/owl/internal/db/service"
+	"github.com/lishimeng/owl/internal/util"
 )
 
 type Info struct {
@@ -23,6 +25,20 @@ type Info struct {
 type InfoWrapper struct {
 	app.Response
 	Info
+}
+
+// GetMailVendors 平台支持的mail类型
+func GetMailVendors(ctx iris.Context) {
+	var resp SmsVendors
+
+	resp.Code = tool.RespCodeSuccess
+	resp.Message = "Mail Vendors"
+	for key, v := range model.MailVendors {
+		if v == model.MailVendorEnable {
+			resp.Data = append(resp.Data, key)
+		}
+	}
+	tool.ResponseJSON(ctx, resp)
 }
 
 func GetMailTemplateList(ctx iris.Context) {
@@ -257,6 +273,63 @@ func DeleteMailTemplate(ctx iris.Context) {
 		log.Info("delete mail template failed")
 		resp.Code = -1
 		resp.Message = "delete template failed"
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
+}
+
+type MailStatusReq struct {
+	Status int `json:"status,omitempty"`
+	Id     int `json:"id,omitempty"`
+}
+
+func ChangeMailTemplateStatus(ctx iris.Context) {
+
+	var req SmsStatusReq
+	var resp app.Response
+	var err error
+
+	err = ctx.ReadJSON(&req)
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+
+	if req.Id <= 0 {
+		log.Debug("param id nil")
+		resp.Code = tool.RespCodeError
+		resp.Message = "id nil"
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+
+	if !util.StatusIn(req.Status, model.MailTemplateStatus) {
+		log.Debug("param unknown status: %d", req.Status)
+		resp.Code = tool.RespCodeError
+		resp.Message = fmt.Sprintf("unknown status:%d", req.Status)
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+
+	tpl, err := repo.GetMailTemplateById(req.Id)
+	if err != nil {
+		log.Debug("template not found")
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "template not found"
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+
+	tpl.Status = req.Status
+
+	_, err = repo.UpdateMailTemplateInfo(tpl, "status")
+	if err != nil {
+		log.Debug(err)
+		resp.Code = tool.RespCodeError
+		resp.Message = err.Error()
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
