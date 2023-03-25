@@ -66,3 +66,9 @@ func UpdateMailTemplate(ctx persistence.TxContext, ori model.MailTemplateInfo, c
 	m = ori
 	return
 }
+
+func UpdateMailTemplateInfo(ori model.MailTemplateInfo, cols ...string) (m model.MailTemplateInfo, err error) {
+	_, err = app.GetOrm().Context.Update(&ori, cols...)
+	m = ori
+	return
+}
