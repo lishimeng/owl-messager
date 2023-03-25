@@ -15,13 +15,18 @@ const (
 	MailVendorTencent   MailVendor = "tencent"
 )
 
+const (
+	MailVendorEnable = 0x01
+)
+
 // MailVendors vendor:enable?1:0
 var MailVendors map[MailVendor]byte
 
 func init() {
 	MailVendors = make(map[MailVendor]byte)
-	MailVendors[MailVendorSmtp] = 0x01
-	MailVendors[MailVendorMicrosoft] = 0x01
+	MailVendors[MailVendorSmtp] = MailVendorEnable
+	MailVendors[MailVendorMicrosoft] = MailVendorEnable
+	MailVendors[MailVendorTencent] = MailVendorEnable
 }
 
 // Support 数据库记录的vendor是否被支持

@@ -26,16 +26,20 @@ const (
 	SmsVendorUpYun   SmsVendor = "up_yun"
 )
 
+const (
+	SmsVendorEnable = 0x01
+)
+
 var SmsVendors map[SmsVendor]byte
 
 func init() {
 	SmsVendors = make(map[SmsVendor]byte)
-	SmsVendors[SmsVendorBaidu] = 0x01
-	SmsVendors[SmsVendorAli] = 0x01
-	SmsVendors[SmsVendorHuawei] = 0x01
-	SmsVendors[SmsVendorQiNiu] = 0x01
-	SmsVendors[SmsVendorTencent] = 0x01
-	SmsVendors[SmsVendorUpYun] = 0x01
+	SmsVendors[SmsVendorBaidu] = SmsVendorEnable
+	SmsVendors[SmsVendorAli] = SmsVendorEnable
+	SmsVendors[SmsVendorHuawei] = SmsVendorEnable
+	SmsVendors[SmsVendorQiNiu] = SmsVendorEnable
+	SmsVendors[SmsVendorTencent] = SmsVendorEnable
+	SmsVendors[SmsVendorUpYun] = SmsVendorEnable
 }
 
 // Support 数据库记录的vendor是否被支持
