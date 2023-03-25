@@ -20,3 +20,9 @@ const (
 	MailTemplateCategoryHtml    = 2                        // html
 	MailTemplateCategoryDefault = MailTemplateCategoryText // text
 )
+
+var MailTemplateStatus []int
+
+func init() {
+	MailTemplateStatus = append(MailTemplateStatus, MailTemplateEnable, MailTemplateDisable)
+}
