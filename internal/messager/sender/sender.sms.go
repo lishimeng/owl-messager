@@ -50,7 +50,7 @@ func (m *smsSender) Send(mi model.SmsMessageInfo) (err error) {
 	}
 
 	var req = messager.Request{
-		Template:  tpl.SenderTemplateId,
+		Template:  tpl.CloudTemplateId,
 		Params:    mi.Params,
 		Receivers: mi.Receivers,
 		Sign:      tpl.Signature,
