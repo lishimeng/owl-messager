@@ -66,3 +66,11 @@ type TencentSmsConfig struct {
 	Sign     string `json:"region,omitempty"`
 	SignName string `json:"signName,omitempty"`
 }
+type HuaweiSmsConfig struct {
+	Host     string `json:"host,omitempty"`
+	AppId    string `json:"appId,omitempty"`
+	AppKey   string `json:"appKey,omitempty"`
+	Sign     string `json:"region,omitempty"`
+	Sender   string `json:"sender,omitempty"`
+	SignName string `json:"signName,omitempty"`
+}
