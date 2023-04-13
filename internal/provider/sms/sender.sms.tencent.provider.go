@@ -23,6 +23,8 @@ type TencentSdk struct {
 func NewTencent(conf model.TencentSmsConfig) (sdk messager.SmsProvider) {
 
 	credential := common.NewCredential(conf.AppId, conf.AppKey)
+	// 腾讯云暂时只支持国内的:ap-guangzhou通道, 国外新加坡通道
+	// 因此region暂时会锁定ap-guangzhou
 	client, _ := sms.NewClient(credential, "ap-guangzhou", profile.NewClientProfile())
 
 	sdk = &TencentSdk{
