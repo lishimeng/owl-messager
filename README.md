@@ -1,10 +1,12 @@
-owl messager
+Owl Messager
 ===============================================
 [![Go project version](https://badge.fury.io/go/github.com%2Flishimeng%2Fowl-messager.svg)](https://badge.fury.io/go/github.com%2Flishimeng%2Fowl-messager)
 [![issues](https://img.shields.io/github/issues/lishimeng/owl-messager)](https://github.com/lishimeng/owl-messager)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lishimeng%2Fowl-messager?style=flat-square)](https://goreportcard.com/report/github.com/lishimeng%2Fowl-messager)
 [![License](https://img.shields.io/github/license/lishimeng/owl-messager)](https://github.com/lishimeng/owl-messager)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/owl)](https://artifacthub.io/packages/search?repo=owl)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/lishimeng/owl-messager/develop?style=plastic)](https://github.com/lishimeng/owl-messager)
+[![Docker pull](https://img.shields.io/docker/pulls/lishimeng/owl-messager?style=plastic)](https://hub.docker.com/r/lishimeng/owl-messager)
 
 Message notify platform.
 
