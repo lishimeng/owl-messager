@@ -39,7 +39,7 @@ func NewHuawei(conf model.HuaweiSmsConfig) (sdk messager.SmsProvider) {
 }
 
 func (sdk *HuaweiSdk) Send(message messager.Request) (resp messager.Response, err error) {
-	signature := message.Sign
+	signature := sdk.config.SignName // TODO 暂时只支持一个账号唯一签名
 	receiver := message.Receivers
 	statusCallBack := ""
 	var m = make(map[string]interface{})
