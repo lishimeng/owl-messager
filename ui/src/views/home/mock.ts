@@ -106,13 +106,13 @@ export const getZhexianOption = (color: string, bgColor: string) => {
     return {
         backgroundColor: bgColor,
         title: {
-            text: '政策补贴额度',
+            text: '发送历史',
             x: 'left',
             textStyle: { fontSize: '15', color: color },
         },
         grid: { top: 70, right: 20, bottom: 30, left: 30 },
         tooltip: { trigger: 'axis' },
-        legend: { data: ['预购队列', '最新成交价'], right: 0 },
+        legend: { data: ['Mail', 'SMS'], right: 0 },
         xAxis: {
             data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
         },
@@ -125,7 +125,7 @@ export const getZhexianOption = (color: string, bgColor: string) => {
         ],
         series: [
             {
-                name: '预购队列',
+                name: 'Mail',
                 type: 'line',
                 symbolSize: 6,
                 symbol: 'circle',
@@ -141,7 +141,7 @@ export const getZhexianOption = (color: string, bgColor: string) => {
                 },
             },
             {
-                name: '最新成交价',
+                name: 'SMS',
                 type: 'line',
                 symbolSize: 6,
                 symbol: 'circle',
