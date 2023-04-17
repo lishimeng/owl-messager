@@ -315,7 +315,7 @@ export const getPieOption = (color: string,
 ) => {
 
     const colorList = ['#51A3FC', '#36C78B', '#FEC279', '#968AF5', '#E790E8'];
-    let getname = ['房屋及结构物', '专用设备', '通用设备', '文物和陈列品', '图书、档案'];
+    let getname = ['阿里云', '华为云', '腾讯云', '七牛云', '百度云、又拍云'];
     let getvalue = [34.2, 38.87, 17.88, 9.05, 2.05];
     let data = [];
     for (let i = 0; i < getname.length; i++) {
@@ -324,7 +324,7 @@ export const getPieOption = (color: string,
     return {
         backgroundColor: bgColor,
         title: {
-            text: '房屋建筑工程',
+            text: '短信平台分布',
             x: 'left',
             textStyle: { fontSize: '15', color: color },
         },
@@ -394,7 +394,3 @@ export const getPieOption = (color: string,
 
     }
 }
-
-
-
-
