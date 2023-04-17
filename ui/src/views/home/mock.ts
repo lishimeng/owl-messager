@@ -185,24 +185,24 @@ export const getBarOption = (color: string, bgColor: string) => {
 
       backgroundColor: bgColor,
       title: {
-          text: '地热开发利用',
+          text: '发送效率',
           x: 'left',
           textStyle: { fontSize: '15', color: color },
       },
       tooltip: { trigger: 'axis' },
-      legend: { data: ['供温', '回温', '压力值(Mpa)'], right: 0 },
+      legend: { data: ['任务量', '发送耗时', '等待率'], right: 0 },
       grid: { top: 70, right: 80, bottom: 30, left: 80 },
       xAxis: [
           {
               type: 'category',
-              data: ['1km', '2km', '3km', '4km', '5km', '6km'],
+              data: ['ali', 'huawei', 'tencent', 'qiniu', 'baidu', 'youpai'],
               boundaryGap: true,
               axisTick: { show: false },
           },
       ],
       yAxis: [
           {
-              name: '供回温度(℃）',
+              name: '任务量',
               nameLocation: 'middle',
               nameTextStyle: { padding: [3, 4, 50, 6] },
               splitLine: { show: true, lineStyle: { type: 'dashed', color: '#f5f5f5' } },
@@ -211,7 +211,7 @@ export const getBarOption = (color: string, bgColor: string) => {
               axisLabel: { color: color, formatter: '{value} ' },
           },
           {
-              name: '压力值(Mpa)',
+              name: '耗时',
               nameLocation: 'middle',
               nameTextStyle: { padding: [50, 4, 5, 6] },
               splitLine: { show: false },
@@ -222,7 +222,7 @@ export const getBarOption = (color: string, bgColor: string) => {
       ],
       series: [
           {
-              name: '供温',
+              name: '任务量',
               type: 'line',
               smooth: true,
               showSymbol: true,
@@ -250,7 +250,7 @@ export const getBarOption = (color: string, bgColor: string) => {
               ],
           },
           {
-              name: '回温',
+              name: '耗时',
               type: 'line',
               smooth: true,
               showSymbol: true,
@@ -283,7 +283,7 @@ export const getBarOption = (color: string, bgColor: string) => {
               ],
           },
           {
-              name: '压力值(Mpa)',
+              name: '等待率',
               type: 'bar',
               barWidth: 30,
               yAxisIndex: 1,
