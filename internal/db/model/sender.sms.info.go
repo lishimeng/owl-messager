@@ -61,10 +61,11 @@ type AliSmsConfig struct {
 }
 
 type TencentSmsConfig struct {
-	AppId    string `json:"appId,omitempty"`
-	AppKey   string `json:"appKey,omitempty"`
-	Region   string `json:"region,omitempty"`
-	SignName string `json:"signName,omitempty"`
+	AppId     string `json:"appId,omitempty"`
+	AppKey    string `json:"appKey,omitempty"`
+	SmsAppKey string `json:"smsAppKey,omitempty"`
+	Region    string `json:"region,omitempty"`
+	SignName  string `json:"signName,omitempty"`
 }
 type HuaweiSmsConfig struct {
 	Host     string `json:"host,omitempty"`
