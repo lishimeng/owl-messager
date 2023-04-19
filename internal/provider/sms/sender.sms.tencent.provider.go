@@ -2,6 +2,7 @@ package sms
 
 import (
 	"encoding/json"
+	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/messager"
 	"strings"
@@ -20,13 +21,16 @@ type TencentSdk struct {
 	client *sms.Client
 }
 
-func NewTencent(conf model.TencentSmsConfig) (sdk messager.SmsProvider) {
+func NewTencent(conf model.TencentSmsConfig) (sdk messager.SmsProvider, err error) {
 
 	credential := common.NewCredential(conf.AppId, conf.AppKey)
-	// 腾讯云暂时只支持国内的:ap-guangzhou通道, 国外新加坡通道
-	// 因此region暂时会锁定ap-guangzhou
-	client, _ := sms.NewClient(credential, "ap-guangzhou", profile.NewClientProfile())
 
+	client, err := sms.NewClient(credential, conf.Region, profile.NewClientProfile())
+
+	if err != nil {
+		return
+	}
+	//client.WithDebug(true)
 	sdk = &TencentSdk{
 		config: conf,
 		client: client,
@@ -56,6 +60,9 @@ func (sdk *TencentSdk) Send(message messager.Request) (resp messager.Response, e
 	if len(params) > 0 {
 		req.TemplateParamSet = common.StringPtrs(params)
 	}
+
+	bs, _ := json.Marshal(req)
+	log.Debug(string(bs))
 
 	result, err := sdk.client.SendSms(req)
 	if err != nil {

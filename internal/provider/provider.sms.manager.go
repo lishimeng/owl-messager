@@ -43,7 +43,10 @@ func (f *SmsFactory) Create(vendor model.SmsVendor, config string) (p messager.S
 		if err != nil {
 			return
 		}
-		h := sms.NewTencent(tencentSmsConf)
+		h, err := sms.NewTencent(tencentSmsConf)
+		if err != nil {
+			return
+		}
 		p = h
 	default:
 		err = errors.New("unknown mail vendor")

@@ -15,7 +15,7 @@ func map2array(m map[string]interface{}) (arr []string) {
 
 	var keys []string
 	for key := range m {
-		keys = append(keys, fmt.Sprintf("%0*s", 2, key))
+		keys = append(keys, fmt.Sprintf("%0*s", 1, key))
 	}
 
 	sort.Strings(keys)
