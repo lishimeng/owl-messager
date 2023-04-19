@@ -49,7 +49,7 @@ func (sdk *TencentSdk) Send(message messager.Request) (resp messager.Response, e
 	params := map2array(m)
 
 	req := sms.NewSendSmsRequest()
-	req.SmsSdkAppId = common.StringPtr(sdk.config.SmsAppKey)
+	req.SmsSdkAppId = common.StringPtr(sdk.config.SmsAppId)
 	req.SignName = common.StringPtr(sdk.config.SignName)
 
 	/* 下发手机号码，采用 E.164 标准，+[国家或地区码][手机号]
