@@ -76,3 +76,9 @@ if err != nil {
     return err
 }
 ```
+### 注意
+Tencent对region支持有特殊要求:
+> 国内是香港，国际是新加坡地域
+> 
+> 发送国内邮件需要指定region:ap-hongkong
+
