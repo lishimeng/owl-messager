@@ -15,6 +15,10 @@ const (
 	MailVendorTencent   MailVendor = "tencent"
 )
 
+func (mail MailVendor) String() string {
+	return string(mail)
+}
+
 const (
 	MailVendorEnable = 0x01
 )

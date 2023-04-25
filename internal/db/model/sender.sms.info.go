@@ -26,6 +26,10 @@ const (
 	SmsVendorUpYun   SmsVendor = "up_yun"
 )
 
+func (sms SmsVendor) String() string {
+	return string(sms)
+}
+
 const (
 	SmsVendorEnable = 0x01
 )
