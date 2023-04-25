@@ -19,7 +19,7 @@ type VendorConfigReq struct {
 	Method string `json:"method,omitempty"` // 功能 枚举 model.SenderCategory
 }
 
-func vendorConfig(ctx iris.Context) {
+func getConfigStruct(ctx iris.Context) {
 
 	var resp VendorConfigResp
 	var req VendorConfigReq
