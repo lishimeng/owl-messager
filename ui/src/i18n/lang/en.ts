@@ -71,6 +71,7 @@ export default {
 		visualizingLinkDemo2: 'visualizingLinkDemo2',
 		personal: 'personal',
 		tools: 'tools',
+		sender: 'sender',
 		layoutLinkView: 'LinkView',
 		layoutIframeViewOne: 'IframeViewOne',
 		layoutIframeViewTwo: 'IframeViewTwo',

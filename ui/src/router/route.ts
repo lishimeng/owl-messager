@@ -1135,6 +1135,21 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
 				},
 			},
 			{
+				path: '/sender',
+				name: 'sender',
+				component: () => import('/@/views/sender/sms/index.vue'),
+				meta: {
+					title: 'message.router.sender',
+					isLink: '',
+					isHide: false,
+					isKeepAlive: true,
+					isAffix: false,
+					isIframe: false,
+					roles: ['admin', 'common'],
+					icon: 'iconfont icon-gongju',
+				},
+			},
+			{
 				path: '/link',
 				name: 'layoutLinkView',
 				component: () => import('/@/layout/routerView/link.vue'),

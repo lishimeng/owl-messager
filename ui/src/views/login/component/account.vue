@@ -9,22 +9,11 @@
 		</el-form-item>
 		<el-form-item class="login-animation2">
 			<el-input
-				:type="state.isShowPassword ? 'text' : 'password'"
 				:placeholder="$t('message.account.accountPlaceholder2')"
 				v-model="state.ruleForm.password"
 				autocomplete="off"
+				show-password
 			>
-				<template #prefix>
-					<el-icon class="el-input__icon"><ele-Unlock /></el-icon>
-				</template>
-				<template #suffix>
-					<i
-						class="iconfont el-input__icon login-content-password"
-						:class="state.isShowPassword ? 'icon-yincangmima' : 'icon-xianshimima'"
-						@click="state.isShowPassword = !state.isShowPassword"
-					>
-					</i>
-				</template>
 			</el-input>
 		</el-form-item>
 		<el-form-item class="login-animation3">

@@ -71,6 +71,7 @@ export default {
 		visualizingLinkDemo2: '數據視覺化演示2',
 		personal: '個人中心',
 		tools: '工具類集合',
+		sender: '發件人',
 		layoutLinkView: '外鏈',
 		layoutIframeViewOne: '内嵌 iframe1',
 		layoutIframeViewTwo: '内嵌 iframe2',
