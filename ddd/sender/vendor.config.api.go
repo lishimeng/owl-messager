@@ -4,7 +4,6 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/tool"
-	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/db/model"
 	"reflect"
 	"strings"
@@ -22,17 +21,10 @@ type VendorConfigReq struct {
 
 func vendorConfig(ctx iris.Context) {
 
-	var err error
 	var resp VendorConfigResp
 	var req VendorConfigReq
-	err = ctx.ReadJSON(&req)
-	if err != nil {
-		log.Info("read req failed")
-		log.Info(err)
-		resp.Code = tool.RespCodeError
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
+	req.Vendor = ctx.Params().Get("vendor")
+	req.Method = ctx.Params().Get("category")
 	config, ok := vendorSupport[req.Vendor+req.Method]
 	if ok {
 		m := getJsonConstructor(config)
