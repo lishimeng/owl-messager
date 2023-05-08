@@ -6,7 +6,7 @@ import (
 )
 
 func TestVendorConfig(t *testing.T) {
-	var c, ok = vendorSupport[model.MailVendorMicrosoft.String()+model.SenderCategorySms]
+	var c, ok = vendorSupport[model.MailVendorMicrosoft.String()+model.SenderCategoryMail]
 	if !ok {
 		t.Log("unknown config")
 		return
