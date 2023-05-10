@@ -19,6 +19,9 @@ type VendorConfigReq struct {
 	Method string `json:"method,omitempty"` // 功能 枚举 model.SenderCategory
 }
 
+// getConfigStruct
+// 显示sender的配置字段,以map格式展示
+// VendorConfigResp
 func getConfigStruct(ctx iris.Context) {
 
 	var resp VendorConfigResp
@@ -51,6 +54,7 @@ func getJsonConstructor(v interface{}) (m map[string]string) {
 	return
 }
 
+// 配置平台支持的sender类型
 var vendorSupport = map[string]interface{}{
 	model.SmsVendorAli.String() + model.SenderCategorySms:     model.AliSmsConfig{},
 	model.SmsVendorTencent.String() + model.SenderCategorySms: model.TencentSmsConfig{},
