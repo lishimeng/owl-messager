@@ -28,12 +28,12 @@ What is this?
 owl messager is a platform:
 
 1. Support email.
-1. Support SMS.
-1. Support APNS.
-1. Support WeChat.
-1. Support DingDing.
-1. Support Multi-tenant.
-1. Support Account list(mail sender).
+2. Support SMS.
+3. Support APNS.
+4. Support WeChat.
+5. Support DingDing.
+6. Support Multi-tenant.
+7. Support Account list(mail sender).
 
 Usage
 --------------
