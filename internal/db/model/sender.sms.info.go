@@ -47,7 +47,7 @@ func init() {
 }
 
 // Support 数据库记录的vendor是否被支持
-func (s SmsSenderInfo) Support() bool {
+func (s *SmsSenderInfo) Support() bool {
 	val, ok := SmsVendors[s.Vendor]
 	return ok && (val > 0)
 }
