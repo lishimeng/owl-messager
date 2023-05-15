@@ -1,13 +1,16 @@
 package model
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"github.com/lishimeng/app-starter"
+)
 
 type SmsParam map[string]string
 
 // SmsTemplateInfo 短信模板
 // 可以指定发送账号
 type SmsTemplateInfo struct {
-	Pk
+	app.Pk
 	Code            string   `orm:"column(code);unique"`       // owl中的唯一编码
 	Name            string   `orm:"column(name)"`              // 模板名字
 	Sender          int      `orm:"column(sender_id);null"`    // 发送平台
@@ -18,7 +21,7 @@ type SmsTemplateInfo struct {
 	Params          string   `orm:"column(params);null"` // json:key--data_type
 	paramList       SmsParam // 参数列表，不进入数据库
 	Vendor          string   `orm:"column(vendor);null"` // vendor
-	TableChangeInfo
+	app.TableChangeInfo
 }
 
 func (t *SmsTemplateInfo) AddParam(name string, dataType string) {

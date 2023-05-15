@@ -1,11 +1,13 @@
 package model
 
+import "github.com/lishimeng/app-starter"
+
 // SenderInfo 发消息账号
 type SenderInfo struct {
-	Pk
+	app.Pk
 	Code    string `orm:"column(code);unique"`    // 编号
 	Default int    `orm:"column(default_sender)"` // 默认账号
-	TableChangeInfo
+	app.TableChangeInfo
 }
 
 const (
