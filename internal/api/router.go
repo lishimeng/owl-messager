@@ -10,7 +10,6 @@ import (
 	"github.com/lishimeng/owl/internal/api/smsApi"
 	"github.com/lishimeng/owl/internal/api/taskApi"
 	"github.com/lishimeng/owl/internal/api/templateApi"
-	"github.com/lishimeng/owl/internal/openapi"
 )
 
 func Route(app *iris.Application) {
@@ -116,7 +115,7 @@ func mail(p iris.Party) {
 	p.Get("/message/apns/{id}", apnsApi.GetByMessage)
 }
 func sendMail(p iris.Party) {
-	p.Post("/", openapi.CheckAccessToken, mailApi.SendMail)
+	p.Post("/", mailApi.SendMail)
 }
 
 func sms(p iris.Party) {
