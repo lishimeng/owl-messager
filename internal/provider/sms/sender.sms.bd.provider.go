@@ -18,13 +18,13 @@ Credentials	*auth.BceCredentials	请求的鉴权对象，分为普通AK/SK与STS
 SignOption	*auth.SignOptions	认证字符串签名选项
 Retry	RetryPolicy	连接重试策略
 ConnectionTimeoutInMillis	int	连接超时时间，单位毫秒，默认20分钟
- */
+*/
 
 type BDSmsProvider struct {
-
-	client *sms.Client
+	client    *sms.Client
 	signature string
 }
+
 func (p *BDSmsProvider) Init(accessKey, accessSecret string, signature string) (err error) {
 	endpoint := "https://smsv3.bj.baidubce.com"
 	p.client, err = sms.NewClient(accessKey, accessSecret, endpoint)
@@ -34,7 +34,7 @@ func (p *BDSmsProvider) Init(accessKey, accessSecret string, signature string) (
 	return
 }
 
-func (p BDSmsProvider) Send(toer string, tplId string, params map[string]interface{}) (err error) {
+func (p *BDSmsProvider) Send(toer string, tplId string, params map[string]interface{}) (err error) {
 	resp, err := p.client.SendSms(&api.SendSmsArgs{
 		Mobile:      toer,
 		Template:    tplId,
