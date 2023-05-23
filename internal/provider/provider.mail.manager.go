@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/messager"
-	"github.com/lishimeng/owl/internal/provider/mail"
 )
 
 type MailFactory struct {
@@ -18,16 +17,12 @@ func init() {
 
 func (f *MailFactory) Create(vendor model.MailVendor, config string) (s messager.MailProvider, err error) {
 
-	switch vendor {
-	case model.MailVendorSmtp:
-		s, err = mail.NewSmtp(config)
-	case model.MailVendorMicrosoft:
-		s, err = mail.NewMicrosoft(config)
-	case model.MailVendorTencent:
-		s, err = mail.NewTencent(config)
-	default:
+	b, ok := providerBuilders[vendor]
+	if !ok {
 		err = errors.New("unknown mail vendor")
+		return
 	}
+	s, err = b(config)
 	return
 }
 
