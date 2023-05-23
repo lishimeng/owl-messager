@@ -7,7 +7,7 @@ import (
 	"github.com/lishimeng/owl/internal/certificate"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/db/repo"
-	"github.com/lishimeng/owl/internal/provider/apns"
+	"github.com/lishimeng/owl/providers/apns"
 )
 
 type Apns interface {
