@@ -31,9 +31,9 @@ func (f *MailFactory) Create(vendor model.MailVendor, config string) (s messager
 	return
 }
 
-var providerBuilders = map[model.MailVendor]func() (messager.MailProvider, error){}
+var providerBuilders = map[model.MailVendor]func(config string) (messager.MailProvider, error){}
 
-func RegisterMailProvider(vendor model.MailVendor, h func() (messager.MailProvider, error)) {
+func RegisterMailProvider(vendor model.MailVendor, h func(config string) (messager.MailProvider, error)) {
 	if h == nil {
 		return
 	}
