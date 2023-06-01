@@ -222,8 +222,8 @@ github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+
 github.com/leodido/go-urn v1.2.1/go.mod h1:zt4jvISO2HfUBqxjfIshjdMTYS56ZS/qv49ictyFfxY=
 github.com/lib/pq v1.10.5 h1:J+gdV2cUmX7ZqL2B0lFcW0m+egaHC2V3lpO8nWxyYiQ=
 github.com/lib/pq v1.10.5/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
-github.com/lishimeng/app-starter v1.10.15 h1:uDRD6NuzsvO7XkzjbbAkPiQpUJe7Hq6bmshA8tioknk=
-github.com/lishimeng/app-starter v1.10.15/go.mod h1:jrTNghMeoDlpLq+0LBFRfmOOu7ZPNF2fYfqXy41utrI=
+github.com/lishimeng/app-starter v1.11.0 h1:4lrgaFSMKIPyMUOdPuKMOF0kPbaAqHqg2oMMlPdguOE=
+github.com/lishimeng/app-starter v1.11.0/go.mod h1:jrTNghMeoDlpLq+0LBFRfmOOu7ZPNF2fYfqXy41utrI=
 github.com/lishimeng/go-app-shutdown v1.0.1 h1:2tfKpJHSsM8NUm0nVPq1QvDCiVNsJgUtxmxkYt+VSTs=
 github.com/lishimeng/go-app-shutdown v1.0.1/go.mod h1:t6IWDp1O20Ppmyrftos+/FeZRIkuX/htRT6aAmnSuvM=
 github.com/lishimeng/go-log v1.0.0 h1:f4EVvzYfuaNRQVDAlfIfPpGmsnElWbdCRFFy2GoyqtQ=
