@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/lishimeng/owl/internal/db/model"
 	"github.com/lishimeng/owl/internal/messager"
-	"github.com/lishimeng/owl/internal/provider/mail/tencent"
+	"github.com/lishimeng/owl/providers/mail/tencent"
 )
 
 type tencentSender struct {
