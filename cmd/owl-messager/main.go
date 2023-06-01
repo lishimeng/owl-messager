@@ -16,6 +16,7 @@ import (
 	"time"
 )
 import _ "github.com/lib/pq"
+import _ "github.com/lishimeng/owl/providers"
 
 func main() {
 
@@ -73,5 +74,6 @@ func _main() (err error) {
 	}, func(s string) {
 		log.Info(s)
 	})
+
 	return
 }
