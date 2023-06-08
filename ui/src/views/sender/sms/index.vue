@@ -9,12 +9,16 @@
 
       </Table>
   </div>
+  <div class="layout-padding-auto">
+      <JsEditor code="var a = abcd" />
+  </div>
 </template>
 
 <script setup lang="ts" name="smsSender">
 import {defineAsyncComponent, onMounted, reactive, ref} from "vue"
 const Table = defineAsyncComponent(() => import('/@/components/table/index.vue'))
 const TableSearch = defineAsyncComponent(() => import('/@/views/make/tableDemo/search.vue'))
+const JsEditor = defineAsyncComponent(() => import('/@/components/js/index.vue'))
 
 const tableRef = ref<RefType>()
 const state = reactive<TableDemoState>({
