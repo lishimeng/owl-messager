@@ -10,7 +10,7 @@
       </Table>
   </div>
   <div class="layout-padding-auto">
-      <JsEditor code="var a = abcd" />
+      <JsEditor code="var a = abcd" @code="onCodeChange" />
   </div>
 </template>
 
@@ -85,6 +85,10 @@ const getTableData = () => {
 
 const onSearch = () => {
 
+}
+
+const onCodeChange = (content: String) => {
+    console.log("editor:" + content)
 }
 
 // 页面加载时

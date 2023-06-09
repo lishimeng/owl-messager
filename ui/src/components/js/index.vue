@@ -8,17 +8,16 @@
     :tab-size="2"
     :extensions="extensions"
     @ready="handleReady"
-    @change="log('change', $event)"
-    @focus="log('focus', $event)"
-    @blur="log('blur', $event)"
+    @change="onChange"
   />
 </template>
 
 <script setup lang="ts" name="jsEditor">
-import { ref, reactive, shallowRef } from 'vue'
+import { ref, reactive, shallowRef, emit } from 'vue'
 import { Codemirror } from 'vue-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { oneDark } from '@codemirror/theme-one-dark'
+import { stat } from 'fs'
 
 const code = ref(`console.log('Hello, world!')`)
 const extensions = [javascript(), oneDark]
@@ -37,6 +36,12 @@ const log = console.log
 const view = shallowRef()
 const handleReady = (payload:any) => {
 view.value = payload.view
+}
+
+const emit = defineEmits(['code'])
+
+const onChange = () => {
+  emit('code', state.code)
 }
 
 // Status is available at all times via Codemirror EditorView
