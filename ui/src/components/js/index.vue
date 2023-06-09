@@ -38,10 +38,10 @@ const handleReady = (payload:any) => {
 view.value = payload.view
 }
 
-const emit = defineEmits(['code'])
+const emit = defineEmits(['onChange'])
 
 const onChange = () => {
-  emit('code', state.code)
+  emit('onChange', state.code)
 }
 
 // Status is available at all times via Codemirror EditorView
