@@ -13,15 +13,14 @@
 </template>
 
 <script setup lang="ts" name="jsEditor">
-import { ref, reactive, shallowRef, emit } from 'vue'
+import { reactive, shallowRef } from 'vue'
 import { Codemirror } from 'vue-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { oneDark } from '@codemirror/theme-one-dark'
-import { stat } from 'fs'
 
-const code = ref(`console.log('Hello, world!')`)
 const extensions = [javascript(), oneDark]
 
+// 参数列表
 const prop = defineProps({
   code: String
 })
@@ -29,8 +28,6 @@ const prop = defineProps({
 const state = reactive({
   code: prop.code
 })
-
-const log = console.log
 
 // Codemirror EditorView instance ref
 const view = shallowRef()
@@ -44,15 +41,4 @@ const onChange = () => {
   emit('onChange', state.code)
 }
 
-// Status is available at all times via Codemirror EditorView
-const getCodemirrorStates = () => {
-const state = view.value.state
-const ranges = state.selection.ranges
-const selected = ranges.reduce((r:any, range:any) => r + range.to - range.from, 0)
-const cursor = ranges[0].anchor
-const length = state.doc.length
-const lines = state.doc.lines
-// more state info ...
-// return ...
-}
 </script>

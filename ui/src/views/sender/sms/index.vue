@@ -10,7 +10,7 @@
       </Table>
   </div>
   <div class="layout-padding-auto">
-      <JsEditor code="var a = abcd" @on-change="onCodeChange" />
+      <JsEditor code="" @on-change="onCodeChange" />
   </div>
 </template>
 
