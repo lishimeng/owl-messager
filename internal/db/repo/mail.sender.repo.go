@@ -66,3 +66,21 @@ func GetMailSenders(org int) (senders []model.MailSenderInfo, err error) {
 	}
 	return
 }
+
+// 创建邮件箱配置内容
+func CreateMailSenderInfo(code, vendor, config string, defaultSender int) (m model.MailSenderInfo, err error) {
+	m.Status = 1
+	m.Vendor = model.MailVendor(vendor)
+	m.Config = config
+	m.Code = code
+	m.Default = defaultSender
+	_, err = app.GetOrm().Context.Insert(&m)
+	return
+}
+
+// 编辑邮件箱配置内容
+func UpdateMailSenderInfo(ori model.MailSenderInfo, cols ...string) (m model.MailSenderInfo, err error) {
+	_, err = app.GetOrm().Context.Update(&ori, cols...)
+	m = ori
+	return
+}

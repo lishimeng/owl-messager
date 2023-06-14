@@ -81,3 +81,24 @@ func SetDefaultMailSender(id int, org int) (err error) {
 	}
 	return
 }
+
+func CreateMsi(code, vendor, config string, defaultSender int) (m model.MailSenderInfo, err error) {
+	if err != nil {
+		return
+	}
+	m, err = repo.CreateMailSenderInfo(code, vendor, config, defaultSender)
+	return
+}
+func UpdateMsi(code, vendor, config string, defaultSender int) (m model.MailSenderInfo, err error) {
+	m, err = repo.GetMailSenderByCode(code)
+	if err != nil {
+		return
+	}
+	var cols []string
+	m.Default = defaultSender
+	cols = append(cols, "Default")
+	m.Config = config
+	cols = append(cols, "Config")
+	m, err = repo.UpdateMailSenderInfo(m, cols...)
+	return
+}
