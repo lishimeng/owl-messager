@@ -71,10 +71,10 @@ const delayShow = () => {
 };
 // 页面加载时
 onMounted(() => {
-	delayShow();
+/*	delayShow();
 	setTimeout(() => {
 		state.btnTxt = t('message.upgrade.btnTwo');
-	}, 200);
+	}, 200);*/
 });
 </script>
 
