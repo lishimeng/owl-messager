@@ -1,11 +1,16 @@
 package util
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"github.com/go-resty/resty/v2"
 )
 
 type Rest interface {
+	Get(uri string) (code int, body string, err error)
+	Form(url string, data map[string]string, headers map[string]string) (code int, body string, err error)
+	Post(uri string) (code int, body string, err error)
+	PostJson(uri string, body interface{}) (code int, err error)
 }
 
 type RestHandler struct {
@@ -15,7 +20,20 @@ type RestHandler struct {
 func New() (r Rest) {
 
 	h := RestHandler{proxy: resty.New()}
+	h.proxy.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
 	r = &h
+	return
+}
+
+func (r *RestHandler) Form(url string, data map[string]string, headers map[string]string) (code int, body string, err error) {
+	req := r.proxy.NewRequest()
+	resp, err := req.SetFormData(data).SetHeaders(headers).Post(url)
+	if err != nil {
+		return
+	}
+	code = resp.StatusCode()
+	txt := resp.Body()
+	body = string(txt)
 	return
 }
 

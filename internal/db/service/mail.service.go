@@ -23,6 +23,21 @@ func CreateMailMessage(sender *model.MailSenderInfo, template model.MailTemplate
 	return
 }
 
+func CreateCloudMailMessage(sender *model.MailSenderInfo, templateId string, templateParams string,
+	subject, receiver, cc string) (m model.MessageInfo, err error) {
+	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
+		// create message
+		m, e = repo.CreateMessage(ctx, subject, msg.Email)
+		if e != nil {
+			return
+		}
+		// create mail
+		_, _ = repo.CreateCloudMailMessage(ctx, m, templateId, templateParams, subject, receiver)
+		return
+	})
+	return
+}
+
 func UpdateMailTemplate(id, status int, body, description string) (m model.MailTemplateInfo, err error) {
 	m, err = repo.GetMailTemplateById(id)
 	if err != nil {
@@ -64,5 +79,26 @@ func SetDefaultMailSender(id int, org int) (err error) {
 			s.Default = model.DefaultSenderDisable
 		}
 	}
+	return
+}
+
+func CreateMsi(code, vendor, config string, defaultSender int) (m model.MailSenderInfo, err error) {
+	if err != nil {
+		return
+	}
+	m, err = repo.CreateMailSenderInfo(code, vendor, config, defaultSender)
+	return
+}
+func UpdateMsi(code, vendor, config string, defaultSender int) (m model.MailSenderInfo, err error) {
+	m, err = repo.GetMailSenderByCode(code)
+	if err != nil {
+		return
+	}
+	var cols []string
+	m.Default = defaultSender
+	cols = append(cols, "Default")
+	m.Config = config
+	cols = append(cols, "Config")
+	m, err = repo.UpdateMailSenderInfo(m, cols...)
 	return
 }

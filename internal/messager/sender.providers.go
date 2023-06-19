@@ -1,7 +1,15 @@
 package messager
 
+type MailRequest struct {
+	Subject     string                 `json:"subject,omitempty"`
+	TextContent string                 `json:"textContent,omitempty"`
+	Receivers   []string               `json:"receivers,omitempty"`
+	Template    string                 `json:"template,omitempty"`
+	Params      map[string]interface{} `json:"params,omitempty"`
+}
+
 type MailProvider interface {
-	Send(subject string, body string, to ...string) error
+	Send(req MailRequest) error
 }
 
 // Request SMS发送请求

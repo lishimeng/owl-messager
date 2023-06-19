@@ -5,6 +5,39 @@
  */
 
 /**
+ * 验证百分比（不可以小数）
+ * @param val 当前值字符串
+ * @returns 返回处理后的字符串
+ */
+export function verifyNumberPercentage(val: string): string {
+	// 匹配空格
+	let v = val.replace(/(^\s*)|(\s*$)/g, '');
+	// 只能是数字和小数点，不能是其他输入
+	v = v.replace(/[^\d]/g, '');
+	// 不能以0开始
+	v = v.replace(/^0/g, '');
+	// 数字超过100，赋值成最大值100
+	v = v.replace(/^[1-9]\d\d{1,3}$/, '100');
+	// 返回结果
+	return v;
+}
+
+/**
+ * 验证百分比（可以小数）
+ * @param val 当前值字符串
+ * @returns 返回处理后的字符串
+ */
+export function verifyNumberPercentageFloat(val: string): string {
+	let v = verifyNumberIntegerAndFloat(val);
+	// 数字超过100，赋值成最大值100
+	v = v.replace(/^[1-9]\d\d{1,3}$/, '100');
+	// 超过100之后不给再输入值
+	v = v.replace(/^100\.$/, '100');
+	// 返回结果
+	return v;
+}
+
+/**
  * 小数或整数(不可以负数)
  * @param val 当前值字符串
  * @returns 返回处理后的字符串
@@ -157,7 +190,7 @@ export function verifyNumberCnUppercase(val: any, unit = '仟佰拾亿仟佰拾�
  */
 export function verifyPhone(val: string) {
 	// false: 手机号码不正确
-	if (!/^((12[0-9])|(13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$/.test(val)) return false;
+	if (!/^((12[0-9])|(13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0|1,5-9]))\d{8}$/.test(val)) return false;
 	// true: 手机号码正确
 	else return true;
 }

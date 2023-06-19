@@ -1,18 +1,21 @@
 package model
 
-import "time"
+import (
+	"github.com/lishimeng/app-starter"
+	"time"
+)
 
 type MessageHeader struct {
-	Pk
-	TableChangeInfo
+	app.Pk
+	app.TableChangeInfo
 	// 消息ID(外键)
 	MessageId int `orm:"column(message_id)"`
 }
 
 // 消息主表
 type MessageInfo struct {
-	Pk
-	TableChangeInfo
+	app.Pk
+	app.TableChangeInfo
 	Category     int       `orm:"column(category)"`
 	Subject      string    `orm:"column(subject)"`
 	Priority     int       `orm:"column(priority);null"`

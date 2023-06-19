@@ -26,20 +26,28 @@ const (
 	SmsVendorUpYun   SmsVendor = "up_yun"
 )
 
+func (sms SmsVendor) String() string {
+	return string(sms)
+}
+
+const (
+	SmsVendorEnable = 0x01
+)
+
 var SmsVendors map[SmsVendor]byte
 
 func init() {
 	SmsVendors = make(map[SmsVendor]byte)
-	SmsVendors[SmsVendorBaidu] = 0x01
-	SmsVendors[SmsVendorAli] = 0x01
-	SmsVendors[SmsVendorHuawei] = 0x01
-	SmsVendors[SmsVendorQiNiu] = 0x01
-	SmsVendors[SmsVendorTencent] = 0x01
-	SmsVendors[SmsVendorUpYun] = 0x01
+	SmsVendors[SmsVendorBaidu] = SmsVendorEnable
+	SmsVendors[SmsVendorAli] = SmsVendorEnable
+	SmsVendors[SmsVendorHuawei] = SmsVendorEnable
+	SmsVendors[SmsVendorQiNiu] = SmsVendorEnable
+	SmsVendors[SmsVendorTencent] = SmsVendorEnable
+	SmsVendors[SmsVendorUpYun] = SmsVendorEnable
 }
 
 // Support 数据库记录的vendor是否被支持
-func (s SmsSenderInfo) Support() bool {
+func (s *SmsSenderInfo) Support() bool {
 	val, ok := SmsVendors[s.Vendor]
 	return ok && (val > 0)
 }
@@ -54,4 +62,19 @@ type AliSmsConfig struct {
 	AppSecret string `json:"appSecret,omitempty"`
 	Region    string `json:"region,omitempty"`
 	SignName  string `json:"signName,omitempty"`
+}
+
+type TencentSmsConfig struct {
+	AppId    string `json:"appId,omitempty"`
+	AppKey   string `json:"appKey,omitempty"`
+	SmsAppId string `json:"smsAppId,omitempty"`
+	Region   string `json:"region,omitempty"`
+	SignName string `json:"signName,omitempty"`
+}
+type HuaweiSmsConfig struct {
+	Host     string `json:"host,omitempty"`
+	AppId    string `json:"appId,omitempty"`
+	AppKey   string `json:"appKey,omitempty"`
+	Sender   string `json:"sender,omitempty"`
+	SignName string `json:"signName,omitempty"`
 }

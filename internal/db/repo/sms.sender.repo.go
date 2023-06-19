@@ -94,3 +94,21 @@ func SmsSenderDisable(id int) (err error) {
 
 	return
 }
+
+// 创建配置内容
+func CreateSmslSenderInfo(code, vendor, config string, defaultSender int) (m model.SmsSenderInfo, err error) {
+	m.Status = 1
+	m.Vendor = model.SmsVendor(vendor)
+	m.Config = config
+	m.Code = code
+	m.Default = defaultSender
+	_, err = app.GetOrm().Context.Insert(&m)
+	return
+}
+
+// 编辑配置内容
+func UpdateSmsSenderInfo(ori model.SmsSenderInfo, cols ...string) (m model.SmsSenderInfo, err error) {
+	_, err = app.GetOrm().Context.Update(&ori, cols...)
+	m = ori
+	return
+}

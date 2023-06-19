@@ -44,17 +44,19 @@ func DeleteSmsTemplate(id int) (err error) {
 	return
 }
 
-func CreateSmsTemplate(code, name, body, description string) (m model.SmsTemplateInfo, err error) {
+func CreateSmsTemplate(code, name, templateId, params, description, vendor string) (m model.SmsTemplateInfo, err error) {
 	m = model.SmsTemplateInfo{
-		Code: code,
-		Name: name,
-		Body: body,
+		Code:            code,
+		Name:            name,
+		Params:          params,
+		Vendor:          vendor,
+		CloudTemplateId: templateId,
 		// TODO
 	}
 	if len(description) > 0 {
 		m.Description = description
 	}
-	m.Status = model.MailTemplateEnable
+	m.Status = model.SmsTemplateEnable
 	_, err = app.GetOrm().Context.Insert(&m)
 
 	return

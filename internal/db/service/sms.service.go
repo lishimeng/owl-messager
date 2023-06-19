@@ -49,3 +49,25 @@ func UpdateSmsTemplate(id, status int, body, description string) (m model.MailTe
 	})
 	return
 }
+
+func CreateSsi(code, vendor, config string, defaultSender int) (m model.SmsSenderInfo, err error) {
+	if err != nil {
+		return
+	}
+	m, err = repo.CreateSmslSenderInfo(code, vendor, config, defaultSender)
+	return
+}
+
+func UpdateSsi(code, vendor, config string, defaultSender int) (m model.SmsSenderInfo, err error) {
+	m, err = repo.GetSmsSenderByCode(code)
+	if err != nil {
+		return
+	}
+	var cols []string
+	m.Default = defaultSender
+	cols = append(cols, "Default")
+	m.Config = config
+	cols = append(cols, "Config")
+	m, err = repo.UpdateSmsSenderInfo(m, cols...)
+	return
+}
