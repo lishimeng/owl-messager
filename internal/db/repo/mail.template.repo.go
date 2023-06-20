@@ -60,6 +60,22 @@ func CreateMailTemplate(code, name, body, description string, category int) (m m
 
 	return
 }
+func CreateMailTemplateNew(code, name, body, description, vendor string, category int) (m model.MailTemplateInfo, err error) {
+	m = model.MailTemplateInfo{
+		Code:     code,
+		Name:     name,
+		Body:     body,
+		Category: category,
+		Vendor:   vendor,
+	}
+	if len(description) > 0 {
+		m.Description = description
+	}
+	m.Status = model.MailTemplateEnable
+	_, err = app.GetOrm().Context.Insert(&m)
+
+	return
+}
 
 func UpdateMailTemplate(ctx persistence.TxContext, ori model.MailTemplateInfo, cols ...string) (m model.MailTemplateInfo, err error) {
 	_, err = ctx.Context.Update(&ori, cols...)

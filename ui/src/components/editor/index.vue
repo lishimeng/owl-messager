@@ -8,6 +8,7 @@
 			v-model="state.editorVal"
 			@onCreated="handleCreated"
 			@onChange="handleChange"
+      @input="handleChange"
 		/>
 	</div>
 </template>
@@ -66,6 +67,7 @@ const handleCreated = (editor: IDomEditor) => {
 };
 // 编辑器内容改变时
 const handleChange = (editor: IDomEditor) => {
+  // console.log(editor.getHtml())
 	emit('update:getHtml', editor.getHtml());
 	emit('update:getText', editor.getText());
 };

@@ -23,8 +23,8 @@ func CreateSmsMessage(template model.SmsTemplateInfo, templateParams string,
 	return
 }
 
-func UpdateSmsTemplate(id, status int, body, description string) (m model.MailTemplateInfo, err error) {
-	m, err = repo.GetMailTemplateById(id)
+func UpdateSmsTemplate(id, status int, body, description string) (m model.SmsTemplateInfo, err error) {
+	m, err = repo.GetSmsTemplateById(id)
 	if err != nil {
 		return
 	}
@@ -43,13 +43,60 @@ func UpdateSmsTemplate(id, status int, body, description string) (m model.MailTe
 			cols = append(cols, "Description")
 		}
 
-		m, e = repo.UpdateMailTemplate(ctx, m, cols...)
+		m, e = repo.UpdateSmsTemplateInfo(ctx, m, cols...)
 
 		return
 	})
 	return
 }
-
+func UpdateSmsTemplateByCode(status, sender int, code, name, body, templateId, signature, description, params, vendor string) (m model.SmsTemplateInfo, err error) {
+	m, err = repo.GetSmsTemplateByCode(code)
+	if err != nil {
+		return
+	}
+	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
+		var cols []string
+		if status > repo.ConditionIgnore {
+			m.Status = status
+			cols = append(cols, "Status")
+		}
+		if sender > 0 {
+			m.Sender = sender
+			cols = append(cols, "Sender")
+		}
+		if len(name) > 0 {
+			m.Name = name
+			cols = append(cols, "Name")
+		}
+		if len(body) > 0 {
+			m.Body = body
+			cols = append(cols, "Body")
+		}
+		if len(templateId) > 0 {
+			m.CloudTemplateId = templateId
+			cols = append(cols, "CloudTemplateId")
+		}
+		if len(signature) > 0 {
+			m.Signature = signature
+			cols = append(cols, "Signature")
+		}
+		if len(description) > 0 {
+			m.Description = description
+			cols = append(cols, "Description")
+		}
+		if len(params) > 0 {
+			m.Params = params
+			cols = append(cols, "Params")
+		}
+		if len(vendor) > 0 {
+			m.Vendor = vendor
+			cols = append(cols, "Vendor")
+		}
+		m, e = repo.UpdateSmsTemplateInfo(ctx, m, cols...)
+		return
+	})
+	return
+}
 func CreateSsi(code, vendor, config string, defaultSender int) (m model.SmsSenderInfo, err error) {
 	if err != nil {
 		return

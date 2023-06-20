@@ -33,7 +33,7 @@ func (f *SmsFactory) Create(vendor model.SmsVendor, config string) (p messager.S
 	return
 }
 
-var smsProviderBuilders map[model.SmsVendor]func(config string) (messager.SmsProvider, error)
+var smsProviderBuilders = map[model.SmsVendor]func(config string) (messager.SmsProvider, error){}
 
 func RegisterSmsProvider(vendor model.SmsVendor, h func(config string) (messager.SmsProvider, error)) {
 	if h == nil {

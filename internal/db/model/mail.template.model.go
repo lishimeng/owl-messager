@@ -9,6 +9,7 @@ type MailTemplateInfo struct {
 	Body        string `orm:"column(body)"`
 	Category    int    `orm:"column(category)"`
 	Description string `orm:"column(description);null"`
+	Vendor      string `orm:"column(vendor);null"` // vendor
 	app.TableChangeInfo
 }
 

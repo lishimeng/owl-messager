@@ -2,6 +2,7 @@ package repo
 
 import (
 	"github.com/lishimeng/app-starter"
+	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl/internal/db/model"
 )
 
@@ -43,7 +44,6 @@ func DeleteSmsTemplate(id int) (err error) {
 	_, err = app.GetOrm().Context.Delete(&t)
 	return
 }
-
 func CreateSmsTemplate(code, name, templateId, params, description, vendor string) (m model.SmsTemplateInfo, err error) {
 	m = model.SmsTemplateInfo{
 		Code:            code,
@@ -61,9 +61,32 @@ func CreateSmsTemplate(code, name, templateId, params, description, vendor strin
 
 	return
 }
+func CreateSmsTemplateNew(code, name, templateId, params, description, vendor, signature string, sender int) (m model.SmsTemplateInfo, err error) {
+	m = model.SmsTemplateInfo{
+		Code:            code,
+		Name:            name,
+		Params:          params,
+		Vendor:          vendor,
+		CloudTemplateId: templateId,
+		Signature:       signature,
+		Sender:          sender,
+		// TODO
+	}
+	if len(description) > 0 {
+		m.Description = description
+	}
+	m.Status = model.SmsTemplateEnable
+	_, err = app.GetOrm().Context.Insert(&m)
 
+	return
+}
 func UpdateSmsTemplate(ori model.SmsTemplateInfo, cols ...string) (m model.SmsTemplateInfo, err error) {
 	_, err = app.GetOrm().Context.Update(&ori, cols...)
+	m = ori
+	return
+}
+func UpdateSmsTemplateInfo(ctx persistence.TxContext, ori model.SmsTemplateInfo, cols ...string) (m model.SmsTemplateInfo, err error) {
+	_, err = ctx.Context.Update(&ori, cols...)
 	m = ori
 	return
 }
