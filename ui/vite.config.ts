@@ -32,7 +32,7 @@ const viteConfig = defineConfig((mode: ConfigEnv) => {
 			hmr: true,
 			proxy: {
 				'/api': {
-					target: 'http://localhost:81',
+					target: 'http://localhost:80',
 					ws: true,
 					changeOrigin: true,
 					// rewrite: (path) => path.replace(/^\/api/, ''),

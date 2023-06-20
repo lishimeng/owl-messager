@@ -65,6 +65,37 @@ func UpdateMailTemplate(id, status int, body, description string) (m model.MailT
 	return
 }
 
+func UpdateMailTemplateByCode(status int, code, name, body, description string) (m model.MailTemplateInfo, err error) {
+	m, err = repo.GetMailTemplateByCode(code)
+	if err != nil {
+		return
+	}
+	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
+		var cols []string
+		if status > repo.ConditionIgnore {
+			m.Status = status
+			cols = append(cols, "Status")
+		}
+		if len(name) > 0 {
+			m.Name = name
+			cols = append(cols, "Name")
+		}
+		if len(body) > 0 {
+			m.Body = body
+			cols = append(cols, "Body")
+		}
+		if len(description) > 0 {
+			m.Description = description
+			cols = append(cols, "Description")
+		}
+
+		m, e = repo.UpdateMailTemplate(ctx, m, cols...)
+
+		return
+	})
+	return
+}
+
 // SetDefaultMailSender 设置默认发送账号
 func SetDefaultMailSender(id int, org int) (err error) {
 
