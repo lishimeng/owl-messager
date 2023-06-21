@@ -222,7 +222,7 @@
   </div>
 </template>
 
-<script setup lang="ts" name="mail">
+<script setup lang="ts" name="Mail">
 import {onMounted, reactive, ref} from 'vue';
 import {
   createMailSenderConfigApi,

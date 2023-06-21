@@ -54,6 +54,10 @@ func sender(p iris.Party) {
 func template(p iris.Party) {
 	mailTemplate(p.Party("/mail"))
 	smsTemplate(p.Party("/sms"))
+	p.Get("/getTemplateList", templateApi.GetTemplateListByPage)
+	p.Post("/createTemplate", templateApi.CreateTemplate)
+	p.Post("/updateTemplate", templateApi.UpdateTemplate)
+	p.Get("/getTemplateInfo", templateApi.GetTemplateInfo)
 }
 
 func message(p iris.Party) {

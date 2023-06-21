@@ -3,6 +3,7 @@ export default {
 	router: {
 		home: 'home',
 		mail: 'mail',
+		template:'template',
 		system: 'system',
 		systemMenu: 'systemMenu',
 		systemRole: 'systemRole',
