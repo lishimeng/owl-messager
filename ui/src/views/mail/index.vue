@@ -83,7 +83,7 @@
               <el-input v-model="state.smtp.host" clearable></el-input>
             </el-form-item>
             <el-form-item label="port" prop="port">
-              <el-input v-model="state.smtp.port" clearable></el-input>
+              <el-input v-model="state.smtp.port" type="number" clearable></el-input>
             </el-form-item>
             <el-form-item label="senderEmail" prop="senderEmail">
               <el-input v-model="state.smtp.senderEmail" clearable></el-input>
@@ -278,7 +278,7 @@ const state = reactive({
   },
   smtp: {
     host: "",
-    port: "",
+    port: 0,
     senderEmail: "",
     senderAlias: "",
     authUser: "",
@@ -340,6 +340,7 @@ const showEdit = (row: object) => {
 const onSubmit = () => {
   switch (state.form.vendor) {
     case 'smtp':
+      state.smtp.port = parseInt(state.smtp.port)
       state.form.config = JSON.stringify(state.smtp)
       break;
     case 'microsoft':
