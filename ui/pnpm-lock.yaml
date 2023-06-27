@@ -25,6 +25,7 @@ specifiers:
   element-plus: ^2.3.1
   eslint: ^8.36.0
   eslint-plugin-vue: ^9.10.0
+  font-awesome: ^4.7.0
   js-cookie: ^3.0.1
   js-table2excel: ^1.0.3
   jsplumb: ^2.15.6
@@ -70,6 +71,7 @@ dependencies:
   echarts-gl: 2.0.9_echarts@5.4.2
   echarts-wordcloud: 2.1.0_echarts@5.4.2
   element-plus: 2.3.2_vue@3.2.47
+  font-awesome: 4.7.0
   js-cookie: 3.0.1
   js-table2excel: 1.0.3
   jsplumb: 2.15.6
@@ -1874,6 +1876,11 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+    dev: false
+
+  /font-awesome/4.7.0:
+    resolution: {integrity: sha512-U6kGnykA/6bFmg1M/oT9EkFeIYv7JlX3bozwQJWiiLz6L0w3F5vBVPxHlwyX/vtNq1ckcpRKOB9f2Qal/VtFpg==}
+    engines: {node: '>=0.10.3'}
     dev: false
 
   /form-data/4.0.0:
