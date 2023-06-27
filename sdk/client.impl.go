@@ -6,14 +6,13 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl/internal/messager/msg"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"time"
 )
 
 const ApiPath = "/v2/messages/"
 
-//MessageClient 消息服务
+// MessageClient 消息服务
 type MessageClient struct {
 	Host     string // 消息服务主机地址. 如, "http://127.0.0.1/api"
 	category string // 消息类型. "mail","sms","apns"
@@ -76,13 +75,10 @@ func (m *MessageClient) send(request interface{}) (response Response, err error)
 		return
 	}
 	defer func(Body io.ReadCloser) {
-		err = Body.Close()
-		if err != nil {
-
-		}
+		_ = Body.Close()
 	}(resp.Body)
 
-	result, _ := ioutil.ReadAll(resp.Body)
+	result, _ := io.ReadAll(resp.Body)
 	err = json.Unmarshal(result, &response)
 	if err != nil {
 		log.Debug("response Unmarshal err, %+v", response)
