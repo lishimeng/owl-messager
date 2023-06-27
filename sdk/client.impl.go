@@ -7,6 +7,7 @@ import (
 	"github.com/lishimeng/owl-messager/internal/messager/msg"
 	"io"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -29,14 +30,14 @@ func (m *MessageClient) setCategory(category string) {
 	m.category = category
 }
 
-func (m *MessageClient) getURL() string {
-	return m.Host + ApiPath + "/" + m.category
+func (m *MessageClient) getURL(category string) (address string, err error) {
+	address, err = url.JoinPath(m.Host, ApiPath, category)
+	return
 }
 
 func (m *MessageClient) SendMail(request MailRequest) (response Response, err error) {
 	log.Debug("sendMail to: %s", request.Receiver)
-	m.setCategory(msg.EmailCategory)
-	response, err = m.send(request)
+	response, err = m.send(msg.EmailCategory, request)
 	if err != nil {
 		log.Debug(err)
 		return
@@ -45,8 +46,7 @@ func (m *MessageClient) SendMail(request MailRequest) (response Response, err er
 }
 func (m *MessageClient) SendSms(request SmsRequest) (response Response, err error) {
 	log.Debug("sendMail to: %s", request.Receiver)
-	m.setCategory(msg.SmsCategory)
-	response, err = m.send(request)
+	response, err = m.send(msg.SmsCategory, request)
 	if err != nil {
 		log.Debug(err)
 		return
@@ -55,8 +55,7 @@ func (m *MessageClient) SendSms(request SmsRequest) (response Response, err erro
 }
 func (m *MessageClient) SendApns(request ApnsRequest) (response Response, err error) {
 	log.Debug("sendMail to: %s", request.Receiver)
-	m.setCategory(msg.ApnsCategory)
-	response, err = m.send(request)
+	response, err = m.send(msg.ApnsCategory, request)
 	if err != nil {
 		log.Debug(err)
 		return
@@ -64,12 +63,15 @@ func (m *MessageClient) SendApns(request ApnsRequest) (response Response, err er
 	return
 }
 
-func (m *MessageClient) send(request interface{}) (response Response, err error) {
-	url := m.getURL()
-	log.Debug("sendMail url: %s", url)
+func (m *MessageClient) send(category string, request interface{}) (response Response, err error) {
+	u, err := m.getURL(category)
+	if err != nil {
+		return
+	}
+	log.Debug("sendMail url: %s", u)
 	client := &http.Client{Timeout: 8 * time.Second}
 	jsonStr, _ := json.Marshal(request)
-	resp, err := client.Post(url, "application/json", bytes.NewBuffer(jsonStr))
+	resp, err := client.Post(u, "application/json", bytes.NewBuffer(jsonStr))
 	if err != nil {
 		log.Debug("client Post err")
 		return
