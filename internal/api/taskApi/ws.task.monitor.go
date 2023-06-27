@@ -4,7 +4,7 @@ import (
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/messager/task"
+	"github.com/lishimeng/owl-messager/internal/messager/task"
 )
 
 func TaskMonitorWs() context.Handler {

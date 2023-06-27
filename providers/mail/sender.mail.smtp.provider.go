@@ -1,8 +1,8 @@
 package mail
 
 import (
-	"github.com/lishimeng/owl/internal/messager"
-	"github.com/lishimeng/owl/providers/mail/smtp"
+	"github.com/lishimeng/owl-messager/internal/messager"
+	"github.com/lishimeng/owl-messager/providers/mail/smtp"
 )
 
 type smtpSender struct {

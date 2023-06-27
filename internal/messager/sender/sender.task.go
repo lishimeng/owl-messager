@@ -3,9 +3,9 @@ package sender
 import (
 	"context"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/db/model"
-	"github.com/lishimeng/owl/internal/db/repo"
-	"github.com/lishimeng/owl/internal/messager/msg"
+	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/repo"
+	"github.com/lishimeng/owl-messager/internal/messager/msg"
 )
 
 type TaskExecutor interface {

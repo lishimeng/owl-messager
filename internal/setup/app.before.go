@@ -2,7 +2,7 @@ package setup
 
 import (
 	"context"
-	"github.com/lishimeng/owl/internal/messager/task"
+	"github.com/lishimeng/owl-messager/internal/messager/task"
 )
 
 func BeforeStarted(ctx context.Context) (err error) {

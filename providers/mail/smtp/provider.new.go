@@ -2,7 +2,7 @@ package smtp
 
 import (
 	"encoding/json"
-	"github.com/lishimeng/owl/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/model"
 )
 
 func New(config string) (p *MailSmtpProvider, err error) {

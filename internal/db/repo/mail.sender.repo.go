@@ -2,7 +2,7 @@ package repo
 
 import (
 	"github.com/lishimeng/app-starter"
-	"github.com/lishimeng/owl/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/model"
 )
 
 // GetMailSenderByCode 查询邮件发送账号

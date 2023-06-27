@@ -3,10 +3,10 @@ package task
 import (
 	"context"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/db/model"
-	"github.com/lishimeng/owl/internal/db/repo"
-	"github.com/lishimeng/owl/internal/db/service"
-	"github.com/lishimeng/owl/internal/messager/sender"
+	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/repo"
+	"github.com/lishimeng/owl-messager/internal/db/service"
+	"github.com/lishimeng/owl-messager/internal/messager/sender"
 	"math"
 	"time"
 )

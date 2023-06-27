@@ -3,7 +3,7 @@ package repo
 import (
 	"github.com/lishimeng/app-starter"
 	persistence "github.com/lishimeng/go-orm"
-	"github.com/lishimeng/owl/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/model"
 )
 
 func GetApnsByMessageId(msgId int) (m model.ApnsMessageInfo, err error) {

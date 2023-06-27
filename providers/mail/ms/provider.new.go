@@ -5,8 +5,8 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"errors"
-	"github.com/lishimeng/owl/internal/certificate"
-	"github.com/lishimeng/owl/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/certificate"
+	"github.com/lishimeng/owl-messager/internal/db/model"
 )
 
 func New(config string) (p *AzureGraphProvider, err error) {

@@ -5,7 +5,7 @@ import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/db/repo"
+	"github.com/lishimeng/owl-messager/internal/db/repo"
 )
 
 type TaskInfoResp struct {

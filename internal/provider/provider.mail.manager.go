@@ -2,8 +2,8 @@ package provider
 
 import (
 	"errors"
-	"github.com/lishimeng/owl/internal/db/model"
-	"github.com/lishimeng/owl/internal/messager"
+	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/messager"
 )
 
 type MailFactory struct {

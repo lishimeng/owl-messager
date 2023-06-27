@@ -2,11 +2,11 @@ package providers
 
 import (
 	"encoding/json"
-	"github.com/lishimeng/owl/internal/db/model"
-	"github.com/lishimeng/owl/internal/messager"
-	"github.com/lishimeng/owl/internal/provider"
-	"github.com/lishimeng/owl/providers/mail"
-	"github.com/lishimeng/owl/providers/sms"
+	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/messager"
+	"github.com/lishimeng/owl-messager/internal/provider"
+	"github.com/lishimeng/owl-messager/providers/mail"
+	"github.com/lishimeng/owl-messager/providers/sms"
 )
 
 func registerMailProviders() {

@@ -1,4 +1,4 @@
-module github.com/lishimeng/owl
+module github.com/lishimeng/owl-messager
 
 go 1.20
 

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/messager/msg"
+	"github.com/lishimeng/owl-messager/internal/messager/msg"
 	"io"
 	"net/http"
 	"time"

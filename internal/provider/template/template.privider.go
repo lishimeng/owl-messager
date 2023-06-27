@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/model"
 	html "html/template"
 	text "text/template"
 )

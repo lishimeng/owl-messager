@@ -2,8 +2,8 @@ package mail
 
 import (
 	"errors"
-	"github.com/lishimeng/owl/internal/messager"
-	"github.com/lishimeng/owl/providers/mail/ms"
+	"github.com/lishimeng/owl-messager/internal/messager"
+	"github.com/lishimeng/owl-messager/providers/mail/ms"
 )
 
 type msSender struct {

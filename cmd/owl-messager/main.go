@@ -7,16 +7,16 @@ import (
 	etc2 "github.com/lishimeng/app-starter/etc"
 	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
-	"github.com/lishimeng/owl/internal/api"
-	"github.com/lishimeng/owl/internal/db/model"
-	"github.com/lishimeng/owl/internal/etc"
-	"github.com/lishimeng/owl/internal/setup"
-	"github.com/lishimeng/owl/static"
+	"github.com/lishimeng/owl-messager/internal/api"
+	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/etc"
+	"github.com/lishimeng/owl-messager/internal/setup"
+	"github.com/lishimeng/owl-messager/static"
 	"net/http"
 	"time"
 )
 import _ "github.com/lib/pq"
-import _ "github.com/lishimeng/owl/providers"
+import _ "github.com/lishimeng/owl-messager/providers"
 
 func main() {
 

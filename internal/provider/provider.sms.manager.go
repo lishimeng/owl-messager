@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/lishimeng/app-starter/factory"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/db/model"
-	"github.com/lishimeng/owl/internal/messager"
+	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/messager"
 )
 
 type SmsFactory struct {

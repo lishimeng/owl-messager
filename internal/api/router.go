@@ -2,14 +2,14 @@ package api
 
 import (
 	"github.com/kataras/iris/v12"
-	"github.com/lishimeng/owl/ddd"
-	"github.com/lishimeng/owl/internal/api/apnsApi"
-	"github.com/lishimeng/owl/internal/api/mailApi"
-	"github.com/lishimeng/owl/internal/api/messageApi"
-	"github.com/lishimeng/owl/internal/api/senderApi"
-	"github.com/lishimeng/owl/internal/api/smsApi"
-	"github.com/lishimeng/owl/internal/api/taskApi"
-	"github.com/lishimeng/owl/internal/api/templateApi"
+	"github.com/lishimeng/owl-messager/ddd"
+	"github.com/lishimeng/owl-messager/internal/api/apnsApi"
+	"github.com/lishimeng/owl-messager/internal/api/mailApi"
+	"github.com/lishimeng/owl-messager/internal/api/messageApi"
+	"github.com/lishimeng/owl-messager/internal/api/senderApi"
+	"github.com/lishimeng/owl-messager/internal/api/smsApi"
+	"github.com/lishimeng/owl-messager/internal/api/taskApi"
+	"github.com/lishimeng/owl-messager/internal/api/templateApi"
 )
 
 func Route(app *iris.Application) {

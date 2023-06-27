@@ -3,8 +3,8 @@ package sms
 import (
 	"encoding/json"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/db/model"
-	"github.com/lishimeng/owl/internal/messager"
+	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/messager"
 	"strings"
 )
 

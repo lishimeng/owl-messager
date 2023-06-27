@@ -2,7 +2,7 @@ package sms
 
 import (
 	"encoding/json"
-	"github.com/lishimeng/owl/internal/messager"
+	"github.com/lishimeng/owl-messager/internal/messager"
 	"github.com/qiniu/go-sdk/v7/auth"
 	"github.com/qiniu/go-sdk/v7/sms"
 	"strings"

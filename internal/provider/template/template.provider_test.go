@@ -1,7 +1,7 @@
 package template
 
 import (
-	"github.com/lishimeng/owl/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/model"
 	"testing"
 )
 

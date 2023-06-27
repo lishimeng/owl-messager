@@ -2,8 +2,8 @@ package setup
 
 import (
 	"context"
-	"github.com/lishimeng/owl/internal/messager/sender"
-	"github.com/lishimeng/owl/internal/messager/task"
+	"github.com/lishimeng/owl-messager/internal/messager/sender"
+	"github.com/lishimeng/owl-messager/internal/messager/task"
 )
 
 var taskExecutor sender.TaskExecutor

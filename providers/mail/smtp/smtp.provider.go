@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"github.com/go-gomail/gomail"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/model"
 )
 
 type MailSmtpProvider struct {

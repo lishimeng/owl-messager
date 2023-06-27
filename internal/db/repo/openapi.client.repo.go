@@ -2,7 +2,7 @@ package repo
 
 import (
 	persistence "github.com/lishimeng/go-orm"
-	"github.com/lishimeng/owl/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/model"
 )
 
 func GetClientById(ctx persistence.OrmContext, id int) (c model.OpenClient, err error) {

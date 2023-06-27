@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl/internal/certificate"
-	"github.com/lishimeng/owl/internal/db/model"
-	"github.com/lishimeng/owl/internal/db/repo"
-	"github.com/lishimeng/owl/providers/apns"
+	"github.com/lishimeng/owl-messager/internal/certificate"
+	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/repo"
+	"github.com/lishimeng/owl-messager/providers/apns"
 )
 
 type Apns interface {
