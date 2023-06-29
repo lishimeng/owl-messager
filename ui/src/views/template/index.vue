@@ -55,43 +55,45 @@
         :size="1000"
         :before-close="handleClose">
       <div style="width:100%;padding: 10px">
-          <el-form style="margin-top: 20px"
-                   :model="state.subForm"
-                   ref="mailFormFormRef"
-                   label-width="120px">
-            <el-form-item label="配置平台" prop="vendor">
-              <el-select class="input_width"
-                         v-model="state.subForm.vendor"
-                         placeholder="请选择通讯方式">
-                <el-option v-for="(item,index) in state.vendors" :key="index" :label="item" :value="item">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item v-if="state.subForm.code.length>0" label="code" prop="code">
-              <el-input v-model="state.subForm.code" :disabled="state.subForm.code.length>0" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="名称" prop="name">
-              <el-input v-model="state.subForm.name" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="描述" prop="description">
-              <el-input v-model="state.subForm.description" clearable></el-input>
-            </el-form-item>
-            <el-form-item v-if="state.category=='sms'" label="第三方模板ID" prop="templateId">
-              <el-input v-model="state.subForm.templateId" clearable></el-input>
-            </el-form-item>
-            <el-form-item v-if="state.category=='sms'" label="第三方模板签名" prop="signature">
-              <el-input type="textarea" v-model="state.subForm.signature" clearable></el-input>
-            </el-form-item>
-            <el-form-item v-if="state.category=='sms'" label="指定发送平台" prop="sender">
-              <el-input type="text" v-model="state.subForm.sender" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="模板内容">
-              <wngEditor mode="default" height="300px" v-model:getHtml="state.getHtml" v-model:getText="state.getText"></wngEditor>
-            </el-form-item>
-            <el-form-item>
-                <el-input disabled style="width: 100%;height: 400px" type="textarea" v-model="state.subForm.body" ></el-input>
-            </el-form-item>
-          </el-form>
+        <el-form style="margin-top: 20px"
+                 :model="state.subForm"
+                 ref="mailFormFormRef"
+                 label-width="120px">
+          <el-form-item label="配置平台" prop="vendor">
+            <el-select class="input_width"
+                       v-model="state.subForm.vendor"
+                       placeholder="请选择通讯方式">
+              <el-option v-for="(item,index) in state.vendors" :key="index" :label="item" :value="item">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item v-if="state.subForm.code.length>0" label="code" prop="code">
+            <el-input v-model="state.subForm.code" :disabled="state.subForm.code.length>0" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="名称" prop="name">
+            <el-input v-model="state.subForm.name" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="描述" prop="description">
+            <el-input v-model="state.subForm.description" clearable></el-input>
+          </el-form-item>
+          <el-form-item v-if="state.category=='sms'" label="第三方模板ID" prop="templateId">
+            <el-input v-model="state.subForm.templateId" clearable></el-input>
+          </el-form-item>
+          <el-form-item v-if="state.category=='sms'" label="第三方模板签名" prop="signature">
+            <el-input type="textarea" v-model="state.subForm.signature" clearable></el-input>
+          </el-form-item>
+          <el-form-item v-if="state.category=='sms'" label="指定发送平台" prop="sender">
+            <el-input type="number" v-model="state.subForm.sender" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="模板内容">
+            <wngEditor mode="default" height="300px" v-model:getHtml="state.getHtml"
+                       v-model:getText="state.getText"></wngEditor>
+          </el-form-item>
+          <el-form-item>
+            <el-input disabled style="width: 100%;height: 400px" type="textarea"
+                      v-model="state.subForm.body"></el-input>
+          </el-form-item>
+        </el-form>
 
       </div>
       <template #footer>
@@ -109,6 +111,7 @@ import {createTemplateApi, getTemplateInfoAPi, getTemplateListAPi, updateTemplat
 import {defineAsyncComponent, onMounted, reactive, ref, watch} from 'vue';
 import {formatDate} from "../../utils/formatTime";
 import {ElMessage} from "element-plus";
+
 const JsEditor = defineAsyncComponent(() => import('/@/components/js/index.vue'))
 const wngEditor = defineAsyncComponent(() => import('/@/components/editor/index.vue'));
 const mailFormFormRef = ref()
@@ -132,11 +135,11 @@ const state = reactive({
     name: "",
     description: "",
     body: "",
-    vendor:"",
-    templateId:"",
-    params:"",
-    signature:"",
-    sender:null,
+    vendor: "",
+    templateId: "",
+    params: "",
+    signature: "",
+    sender: 0,
     category: "",
   },
   vendors: [],
@@ -157,11 +160,11 @@ const state = reactive({
 onMounted(() => {
   chooseCategory()
 })
-watch(()=>state.getHtml,(newVal,oldVal)=>{
-  console.log('监听：',newVal)
-  state.subForm.body="<html>" +
+watch(() => state.getHtml, (newVal, oldVal) => {
+  console.log('监听：', newVal)
+  state.subForm.body = "<html>" +
       "<head>" +
-      "<meta charset=\"utf-8\">"+
+      "<meta charset=\"utf-8\">" +
       "</head>" +
       "<body>" + newVal +
       "</body>" +
@@ -169,35 +172,37 @@ watch(()=>state.getHtml,(newVal,oldVal)=>{
   console.log(state.subForm.body)
 })
 const onSubmit = () => {
-  state.subForm.category=state.category
+  state.subForm.category = state.category
   // console.log(state.getText,state.getHtml)
-  if(state.getText){
-    state.subForm.body="<html>" +
+  if (state.getText) {
+    state.subForm.body = "<html>" +
         "<head>" +
-        "<meta charset=\"utf-8\">"+
+        "<meta charset=\"utf-8\">" +
         "</head>" +
         "<body>" + state.getHtml +
         "</body>" +
         "</html>"
+  } else {
+    state.subForm.body = state.getText
   }
-  if(state.subForm.sender){
-    state.subForm.sender=parseInt(state.subForm.sender)
+  if (state.subForm.sender) {
+    state.subForm.sender = parseInt(state.subForm.sender)
   }
   if (state.subForm.code) {
     // console.log("编辑")
-    updateTemplateApi(state.subForm).then(res=>{
-       if(res.code&&res.code==200){
-         ElMessage.success(`提交成功！`);
-         state.showDrawer=false
-         getTemplateList();
-       }
+    updateTemplateApi(state.subForm).then(res => {
+      if (res.code && res.code == 200) {
+        ElMessage.success(`提交成功！`);
+        state.showDrawer = false
+        getTemplateList();
+      }
     })
   } else {
     // console.log("新增")
-    createTemplateApi(state.subForm).then(res=>{
-      if(res.code&&res.code==200){
+    createTemplateApi(state.subForm).then(res => {
+      if (res.code && res.code == 200) {
         ElMessage.success(`提交成功！`);
-        state.showDrawer=false
+        state.showDrawer = false
         getTemplateList();
       }
     })
@@ -206,13 +211,13 @@ const onSubmit = () => {
 const getTemplateList = () => {
   state.queryValue.category = state.category
   getTemplateListAPi(state.queryValue).then(res => {
-      if(res.items&&res.items.length>0){
-        state.dataList=res.items
-        state.queryValue.totalNum=res.totalPage
-      }else{
-        state.dataList=[]
-        state.queryValue.totalNum=0
-      }
+    if (res.items && res.items.length > 0) {
+      state.dataList = res.items
+      state.queryValue.totalNum = res.totalPage
+    } else {
+      state.dataList = []
+      state.queryValue.totalNum = 0
+    }
   })
 }
 const handleClose = (done: any) => {
@@ -220,11 +225,11 @@ const handleClose = (done: any) => {
   done();
 }
 const onSizeChange = (val: any) => {
-  state.queryValue.pageSize=val
+  state.queryValue.pageSize = val
   getTemplateList();
 }
 const onCurrentChange = (val: any) => {
-  state.queryValue.pageNum=val
+  state.queryValue.pageNum = val
   getTemplateList();
 }
 const chooseCategory = () => {
@@ -245,28 +250,28 @@ const showEdit = (data: any) => {
     // console.log("编辑模版")
     state.title = "编辑模版"
     getTemplateInfoAPi({
-      code:data.Code,
-      category:state.category
-    }).then(res=>{
-      if(res.code&&res.code==200){
-        state.subForm=res.item
-        state.getHtml=res.item.body.replace("<html>","")
-            .replace("</html>","")
-            .replace("<head>","")
-            .replace("</head>","")
-            .replace("<body>","")
-            .replace("</body>","")
-            .replace("<meta charset=\"utf-8\">","")
+      code: data.Code,
+      category: state.category
+    }).then(res => {
+      if (res.code && res.code == 200) {
+        state.subForm = res.item
+        state.getHtml = res.item.body.replace("<html>", "")
+            .replace("</html>", "")
+            .replace("<head>", "")
+            .replace("</head>", "")
+            .replace("<body>", "")
+            .replace("</body>", "")
+            .replace("<meta charset=\"utf-8\">", "")
       }
     })
   } else {
     // console.log("新增模版")
     mailFormFormRef.value.resetFields();
-    state.subForm.code=""
+    state.subForm.code = ""
     state.title = "新增模版"
-    state.getText=""
-    state.getHtml=""
-    state.subForm.body=""
+    state.getText = ""
+    state.getHtml = ""
+    state.subForm.body = ""
   }
 
 }
