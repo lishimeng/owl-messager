@@ -4,11 +4,9 @@ import "github.com/lishimeng/app-starter"
 
 type OpenClient struct {
 	app.Pk
-	AppId    string `orm:"column(app_id);unique"`
-	Secret   string `orm:"column(secret)"`
-	Domain   string `orm:"column(domain)"`
-	UserId   string `orm:"column(user_id);null"`
-	Password string `orm:"column(password);null"`
+	AppId  string `orm:"column(app_id);unique"`
+	Secret string `orm:"column(secret)"`
+	Domain string `orm:"column(domain)"`
 	app.TableChangeInfo
 }
 
@@ -22,12 +20,4 @@ func (t OpenClient) GetSecret() string {
 
 func (t OpenClient) GetDomain() string {
 	return t.Domain
-}
-
-func (t OpenClient) GetUserID() string {
-	return t.AppId
-}
-
-func (t OpenClient) VerifyPassword(psw string) bool {
-	return t.Password == psw
 }

@@ -3,6 +3,7 @@ package etc
 type Configuration struct {
 	Db    db
 	Web   web
+	Token token
 	Redis redis
 }
 
@@ -15,6 +16,12 @@ type redis struct {
 	Addr     string
 	Password string
 	Db       int
+}
+
+type token struct {
+	Enable bool
+	Issuer string
+	Key    string
 }
 
 type db struct {
