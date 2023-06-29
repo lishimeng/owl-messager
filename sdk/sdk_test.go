@@ -5,7 +5,9 @@ import "testing"
 func TestSdk(t *testing.T) {
 	params := make(map[string]string)
 	params["content"] = "ABC123"
-	resp, err := NewClient("http://ows.thingplecloud.com:82/owl").SendMail(MailRequest{
+	resp, err := New(WithHost("http://localhost/api"),
+		WithDebug(true),
+		WithAuth("aewfvsfvadv", "bhnsasdvdzvdvs")).SendMail(MailRequest{
 		Template:      "tpl_test001", // 测试模板
 		CloudTemplate: false,
 		TemplateParam: params,
