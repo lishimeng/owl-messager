@@ -2,9 +2,9 @@
 listen = ":80"
 
 [db]
-user = "postgres"
-password = "postgres"
-host = "192.168.10.53"
+user = "iot"
+password = "thingple"
+host = "192.168.10.32"
 port = 5432
 database = "owl_messager"
 ssl = "disable" #require/verify-full/verify-ca/disable
