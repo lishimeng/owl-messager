@@ -1,0 +1,82 @@
+package open
+
+import (
+	"github.com/kataras/iris/v12"
+	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/factory"
+	"github.com/lishimeng/app-starter/token"
+	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl-messager/internal/etc"
+	"github.com/pkg/errors"
+)
+
+type CredentialReq struct {
+	AppId  string `json:"appId,omitempty"`
+	Secret string `json:"secret,omitempty"`
+}
+
+type CredentialResp struct {
+	app.Response
+	Token string `json:"token,omitempty"`
+}
+
+func genCredential(ctx iris.Context) {
+	var err error
+	var req CredentialReq
+	var resp CredentialResp
+
+	err = ctx.ReadJSON(&req)
+	if err != nil {
+		log.Debug(errors.Wrap(err, "读取参数错误"))
+		resp.Code = tool.RespCodeError
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+
+	if len(req.AppId) == 0 || len(req.Secret) == 0 {
+		log.Debug("appId: %s, secret:%s", req.AppId, req.Secret)
+		resp.Code = tool.RespCodeError
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+	c, err := getClientByAppId(req.AppId)
+	if err != nil {
+		log.Debug(errors.Wrap(err, "无appId"))
+		resp.Code = tool.RespCodeNotFound
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+	if c.Secret != req.Secret {
+		log.Debug("appId: %s, secret not match", req.AppId)
+		resp.Code = tool.RespCodeError
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+
+	var provider token.JwtProvider
+	err = factory.Get(&provider)
+	if len(req.AppId) == 0 || len(req.Secret) == 0 {
+		log.Debug(errors.Wrap(err, "gen credential err"))
+		resp.Code = tool.RespCodeError
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+
+	p := token.JwtPayload{
+		Org: c.Domain,
+		Uid: c.AppId,
+	}
+	bs, err := provider.GenWithTTL(p, etc.TokenTTL)
+	if len(req.AppId) == 0 || len(req.Secret) == 0 {
+		log.Debug(errors.Wrap(err, "gen credential err"))
+		resp.Code = tool.RespCodeError
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+
+	resp.Token = string(bs)
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
+	return
+}
