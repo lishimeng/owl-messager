@@ -41,7 +41,6 @@ func add(ctx iris.Context) {
 	}
 
 	if len(req.Name) == 0 {
-		log.Debug("param name:%s", req.Name)
 		common.RespLostParam("name", ctx)
 		return
 	}
