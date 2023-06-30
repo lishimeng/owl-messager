@@ -3,18 +3,21 @@ package sdk
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl-messager/cmd/owl-messager/ddd/open"
 	"github.com/lishimeng/owl-messager/internal/messager/msg"
 	"github.com/pkg/errors"
 	"net/url"
 )
 
-const ApiSendMessage = "/v2/messages/"
+const ApiSendMessage = "/messages/"
 
-const ApiCredential = "/v2/open/oauth2/token"
+const ApiCredential = "/open/oauth2/token"
 
 const (
 	CodeNotAllow int = 401
+	CodeNotFound int = 404
 	CodeSuccess  int = 200
 )
 
@@ -60,12 +63,15 @@ func (m *messageClient) SendApns(request ApnsRequest) (response Response, err er
 	return
 }
 
-func (m *messageClient) refreshCredential() (err error) {
+func (m *messageClient) refreshCredential() (response open.CredentialResp, err error) {
 	host, err := url.JoinPath(m.host, ApiCredential)
 	if err != nil {
 		return
 	}
-	response, err := getCredential(host, m.appId, m.secret)
+	if debugEnable {
+		log.Debug("credential url:%s", host)
+	}
+	response, err = getCredential(host, m.appId, m.secret)
 	if err != nil {
 		return
 	}
@@ -84,7 +90,7 @@ func (m *messageClient) send(category string, request any) (response Response, e
 		return
 	}
 	if debugEnable {
-		log.Debug("sendMail url: %s", u)
+		log.Debug("send message url: %s", u)
 	}
 	code, response, err := _send(m.credential, u, jsonStr)
 	if err != nil {
@@ -95,24 +101,17 @@ func (m *messageClient) send(category string, request any) (response Response, e
 		return
 	}
 	// http 无异常, 检查response code, 如果CodeNotAllow说明token不正常
-	if code == CodeNotAllow {
+	switch code {
+	case CodeNotAllow:
+		code, response, err = m.resend(u, jsonStr)
+	case CodeSuccess:
 		if debugEnable {
-			log.Debug("credential expired, refresh credential")
+			log.Debug("credential valid, send success")
 		}
-		err = m.refreshCredential()
-		if err != nil {
-			err = errors.Wrap(err, "can't refresh credential")
-			if debugEnable {
-				log.Debug(err)
-			}
-			return
-		}
-		// 如果获取了新token,重新发一遍
-		if debugEnable {
-			log.Debug("re_send the message")
-		}
-		code, response, err = _send(m.credential, u, jsonStr)
+	default: // not found, redirect ...
+		err = errors.New(fmt.Sprintf("%d", code))
 	}
+
 	if err != nil {
 		err = errors.Wrap(err, "send fail")
 		if debugEnable {
@@ -124,8 +123,30 @@ func (m *messageClient) send(category string, request any) (response Response, e
 		// 如果还是 CodeNotAllow, 说明token系统出问题了
 		err = errors.New(fmt.Sprintf("%d", CodeNotAllow))
 	}
+	return
+}
+
+func (m *messageClient) resend(u string, data []byte) (code int, response Response, err error) {
 	if debugEnable {
-		log.Debug("sendMail response: %v", response)
+		log.Debug("credential expired, refresh credential")
 	}
+	credentialResp, err := m.refreshCredential()
+	if err != nil {
+		err = errors.Wrap(err, "can't refresh credential")
+		if debugEnable {
+			log.Debug(err)
+		}
+		return
+	}
+	if credentialResp.Code != float64(tool.RespCodeSuccess) {
+		response.Code = credentialResp.Code
+		response.Message = credentialResp.Message
+		return
+	}
+	// 如果获取了新token,重新发一遍
+	if debugEnable {
+		log.Debug("re_send the message")
+	}
+	code, response, err = _send(m.credential, u, data)
 	return
 }

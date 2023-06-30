@@ -3,15 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
 	etc2 "github.com/lishimeng/app-starter/etc"
 	"github.com/lishimeng/app-starter/factory"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
-	"github.com/lishimeng/owl-messager/cmd/owl-messager/ddd"
-	"github.com/lishimeng/owl-messager/cmd/owl-messager/process"
+	"github.com/lishimeng/owl-messager/cmd/saas/ddd"
+	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/etc"
 	"time"
 )
@@ -30,12 +29,11 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	time.Sleep(time.Millisecond * 200)
+	time.Sleep(time.Second * 2)
 }
 
 func _main() (err error) {
 	configName := "config"
-	orm.Debug = true
 
 	application := app.New()
 
@@ -73,13 +71,9 @@ func _main() (err error) {
 		})
 
 		builder.EnableDatabase(dbConfig.Build(),
-			ddd.Tables()...).
-			SetWebLogLevel("DEBUG").
+			model.Tables()...).
 			PrintVersion().
-			EnableWeb(etc.Config.Web.Listen, ddd.Route).
-			//ComponentBefore(process.JobClearExpireTask).
-			ComponentBefore(process.BeforeStarted).
-			ComponentAfter(process.AfterStarted)
+			EnableWeb(etc.Config.Web.Listen, ddd.Route)
 
 		return err
 	}, func(s string) {

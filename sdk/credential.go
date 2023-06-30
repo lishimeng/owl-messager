@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/ddd/open"
+	"github.com/lishimeng/owl-messager/cmd/owl-messager/ddd/open"
 	"github.com/pkg/errors"
 	"io"
 	"net/http"
@@ -41,10 +41,6 @@ func getCredential(host string, appId, secret string) (response open.CredentialR
 		if debugEnable {
 			log.Debug(err)
 		}
-		return
-	}
-	if response.Code != float64(CodeSuccess) {
-		err = errors.New(fmt.Sprintf("%d", response.Code))
 		return
 	}
 	return

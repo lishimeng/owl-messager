@@ -1,15 +1,15 @@
-package api
+package ddd
 
 import (
 	"github.com/kataras/iris/v12"
-	"github.com/lishimeng/owl-messager/ddd"
-	"github.com/lishimeng/owl-messager/internal/api/apnsApi"
-	"github.com/lishimeng/owl-messager/internal/api/mailApi"
-	"github.com/lishimeng/owl-messager/internal/api/messageApi"
-	"github.com/lishimeng/owl-messager/internal/api/senderApi"
-	"github.com/lishimeng/owl-messager/internal/api/smsApi"
-	"github.com/lishimeng/owl-messager/internal/api/taskApi"
-	"github.com/lishimeng/owl-messager/internal/api/templateApi"
+	"github.com/lishimeng/owl-messager/cmd/saas/ddd/apnsApi"
+	"github.com/lishimeng/owl-messager/cmd/saas/ddd/mailApi"
+	"github.com/lishimeng/owl-messager/cmd/saas/ddd/messageApi"
+	"github.com/lishimeng/owl-messager/cmd/saas/ddd/sender"
+	"github.com/lishimeng/owl-messager/cmd/saas/ddd/senderApi"
+	"github.com/lishimeng/owl-messager/cmd/saas/ddd/smsApi"
+	"github.com/lishimeng/owl-messager/cmd/saas/ddd/taskApi"
+	"github.com/lishimeng/owl-messager/cmd/saas/ddd/templateApi"
 )
 
 func Route(app *iris.Application) {
@@ -21,33 +21,20 @@ func Route(app *iris.Application) {
 func router(root iris.Party) {
 	task(root.Party("/task"))
 	message(root.Party("/message"))
-
-	sender(root.Party("/sender"))
 	template(root.Party("/template"))
-
 	vendor(root.Party("/vendor"))
-
 	mail(root.Party("/mail"))
-
 	// send message
 	sendMail(root.Party("/send/mail"))
 	sms(root.Party("/send/sms"))
 	apns(root.Party("/send/apns"))
-
-	// api v2
-	ddd.Router(root.Party("/v2"))
+	sender.Route(root.Party("/sender"))
 }
 
 // vendor /api/vendor/
 func vendor(p iris.Party) {
 	p.Get("/mail", templateApi.GetMailVendors)
 	p.Get("/sms", templateApi.GetSmsVendors)
-}
-
-// sender /api/sender/
-func sender(p iris.Party) {
-	mailSender(p.Party("/mail"))
-	smsSender(p.Party("/sms"))
 }
 
 // template /api/template/

@@ -1,12 +1,14 @@
 package open
 
 import (
+	"fmt"
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/factory"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl-messager/internal/common"
 	"github.com/lishimeng/owl-messager/internal/etc"
 	"github.com/pkg/errors"
 )
@@ -42,22 +44,22 @@ func genCredential(ctx iris.Context) {
 	}
 	c, err := getClientByAppId(req.AppId)
 	if err != nil {
-		log.Debug(errors.Wrap(err, "无appId"))
-		resp.Code = tool.RespCodeNotFound
+		log.Debug(errors.Wrap(err, fmt.Sprintf("appId not found:%s", req.AppId)))
+		resp.Code = common.OauthAppNotFound
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	if c.Secret != req.Secret {
 		log.Debug("appId: %s, secret not match", req.AppId)
-		resp.Code = tool.RespCodeError
+		resp.Code = common.OauthSecretNotMatch
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
 
 	var provider token.JwtProvider
 	err = factory.Get(&provider)
-	if len(req.AppId) == 0 || len(req.Secret) == 0 {
-		log.Debug(errors.Wrap(err, "gen credential err"))
+	if err != nil {
+		log.Debug(errors.Wrap(err, "no jwt provider"))
 		resp.Code = tool.RespCodeError
 		tool.ResponseJSON(ctx, resp)
 		return

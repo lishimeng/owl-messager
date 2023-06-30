@@ -1,13 +1,16 @@
 package sdk
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+)
 
 func TestSdk(t *testing.T) {
+	Debug(true)
 	params := make(map[string]string)
 	params["content"] = "ABC123"
-	resp, err := New(WithHost("http://localhost/api"),
-		WithDebug(true),
-		WithAuth("aewfvsfvadv", "bhnsasdvdzvdvs")).SendMail(MailRequest{
+	resp, err := New(WithHost("http://localhost/"),
+		WithAuth("aewfvsfvadv1", "bhnsasdvdzvdvs")).SendMail(MailRequest{
 		Template:      "tpl_test001", // 测试模板
 		CloudTemplate: false,
 		TemplateParam: params,
@@ -18,5 +21,6 @@ func TestSdk(t *testing.T) {
 		t.Fatal(err)
 		return
 	}
-	t.Logf("Response code:%v , %+v", resp.Code, resp)
+	bs, _ := json.Marshal(resp)
+	t.Logf("Response %s", string(bs))
 }

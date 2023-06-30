@@ -87,7 +87,7 @@ func DeleteRunningTaskByTaskId(ctx persistence.TxContext, taskId int) (err error
 func DeleteRunningTask(ctx persistence.TxContext, id int) (err error) {
 	var runningTask model.MessageRunningTask
 	runningTask.Id = id
-	_, err = ctx.Context.Delete(runningTask)
+	_, err = ctx.Context.Delete(&runningTask)
 	return
 }
 

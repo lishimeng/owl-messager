@@ -8,7 +8,7 @@ import (
 func main() {
 	err := buildscript.Generate("owl-messager",
 		"lishimeng",
-		"cmd/owl-messager/main.go", true)
+		"cmd/owl-messager/main.go", false)
 	if err != nil {
 		fmt.Println(err)
 	} else {
