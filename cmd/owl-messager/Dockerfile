@@ -1,9 +1,11 @@
+
+
 FROM golang:1.20 as build
 ARG NAME
 ARG VERSION
 ARG COMMIT
 ARG BUILD_TIME
-ARG MAIN_PATH
+ARG APP_PATH
 ARG BASE="github.com/lishimeng/app-starter/version"
 ENV GOPROXY=https://goproxy.cn,direct
 ARG LDFLAGS=" \
@@ -15,7 +17,7 @@ ARG LDFLAGS=" \
 WORKDIR /release
 ADD . .
 RUN go mod download && go mod verify
-RUN go build -v --ldflags "${LDFLAGS} -X ${BASE}.Compiler=$(go version | sed 's/[ ][ ]*/_/g')" -o ${NAME} ${MAIN_PATH}
+RUN go build -v --ldflags "${LDFLAGS} -X ${BASE}.Compiler=$(go version | sed 's/[ ][ ]*/_/g')" -o ${NAME} ${APP_PATH}/main.go
 
 FROM lishimeng/alpine:3.17 as prod
 ARG NAME
