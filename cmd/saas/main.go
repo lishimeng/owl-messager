@@ -10,8 +10,10 @@ import (
 	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl-messager/cmd/saas/ddd"
+	"github.com/lishimeng/owl-messager/cmd/saas/static"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/etc"
+	"net/http"
 	"time"
 )
 import _ "github.com/lib/pq"
@@ -72,6 +74,9 @@ func _main() (err error) {
 
 		builder.EnableDatabase(dbConfig.Build(),
 			model.Tables()...).
+			EnableStaticWeb(func() http.FileSystem {
+				return http.FS(static.Static)
+			}).
 			PrintVersion().
 			EnableWeb(etc.Config.Web.Listen, ddd.Route)
 
