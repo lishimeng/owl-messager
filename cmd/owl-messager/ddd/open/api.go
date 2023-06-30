@@ -23,6 +23,12 @@ type CredentialResp struct {
 	Token string `json:"token,omitempty"`
 }
 
+type AppInfo struct {
+	AppId  string
+	Secret string
+	Org    string
+}
+
 func genCredential(ctx iris.Context) {
 	var err error
 	var req CredentialReq
@@ -36,22 +42,25 @@ func genCredential(ctx iris.Context) {
 		return
 	}
 
-	if len(req.AppId) == 0 || len(req.Secret) == 0 {
+	if len(req.AppId) == 0 {
 		log.Debug("appId: %s, secret:%s", req.AppId, req.Secret)
-		resp.Code = tool.RespCodeError
+		resp.Code = common.CodeAppNotFound
+		resp.Message = common.MsgAppNotFound
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	c, err := getClientByAppId(req.AppId)
+	c, err := getAppInfo(req.AppId)
 	if err != nil {
 		log.Debug(errors.Wrap(err, fmt.Sprintf("appId not found:%s", req.AppId)))
-		resp.Code = common.OauthAppNotFound
+		resp.Code = common.CodeAppNotFound
+		resp.Message = common.MsgAppNotFound
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
 	if c.Secret != req.Secret {
 		log.Debug("appId: %s, secret not match", req.AppId)
-		resp.Code = common.OauthSecretNotMatch
+		resp.Code = common.CodeSecretNotValid
+		resp.Message = common.MsgSecretNotValid
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
@@ -66,11 +75,11 @@ func genCredential(ctx iris.Context) {
 	}
 
 	p := token.JwtPayload{
-		Org: c.Domain,
+		Org: c.Org,
 		Uid: c.AppId,
 	}
 	bs, err := provider.GenWithTTL(p, etc.TokenTTL)
-	if len(req.AppId) == 0 || len(req.Secret) == 0 {
+	if err != nil {
 		log.Debug(errors.Wrap(err, "gen credential err"))
 		resp.Code = tool.RespCodeError
 		tool.ResponseJSON(ctx, resp)

@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
 	etc2 "github.com/lishimeng/app-starter/etc"
 	"github.com/lishimeng/app-starter/factory"
@@ -35,7 +34,6 @@ func main() {
 
 func _main() (err error) {
 	configName := "config"
-	orm.Debug = true
 
 	application := app.New()
 
@@ -74,7 +72,7 @@ func _main() (err error) {
 
 		builder.EnableDatabase(dbConfig.Build(),
 			ddd.Tables()...).
-			SetWebLogLevel("DEBUG").
+			//SetWebLogLevel("DEBUG").
 			PrintVersion().
 			EnableWeb(etc.Config.Web.Listen, ddd.Route).
 			//ComponentBefore(process.JobClearExpireTask).

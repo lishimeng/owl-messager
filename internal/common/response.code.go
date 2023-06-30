@@ -4,6 +4,11 @@ package common
 
 // OAuth
 const (
-	OauthAppNotFound    = 100404
-	OauthSecretNotMatch = 100401
+	CodeAppNotFound    = 100404
+	CodeSecretNotValid = 100401
+)
+
+const (
+	MsgAppNotFound    = "App not found"
+	MsgSecretNotValid = "App or Secret not valid"
 )

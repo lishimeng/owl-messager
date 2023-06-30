@@ -3,7 +3,7 @@ package model
 import "github.com/lishimeng/app-starter"
 
 type OpenClient struct {
-	app.Pk
+	app.TenantPk
 	AppId  string `orm:"column(app_id);unique"`
 	Secret string `orm:"column(secret)"`
 	Domain string `orm:"column(domain)"`
