@@ -37,7 +37,10 @@ func getCredential(host string, appId, secret string) (response open.CredentialR
 	result, _ := io.ReadAll(resp.Body)
 	err = json.Unmarshal(result, &response)
 	if err != nil {
-		log.Debug(errors.Wrap(err, "response json unmarshal err"))
+		err = errors.Wrap(err, "response json unmarshal err")
+		if debugEnable {
+			log.Debug(err)
+		}
 		return
 	}
 	if response.Code != float64(CodeSuccess) {

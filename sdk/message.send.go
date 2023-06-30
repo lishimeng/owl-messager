@@ -15,14 +15,20 @@ func _send(credential string, url string, req []byte) (code int, response Respon
 	client := &http.Client{Timeout: 8 * time.Second}
 	request, err := http.NewRequest("POST", url, bytes.NewBuffer(req))
 	if err != nil {
-		log.Debug(errors.Wrap(err, "create http request err"))
+		err = errors.Wrap(err, "create http request err")
+		if debugEnable {
+			log.Debug(err)
+		}
 		return
 	}
 	request.Header.Set(tool.AuthHeader, tool.Realm+credential)
 	request.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(request)
 	if err != nil {
-		log.Debug(errors.Wrap(err, "client Post err"))
+		err = errors.Wrap(err, "client Post err")
+		if debugEnable {
+			log.Debug(err)
+		}
 		return
 	}
 	defer func(Body io.ReadCloser) {
@@ -36,7 +42,10 @@ func _send(credential string, url string, req []byte) (code int, response Respon
 	result, _ := io.ReadAll(resp.Body)
 	err = json.Unmarshal(result, &response)
 	if err != nil {
-		log.Debug(errors.Wrap(err, "response json unmarshal err"))
+		err = errors.Wrap(err, "response json unmarshal err")
+		if debugEnable {
+			log.Debug(err)
+		}
 		return
 	}
 	if response.Code == float64(CodeNotAllow) {
