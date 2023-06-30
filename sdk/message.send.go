@@ -29,8 +29,8 @@ func _send(credential string, url string, req []byte) (code int, response Respon
 		_ = Body.Close()
 	}(resp.Body)
 
-	if resp.StatusCode == 401 {
-		code = 401
+	if resp.StatusCode == CodeNotAllow {
+		code = CodeNotAllow
 		return
 	}
 	result, _ := io.ReadAll(resp.Body)
@@ -39,8 +39,8 @@ func _send(credential string, url string, req []byte) (code int, response Respon
 		log.Debug(errors.Wrap(err, "response json unmarshal err"))
 		return
 	}
-	if response.Code == float64(401) {
-		code = 401
+	if response.Code == float64(CodeNotAllow) {
+		code = CodeNotAllow
 		return
 	}
 	return

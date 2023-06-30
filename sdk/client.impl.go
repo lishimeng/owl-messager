@@ -2,6 +2,7 @@ package sdk
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/messager/msg"
 	"github.com/pkg/errors"
@@ -11,6 +12,11 @@ import (
 const ApiSendMessage = "/v2/messages/"
 
 const ApiCredential = "/v2/open/oauth2/token"
+
+const (
+	CodeNotAllow int = 401
+	CodeSuccess  int = 200
+)
 
 // messageClient 消息服务
 type messageClient struct {
@@ -114,8 +120,8 @@ func (m *messageClient) send(category string, request interface{}) (response Res
 		log.Debug(errors.Wrap(err, "send fail"))
 		return
 	}
-	// http 无异常, 检查response code, 如果401说明token不正常
-	if code == 401 {
+	// http 无异常, 检查response code, 如果CodeNotAllow说明token不正常
+	if code == CodeNotAllow {
 		log.Debug("credential expired, refresh credential")
 		err = m.refreshCredential()
 		if err != nil {
@@ -130,9 +136,9 @@ func (m *messageClient) send(category string, request interface{}) (response Res
 		log.Debug(errors.Wrap(err, "send fail"))
 		return
 	}
-	if code == 401 {
-		// 如果还是401, 说明token系统出问题了
-		err = errors.New("401")
+	if code == CodeNotAllow {
+		// 如果还是 CodeNotAllow, 说明token系统出问题了
+		err = errors.New(fmt.Sprintf("%d", CodeNotAllow))
 	}
 	if m.debugEnable {
 		log.Debug("sendMail response: %v", response)

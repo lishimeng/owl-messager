@@ -29,7 +29,7 @@ func getCredential(host string, appId, secret string) (response open.CredentialR
 	defer func() {
 		_ = resp.Body.Close()
 	}()
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != CodeSuccess {
 		err = errors.New(fmt.Sprintf("%d", resp.StatusCode))
 		return
 	}
@@ -40,7 +40,7 @@ func getCredential(host string, appId, secret string) (response open.CredentialR
 		log.Debug(errors.Wrap(err, "response json unmarshal err"))
 		return
 	}
-	if response.Code != float64(200) {
+	if response.Code != float64(CodeSuccess) {
 		err = errors.New(fmt.Sprintf("%d", response.Code))
 		return
 	}
