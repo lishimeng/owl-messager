@@ -29,7 +29,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	time.Sleep(time.Millisecond * 200)
+	time.Sleep(time.Millisecond * 50)
 }
 
 func _main() (err error) {
@@ -72,10 +72,8 @@ func _main() (err error) {
 
 		builder.EnableDatabase(dbConfig.Build(),
 			ddd.Tables()...).
-			//SetWebLogLevel("DEBUG").
 			PrintVersion().
 			EnableWeb(etc.Config.Web.Listen, ddd.Route).
-			//ComponentBefore(process.JobClearExpireTask).
 			ComponentBefore(process.BeforeStarted).
 			ComponentAfter(process.AfterStarted)
 

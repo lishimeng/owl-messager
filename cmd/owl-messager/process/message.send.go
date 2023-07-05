@@ -23,13 +23,3 @@ func messageSendProcess(ctx context.Context) (err error) {
 
 	return
 }
-
-func JobClearExpireTask(ctx context.Context) (err error) {
-	go task.RunClearExpired(ctx)
-	return
-}
-
-func TaskMonitor(ctx context.Context) (err error) {
-	task.InitMonitor(ctx)
-	return nil
-}

@@ -23,7 +23,7 @@ const (
 
 // messageClient 消息服务
 type messageClient struct {
-	host       string // 消息服务主机地址. 如, "http://127.0.0.1/api"
+	host       string // 消息服务主机地址. 如, "http://127.0.0.1"
 	credential string
 	appId      string
 	secret     string

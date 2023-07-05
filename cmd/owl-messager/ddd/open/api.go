@@ -38,6 +38,7 @@ func genCredential(ctx iris.Context) {
 	if err != nil {
 		log.Debug(errors.Wrap(err, "读取参数错误"))
 		resp.Code = tool.RespCodeError
+		resp.Message = "request must be a json format"
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
@@ -70,6 +71,7 @@ func genCredential(ctx iris.Context) {
 	if err != nil {
 		log.Debug(errors.Wrap(err, "no jwt provider"))
 		resp.Code = tool.RespCodeError
+		resp.Message = "Internal Error"
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
@@ -82,6 +84,7 @@ func genCredential(ctx iris.Context) {
 	if err != nil {
 		log.Debug(errors.Wrap(err, "gen credential err"))
 		resp.Code = tool.RespCodeError
+		resp.Message = "Internal Error"
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
