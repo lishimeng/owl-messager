@@ -23,7 +23,7 @@ func TaskMonitorWs() context.Handler {
 		task.GetMonitor().UnSubscribe(c)
 		return
 	}
-	
+
 	ws.OnUpgradeError = func(err error) {
 		log.Info("Upgrade ws fail:%v", err)
 	}

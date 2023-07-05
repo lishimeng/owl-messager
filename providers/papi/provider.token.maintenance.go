@@ -11,7 +11,7 @@ type TokenMaintenance interface {
 
 type tokenMaintenance struct {
 	ctx context.Context
-	h *PriorityQueue
+	h   *PriorityQueue
 }
 
 func (tm *tokenMaintenance) Init() {

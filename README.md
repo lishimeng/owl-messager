@@ -38,10 +38,13 @@ owl messager is a platform:
 Usage
 --------------
 send an email
+
 ```shell
 http://localhost/api/v2/messages/mail/
 ```
+
 Parameter
+
 ```json
 {
 "template":"{tpl_id}",
@@ -54,10 +57,13 @@ Parameter
 ```
 
 send a sms
+
 ```shell
 http://localhost/api/v2/messages/sms/
 ```
+
 Parameter
+
 ```json
 {
 "template":"{tpl_id}",

@@ -13,10 +13,10 @@ type RamTokenStorage struct {
 }
 
 type TokenItem struct {
-	Id string
-	AccessToken string
-	AccessTokenExpire time.Time
-	RefreshToken string
+	Id                   string
+	AccessToken          string
+	AccessTokenExpire    time.Time
+	RefreshToken         string
 	RefreshTokenExpireAt time.Time
 }
 

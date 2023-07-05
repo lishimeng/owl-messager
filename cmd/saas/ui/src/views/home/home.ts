@@ -17,4 +17,4 @@ class HomeThree {
     iconColor: string = ""
 }
 
-export { HomeOne, HomeThree }
+export {HomeOne, HomeThree}

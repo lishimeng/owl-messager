@@ -11,20 +11,20 @@ import request from '/src/utils/request';
  * @method getTestMenu 获取后端动态路由菜单(test)
  */
 export function useMenuApi() {
-	return {
-		getAdminMenu: (params?: object) => {
-			return request({
-				url: '/gitee/lyt-top/vue-next-admin-images/raw/master/menu/adminMenu.json',
-				method: 'get',
-				params,
-			});
-		},
-		getTestMenu: (params?: object) => {
-			return request({
-				url: '/gitee/lyt-top/vue-next-admin-images/raw/master/menu/testMenu.json',
-				method: 'get',
-				params,
-			});
-		},
-	};
+    return {
+        getAdminMenu: (params?: object) => {
+            return request({
+                url: '/gitee/lyt-top/vue-next-admin-images/raw/master/menu/adminMenu.json',
+                method: 'get',
+                params,
+            });
+        },
+        getTestMenu: (params?: object) => {
+            return request({
+                url: '/gitee/lyt-top/vue-next-admin-images/raw/master/menu/testMenu.json',
+                method: 'get',
+                params,
+            });
+        },
+    };
 }

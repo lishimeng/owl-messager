@@ -101,18 +101,17 @@ export const getHomeThree = (): HomeThree[] => {
 }
 
 
-
 export const getZhexianOption = (color: string, bgColor: string) => {
     return {
         backgroundColor: bgColor,
         title: {
             text: '发送历史',
             x: 'left',
-            textStyle: { fontSize: '15', color: color },
+            textStyle: {fontSize: '15', color: color},
         },
-        grid: { top: 70, right: 20, bottom: 30, left: 30 },
-        tooltip: { trigger: 'axis' },
-        legend: { data: ['Mail', 'SMS'], right: 0 },
+        grid: {top: 70, right: 20, bottom: 30, left: 30},
+        tooltip: {trigger: 'axis'},
+        legend: {data: ['Mail', 'SMS'], right: 0},
         xAxis: {
             data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
         },
@@ -120,7 +119,7 @@ export const getZhexianOption = (color: string, bgColor: string) => {
             {
                 type: 'value',
                 name: '价格',
-                splitLine: { show: true, lineStyle: { type: 'dashed', color: '#f5f5f5' } },
+                splitLine: {show: true, lineStyle: {type: 'dashed', color: '#f5f5f5'}},
             },
         ],
         series: [
@@ -131,12 +130,12 @@ export const getZhexianOption = (color: string, bgColor: string) => {
                 symbol: 'circle',
                 smooth: true,
                 data: [0, 41.1, 30.4, 65.1, 53.3, 53.3, 53.3, 41.1, 30.4, 65.1, 53.3, 10],
-                lineStyle: { color: '#fe9a8b' },
-                itemStyle: { color: '#fe9a8b', borderColor: '#fe9a8b' },
+                lineStyle: {color: '#fe9a8b'},
+                itemStyle: {color: '#fe9a8b', borderColor: '#fe9a8b'},
                 areaStyle: {
                     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: '#fe9a8bb3' },
-                        { offset: 1, color: '#fe9a8b03' },
+                        {offset: 0, color: '#fe9a8bb3'},
+                        {offset: 1, color: '#fe9a8b03'},
                     ]),
                 },
             },
@@ -147,12 +146,12 @@ export const getZhexianOption = (color: string, bgColor: string) => {
                 symbol: 'circle',
                 smooth: true,
                 data: [0, 24.1, 7.2, 15.5, 42.4, 42.4, 42.4, 24.1, 7.2, 15.5, 42.4, 0],
-                lineStyle: { color: '#9E87FF' },
-                itemStyle: { color: '#9E87FF', borderColor: '#9E87FF' },
+                lineStyle: {color: '#9E87FF'},
+                itemStyle: {color: '#9E87FF', borderColor: '#9E87FF'},
                 areaStyle: {
                     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: '#9E87FFb3' },
-                        { offset: 1, color: '#9E87FF03' },
+                        {offset: 0, color: '#9E87FFb3'},
+                        {offset: 1, color: '#9E87FF03'},
                     ]),
                 },
                 emphasis: {
@@ -163,12 +162,12 @@ export const getZhexianOption = (color: string, bgColor: string) => {
                             y: 0.5,
                             r: 0.5,
                             colorStops: [
-                                { offset: 0, color: '#9E87FF' },
-                                { offset: 0.4, color: '#9E87FF' },
-                                { offset: 0.5, color: '#fff' },
-                                { offset: 0.7, color: '#fff' },
-                                { offset: 0.8, color: '#fff' },
-                                { offset: 1, color: '#fff' },
+                                {offset: 0, color: '#9E87FF'},
+                                {offset: 0.4, color: '#9E87FF'},
+                                {offset: 0.5, color: '#fff'},
+                                {offset: 0.7, color: '#fff'},
+                                {offset: 0.8, color: '#fff'},
+                                {offset: 1, color: '#fff'},
                             ],
                         },
                         borderColor: '#9E87FF',
@@ -181,132 +180,132 @@ export const getZhexianOption = (color: string, bgColor: string) => {
 }
 
 export const getBarOption = (color: string, bgColor: string) => {
-  return {
+    return {
 
-      backgroundColor: bgColor,
-      title: {
-          text: '发送效率',
-          x: 'left',
-          textStyle: { fontSize: '15', color: color },
-      },
-      tooltip: { trigger: 'axis' },
-      legend: { data: ['任务量', '发送耗时', '等待率'], right: 0 },
-      grid: { top: 70, right: 80, bottom: 30, left: 80 },
-      xAxis: [
-          {
-              type: 'category',
-              data: ['ali', 'huawei', 'tencent', 'qiniu', 'baidu', 'youpai'],
-              boundaryGap: true,
-              axisTick: { show: false },
-          },
-      ],
-      yAxis: [
-          {
-              name: '任务量',
-              nameLocation: 'middle',
-              nameTextStyle: { padding: [3, 4, 50, 6] },
-              splitLine: { show: true, lineStyle: { type: 'dashed', color: '#f5f5f5' } },
-              axisLine: { show: false },
-              axisTick: { show: false },
-              axisLabel: { color: color, formatter: '{value} ' },
-          },
-          {
-              name: '耗时',
-              nameLocation: 'middle',
-              nameTextStyle: { padding: [50, 4, 5, 6] },
-              splitLine: { show: false },
-              axisLine: { show: false },
-              axisTick: { show: false },
-              axisLabel: { color: color, formatter: '{value} ' },
-          },
-      ],
-      series: [
-          {
-              name: '任务量',
-              type: 'line',
-              smooth: true,
-              showSymbol: true,
-              // 矢量画五角星
-              symbol: 'path://M150 0 L80 175 L250 75 L50 75 L220 175 Z',
-              symbolSize: 12,
-              yAxisIndex: 0,
-              areaStyle: {
-                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                      { offset: 0, color: 'rgba(250,180,101,0.3)' },
-                      { offset: 1, color: 'rgba(250,180,101,0)' },
-                  ]),
-                  shadowColor: 'rgba(250,180,101,0.2)',
-                  shadowBlur: 20,
-              },
-              itemStyle: { color: '#FF8000' },
-              // data中可以使用对象，value代表相应的值，另外可加入自定义的属性
-              data: [
-                  { value: 1, stationName: 's1' },
-                  { value: 3, stationName: 's2' },
-                  { value: 4, stationName: 's3' },
-                  { value: 9, stationName: 's4' },
-                  { value: 3, stationName: 's5' },
-                  { value: 2, stationName: 's6' },
-              ],
-          },
-          {
-              name: '耗时',
-              type: 'line',
-              smooth: true,
-              showSymbol: true,
-              symbol: 'emptyCircle',
-              symbolSize: 12,
-              yAxisIndex: 0,
-              areaStyle: {
-                  color: new echarts.graphic.LinearGradient(
-                      0,
-                      0,
-                      0,
-                      1,
-                      [
-                          { offset: 0, color: 'rgba(199, 237, 250,0.5)' },
-                          { offset: 1, color: 'rgba(199, 237, 250,0.2)' },
-                      ],
-                      false
-                  ),
-              },
-              itemStyle: {
-                  color: '#3bbc86',
-              },
-              data: [
-                  { value: 31, stationName: 's1' },
-                  { value: 36, stationName: 's2' },
-                  { value: 54, stationName: 's3' },
-                  { value: 24, stationName: 's4' },
-                  { value: 73, stationName: 's5' },
-                  { value: 22, stationName: 's6' },
-              ],
-          },
-          {
-              name: '等待率',
-              type: 'bar',
-              barWidth: 30,
-              yAxisIndex: 1,
-              itemStyle: {
-                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                      { offset: 0, color: 'rgba(108,80,243,0.3)' },
-                      { offset: 1, color: 'rgba(108,80,243,0)' },
-                  ]),
-                  //柱状图圆角
-                  borderRadius: [30, 30, 0, 0],
-              },
-              data: [
-                  { value: 11, stationName: 's1' },
-                  { value: 34, stationName: 's2' },
-                  { value: 54, stationName: 's3' },
-                  { value: 39, stationName: 's4' },
-                  { value: 63, stationName: 's5' },
-                  { value: 24, stationName: 's6' },
-              ],
-          },
-      ],
+        backgroundColor: bgColor,
+        title: {
+            text: '发送效率',
+            x: 'left',
+            textStyle: {fontSize: '15', color: color},
+        },
+        tooltip: {trigger: 'axis'},
+        legend: {data: ['任务量', '发送耗时', '等待率'], right: 0},
+        grid: {top: 70, right: 80, bottom: 30, left: 80},
+        xAxis: [
+            {
+                type: 'category',
+                data: ['ali', 'huawei', 'tencent', 'qiniu', 'baidu', 'youpai'],
+                boundaryGap: true,
+                axisTick: {show: false},
+            },
+        ],
+        yAxis: [
+            {
+                name: '任务量',
+                nameLocation: 'middle',
+                nameTextStyle: {padding: [3, 4, 50, 6]},
+                splitLine: {show: true, lineStyle: {type: 'dashed', color: '#f5f5f5'}},
+                axisLine: {show: false},
+                axisTick: {show: false},
+                axisLabel: {color: color, formatter: '{value} '},
+            },
+            {
+                name: '耗时',
+                nameLocation: 'middle',
+                nameTextStyle: {padding: [50, 4, 5, 6]},
+                splitLine: {show: false},
+                axisLine: {show: false},
+                axisTick: {show: false},
+                axisLabel: {color: color, formatter: '{value} '},
+            },
+        ],
+        series: [
+            {
+                name: '任务量',
+                type: 'line',
+                smooth: true,
+                showSymbol: true,
+                // 矢量画五角星
+                symbol: 'path://M150 0 L80 175 L250 75 L50 75 L220 175 Z',
+                symbolSize: 12,
+                yAxisIndex: 0,
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        {offset: 0, color: 'rgba(250,180,101,0.3)'},
+                        {offset: 1, color: 'rgba(250,180,101,0)'},
+                    ]),
+                    shadowColor: 'rgba(250,180,101,0.2)',
+                    shadowBlur: 20,
+                },
+                itemStyle: {color: '#FF8000'},
+                // data中可以使用对象，value代表相应的值，另外可加入自定义的属性
+                data: [
+                    {value: 1, stationName: 's1'},
+                    {value: 3, stationName: 's2'},
+                    {value: 4, stationName: 's3'},
+                    {value: 9, stationName: 's4'},
+                    {value: 3, stationName: 's5'},
+                    {value: 2, stationName: 's6'},
+                ],
+            },
+            {
+                name: '耗时',
+                type: 'line',
+                smooth: true,
+                showSymbol: true,
+                symbol: 'emptyCircle',
+                symbolSize: 12,
+                yAxisIndex: 0,
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(
+                        0,
+                        0,
+                        0,
+                        1,
+                        [
+                            {offset: 0, color: 'rgba(199, 237, 250,0.5)'},
+                            {offset: 1, color: 'rgba(199, 237, 250,0.2)'},
+                        ],
+                        false
+                    ),
+                },
+                itemStyle: {
+                    color: '#3bbc86',
+                },
+                data: [
+                    {value: 31, stationName: 's1'},
+                    {value: 36, stationName: 's2'},
+                    {value: 54, stationName: 's3'},
+                    {value: 24, stationName: 's4'},
+                    {value: 73, stationName: 's5'},
+                    {value: 22, stationName: 's6'},
+                ],
+            },
+            {
+                name: '等待率',
+                type: 'bar',
+                barWidth: 30,
+                yAxisIndex: 1,
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        {offset: 0, color: 'rgba(108,80,243,0.3)'},
+                        {offset: 1, color: 'rgba(108,80,243,0)'},
+                    ]),
+                    //柱状图圆角
+                    borderRadius: [30, 30, 0, 0],
+                },
+                data: [
+                    {value: 11, stationName: 's1'},
+                    {value: 34, stationName: 's2'},
+                    {value: 54, stationName: 's3'},
+                    {value: 39, stationName: 's4'},
+                    {value: 63, stationName: 's5'},
+                    {value: 24, stationName: 's6'},
+                ],
+            },
+        ],
 
-  }
+    }
 }
 
 export const getPieOption = (color: string,
@@ -319,16 +318,16 @@ export const getPieOption = (color: string,
     let getvalue = [34.2, 38.87, 17.88, 9.05, 2.05];
     let data = [];
     for (let i = 0; i < getname.length; i++) {
-        data.push({ name: getname[i], value: getvalue[i] });
+        data.push({name: getname[i], value: getvalue[i]});
     }
     return {
         backgroundColor: bgColor,
         title: {
             text: '短信平台分布',
             x: 'left',
-            textStyle: { fontSize: '15', color: color },
+            textStyle: {fontSize: '15', color: color},
         },
-        tooltip: { trigger: 'item', formatter: '{b} <br/> {c}%' },
+        tooltip: {trigger: 'item', formatter: '{b} <br/> {c}%'},
         graphic: {
             elements: [
                 {
@@ -386,8 +385,8 @@ export const getPieOption = (color: string,
                         return colorList[params.dataIndex];
                     },
                 },
-                label: { show: false },
-                labelLine: { show: false },
+                label: {show: false},
+                labelLine: {show: false},
                 data: data,
             },
         ],

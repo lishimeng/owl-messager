@@ -1,9 +1,11 @@
-# Tencent ses SDK 
+# Tencent ses SDK
 
 > 使用腾讯云ses API推送邮件
 
 ## 资源准备
+
 ### 账号
+
 | 资源       | 名称           |
 |----------|--------------|
 | secretId | 应用ID         |
@@ -12,6 +14,7 @@
 | sender   | 发件账号         |
 
 ### 业务资源
+
 | 资源         | 名称        |
 |------------|-----------|
 | templateId | 模板ID,不是名称 |
@@ -20,6 +23,7 @@
 ## 用法(Usage)
 
 ### 配置
+
 ```shell
 TencentConfig{
     AppId:  secretId,
@@ -76,9 +80,11 @@ if err != nil {
     return err
 }
 ```
+
 ### 注意
+
 Tencent对region支持有特殊要求:
 > 国内是香港，国际是新加坡地域
-> 
+>
 > 发送国内邮件需要指定region:ap-hongkong
 

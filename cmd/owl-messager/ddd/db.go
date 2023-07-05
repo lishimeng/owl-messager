@@ -6,7 +6,7 @@ func Tables() (t []interface{}) {
 	t = append(t,
 		new(model.Tenant),
 		new(model.OpenClient),
-		
+
 		new(model.MessageInfo),
 		new(model.MessageTask),
 		new(model.MessageRunningTask),

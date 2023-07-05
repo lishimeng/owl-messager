@@ -7,7 +7,6 @@ const (
 )
 
 type TemplateResp struct {
-
 }
 
 type TplHandler interface {
@@ -18,7 +17,6 @@ type TplHandler interface {
 }
 
 type Sender interface {
-
 	SetAppId(appId string)
 
 	GetTplHandler() TplHandler
@@ -29,12 +27,11 @@ type Sender interface {
 }
 
 type sender struct {
-	appId string
+	appId      string
 	tplHandler TplHandler
 }
 
 type templateHandler struct {
-
 }
 
 func (t *templateHandler) Get(id string) (r TemplateResp, err error) {

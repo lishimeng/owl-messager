@@ -27,7 +27,7 @@ func TestSend(t *testing.T) {
 	// 发送
 	err := d.DialAndSend(m)
 
-	if err !=nil{
+	if err != nil {
 		t.Log("errrrrrrorrrrr")
 		t.Log(err)
 	}

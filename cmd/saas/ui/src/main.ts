@@ -13,7 +13,7 @@ import VueGridLayout from 'vue-grid-layout';
 const app = createApp(App);
 directive(app);
 other.elSvg(app);
- app.use(pinia)
+app.use(pinia)
     .use(router)
     .use(ElementPlus)
     .use(i18n)

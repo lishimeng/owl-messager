@@ -42,8 +42,8 @@ func (pq *PriorityQueue) Pop() interface{} {
 	old := *pq
 	n := len(old.items)
 	item := old.items[n-1]
-	old.items[n-1] = nil  // avoid memory leak
-	item.index = -1 // for safety
+	old.items[n-1] = nil // avoid memory leak
+	item.index = -1      // for safety
 	pq.items = old.items[0 : n-1]
 	return item
 }
