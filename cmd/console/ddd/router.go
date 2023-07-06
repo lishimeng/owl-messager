@@ -2,14 +2,14 @@ package ddd
 
 import (
 	"github.com/kataras/iris/v12"
-	"github.com/lishimeng/owl-messager/cmd/saas/ddd/apnsApi"
-	"github.com/lishimeng/owl-messager/cmd/saas/ddd/mailApi"
-	"github.com/lishimeng/owl-messager/cmd/saas/ddd/messageApi"
-	"github.com/lishimeng/owl-messager/cmd/saas/ddd/sender"
-	"github.com/lishimeng/owl-messager/cmd/saas/ddd/senderApi"
-	"github.com/lishimeng/owl-messager/cmd/saas/ddd/smsApi"
-	"github.com/lishimeng/owl-messager/cmd/saas/ddd/taskApi"
-	"github.com/lishimeng/owl-messager/cmd/saas/ddd/templateApi"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/apnsApi"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/mailApi"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/messageApi"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/sender"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/senderApi"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/smsApi"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/taskApi"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/templateApi"
 )
 
 func Route(app *iris.Application) {

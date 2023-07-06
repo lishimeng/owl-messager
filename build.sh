@@ -51,12 +51,12 @@ push_image(){
 build_all(){
   checkout_tag
   build_image 'owl-messager' 'cmd/owl-messager'
-  build_image 'owl-saas' 'cmd/saas'
+  build_image 'owl-console' 'cmd/console'
 }
 
 push_all(){
   push_image 'owl-messager'
-  push_image 'owl-saas'
+  push_image 'owl-console'
 }
 
 case  $1 in

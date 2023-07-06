@@ -9,8 +9,8 @@ import (
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
-	"github.com/lishimeng/owl-messager/cmd/saas/ddd"
-	"github.com/lishimeng/owl-messager/cmd/saas/static"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd"
+	"github.com/lishimeng/owl-messager/cmd/console/static"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/etc"
 	"net/http"
@@ -31,7 +31,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	time.Sleep(time.Second * 2)
+	time.Sleep(time.Millisecond * 50)
 }
 
 func _main() (err error) {

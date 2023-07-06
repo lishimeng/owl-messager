@@ -14,8 +14,8 @@ func main() {
 			HasUI:   false,
 		},
 		buildscript.Application{
-			Name:    "owl-saas",
-			AppPath: "cmd/saas",
+			Name:    "owl-console",
+			AppPath: "cmd/console",
 			HasUI:   true,
 		},
 	)
