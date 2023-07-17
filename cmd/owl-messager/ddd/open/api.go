@@ -77,8 +77,9 @@ func genCredential(ctx iris.Context) {
 	}
 
 	p := token.JwtPayload{
-		Org: c.Org,
-		Uid: c.AppId,
+		Org:   c.Org,
+		Uid:   c.AppId,
+		Scope: common.Scope,
 	}
 	bs, err := provider.GenWithTTL(p, etc.TokenTTL)
 	if err != nil {
