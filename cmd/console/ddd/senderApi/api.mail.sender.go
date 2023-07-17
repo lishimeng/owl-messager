@@ -47,7 +47,7 @@ func GetMailSenderList(ctx iris.Context) {
 			var tmpInfo = Info{
 				Id:         ms.Id,
 				SenderCode: ms.Code,
-				Config:     ms.Config,
+				Config:     string(ms.Config),
 				Status:     ms.Status,
 				CreateTime: tool.FormatTime(ms.CreateTime),
 				UpdateTime: tool.FormatTime(ms.UpdateTime),
@@ -91,7 +91,7 @@ func GetMailSenderInfo(ctx iris.Context) {
 	var tmpInfo = Info{
 		Id:         ms.Id,
 		SenderCode: ms.Code,
-		Config:     ms.Config,
+		Config:     string(ms.Config),
 		Status:     ms.Status,
 		CreateTime: tool.FormatTime(ms.CreateTime),
 		UpdateTime: tool.FormatTime(ms.UpdateTime),

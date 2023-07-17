@@ -111,7 +111,7 @@ func GetMailSenderInfo(ctx iris.Context) {
 	resp.Scode = m.Code
 	resp.DefaultSender = m.Default
 	resp.Vendor = string(m.Vendor)
-	resp.Config = m.Config
+	resp.Config = string(m.Config)
 	resp.Code = tool.RespCodeSuccess
 	log.Debug("resp:%s", resp)
 	tool.ResponseJSON(ctx, resp)
