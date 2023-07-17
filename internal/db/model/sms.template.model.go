@@ -10,7 +10,7 @@ type SmsParam map[string]string
 // SmsTemplateInfo 短信模板
 // 可以指定发送账号
 type SmsTemplateInfo struct {
-	app.Pk
+	app.TenantPk
 	Code            string   `orm:"column(code);unique"`       // owl中的唯一编码
 	Name            string   `orm:"column(name)"`              // 模板名字
 	Sender          int      `orm:"column(sender_id);null"`    // 发送平台
