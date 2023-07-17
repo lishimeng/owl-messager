@@ -6,7 +6,6 @@ import "encoding/json"
 type SmsSenderInfo struct {
 	SenderInfo
 	Vendor    SmsVendor         `orm:"column(vendor)"` // 消息平台
-	Config    string            `orm:"column(config)"` // json 配置(map: key-value)
 	ConfigMap map[string]string `orm:"-"`
 }
 

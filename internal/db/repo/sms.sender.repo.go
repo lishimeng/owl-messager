@@ -99,7 +99,7 @@ func SmsSenderDisable(id int) (err error) {
 func CreateSmslSenderInfo(code, vendor, config string, defaultSender int) (m model.SmsSenderInfo, err error) {
 	m.Status = 1
 	m.Vendor = model.SmsVendor(vendor)
-	m.Config = config
+	m.Config = model.SenderConfig(config)
 	m.Code = code
 	m.Default = defaultSender
 	_, err = app.GetOrm().Context.Insert(&m)

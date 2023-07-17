@@ -5,6 +5,7 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
+	"github.com/lishimeng/owl-messager/internal/db/service"
 	"github.com/lishimeng/owl-messager/internal/messager"
 	"github.com/lishimeng/owl-messager/internal/provider"
 )
@@ -30,7 +31,7 @@ func (m *smsSender) Send(mi model.SmsMessageInfo) (err error) {
 	// sender info
 	log.Info("send sms:%d", mi.Id)
 	var si model.SmsSenderInfo
-	si, err = repo.GetDefaultSmsSender(0) // 默认sender
+	si, err = service.GetDefaultSmsSender(0) // 默认sender
 	if err != nil {
 		log.Info("sms sender not exist")
 		log.Info(err)
@@ -43,7 +44,7 @@ func (m *smsSender) Send(mi model.SmsMessageInfo) (err error) {
 		return
 	}
 
-	p, err := provider.GetFactory().Create(si.Vendor, si.Config)
+	p, err := provider.GetFactory().Create(si.Vendor, string(si.Config))
 	if err != nil {
 		log.Info("create sms provider failure:%d", si.Id)
 		return

@@ -18,7 +18,7 @@ func GetMailSenderById(id int) (s model.MailSenderInfo, err error) {
 	return
 }
 
-func GetDefaultMailSender(org string) (s model.MailSenderInfo, err error) {
+func GetDefaultMailSender(org int) (s model.MailSenderInfo, err error) {
 	err = app.GetOrm().Context.
 		QueryTable(new(model.MailSenderInfo)).
 		Filter("Default", model.DefaultSenderEnable).
@@ -69,9 +69,9 @@ func GetMailSenders(org int) (senders []model.MailSenderInfo, err error) {
 
 // 创建邮件箱配置内容
 func CreateMailSenderInfo(code, vendor, config string, defaultSender int) (m model.MailSenderInfo, err error) {
-	m.Status = 1
+	m.Status = model.MailVendorEnable
 	m.Vendor = model.MailVendor(vendor)
-	m.Config = config
+	m.Config = model.SenderConfig(config)
 	m.Code = code
 	m.Default = defaultSender
 	_, err = app.GetOrm().Context.Insert(&m)

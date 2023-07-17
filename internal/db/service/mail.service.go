@@ -128,7 +128,7 @@ func UpdateMsi(code, vendor, config string, defaultSender int) (m model.MailSend
 	var cols []string
 	m.Default = defaultSender
 	cols = append(cols, "Default")
-	m.Config = config
+	m.Config = model.SenderConfig(config)
 	cols = append(cols, "Config")
 	m, err = repo.UpdateMailSenderInfo(m, cols...)
 	return

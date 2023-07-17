@@ -4,7 +4,6 @@ package model
 type MailSenderInfo struct {
 	SenderInfo
 	Vendor MailVendor
-	Config string `orm:"column(config)"` // json 配置(map: key-value)
 }
 
 type MailVendor string

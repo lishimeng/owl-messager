@@ -7,6 +7,7 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
+	"github.com/lishimeng/owl-messager/internal/db/service"
 	"github.com/lishimeng/owl-messager/internal/messager"
 	"github.com/lishimeng/owl-messager/internal/provider"
 	"github.com/lishimeng/owl-messager/internal/provider/template"
@@ -34,7 +35,7 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 	// sender info
 	log.Info("send mail:%d", p.Id)
 
-	si, err := repo.GetDefaultMailSender("") // 使用默认sender
+	si, err := service.GetDefaultEmailSender(0) // 使用默认sender
 
 	if err != nil {
 		log.Info("mail sender not exist")
@@ -58,7 +59,7 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 		}
 	}
 
-	s, err := provider.DefaultMailFactory.Create(si.Vendor, si.Config)
+	s, err := provider.DefaultMailFactory.Create(si.Vendor, string(si.Config))
 	if err != nil {
 		log.Info("create mail sender failure:%d", si.Id)
 		return
