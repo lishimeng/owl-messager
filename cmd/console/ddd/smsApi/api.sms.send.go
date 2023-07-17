@@ -38,6 +38,7 @@ func SendSms(ctx iris.Context) {
 		return
 	}
 
+	org := 1
 	// check params
 	log.Debug("check params")
 
@@ -90,6 +91,7 @@ func SendSms(ctx iris.Context) {
 	}
 
 	m, err := service.CreateSmsMessage(
+		org,
 		tpl,
 		tplParams,
 		req.Receiver,

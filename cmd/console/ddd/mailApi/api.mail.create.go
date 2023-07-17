@@ -31,7 +31,7 @@ type Resp struct {
 
 // SendMail
 /**
-@Summary send a email
+@Summary send an email
 
 @Router /api/send/mail [post]
 
@@ -39,7 +39,7 @@ type Resp struct {
 http://localhost/api/send/mail
 
 {
-	"template":"b7411049bbfe8068",
+	"template":"b7411049bb4fg4fe8068",
 	"params":{"content":"O35A0001"},
 	"subject":"电量低超提醒",
 	"sender":"e949ae24481a9527",
@@ -60,6 +60,8 @@ func SendMail(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
+
+	org := 1 // TODO
 
 	// check params
 	log.Debug("check params")
@@ -116,7 +118,7 @@ func SendMail(ctx iris.Context) {
 	}
 
 	m, err := service.CreateMailMessage(
-		sender,
+		org,
 		tpl,
 		templateParams,
 		req.Subject, req.Receiver, req.Cc)

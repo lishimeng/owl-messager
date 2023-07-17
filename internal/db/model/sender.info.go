@@ -23,7 +23,7 @@ func (s *SenderConfig) Decode() error {
 
 // SenderInfo 发消息账号
 type SenderInfo struct {
-	app.Pk
+	app.TenantPk
 	Code    string       `orm:"column(code);unique"`    // 编号
 	Default int          `orm:"column(default_sender)"` // 默认账号
 	Config  SenderConfig `orm:"column(config)"`         // json 配置(map: key-value)

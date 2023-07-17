@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/midware/auth"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/internal/messager/msg"
 )
 
@@ -33,6 +35,7 @@ func sendMessage(ctx iris.Context) {
 	log.Info("Union message send function")
 	var req Req
 	var resp Resp
+	var org = ctx.GetHeader(auth.OrgKey)
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		log.Info("read req fail")
@@ -44,6 +47,14 @@ func sendMessage(ctx iris.Context) {
 	}
 
 	var category = ctx.Params().Get("category")
+	validCategory := checkMessageCategory(category)
+	if !validCategory {
+		log.Debug("unknown category: %s", category)
+		resp.Code = -1
+		resp.Message = "unknown category"
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
 
 	// 检查收信人
 	if len(req.Receiver) == 0 {
@@ -73,15 +84,24 @@ func sendMessage(ctx iris.Context) {
 		}
 	}
 
+	tenant, err := repo.GetTenant(org)
+	if err != nil {
+		log.Debug("unknown tenant: %s", org)
+		resp.Code = -1
+		resp.Message = "unknown tenant"
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+
 	// 检查消息类型(是否支持)
 	var message model.MessageInfo
 	switch category {
 	case msg.EmailCategory:
-		message, resp, err = createMail(req, params)
+		message, resp, err = createMail(tenant.Id, req, params)
 	case msg.SmsCategory:
-		message, resp, err = createSms(req, params)
+		message, resp, err = createSms(tenant.Id, req, params)
 	case msg.ApnsCategory:
-		message, resp, err = createApns(req, params)
+		message, resp, err = createApns(tenant.Id, req, params)
 	default:
 		err = fmt.Errorf("unkown message category")
 		resp.Code = -1
@@ -101,12 +121,28 @@ func sendMessage(ctx iris.Context) {
 	tool.ResponseJSON(ctx, resp)
 }
 
-func createMail(req Req, params string) (m model.MessageInfo, resp Resp, err error) {
+func checkMessageCategory(category string) bool {
+	var validCategory = false
+	// TODO support map
+	switch category {
+	case msg.EmailCategory:
+		validCategory = true
+	case msg.SmsCategory:
+		validCategory = true
+	case msg.ApnsCategory:
+		validCategory = true
+	default:
+		validCategory = false
+	}
+	return validCategory
+}
+
+func createMail(org int, req Req, params string) (m model.MessageInfo, resp Resp, err error) {
 	if len(req.Title) == 0 {
 		log.Debug("no title, use default: %s", DefaultTitle)
 		req.Title = DefaultTitle
 	}
-	m, err = serviceAddMail(req.Template, req.CloudTemplate, req.Template, params, req.Title, req.Receiver)
+	m, err = serviceAddMail(org, req.Template, req.CloudTemplate, req.Template, params, req.Title, req.Receiver)
 	if err != nil {
 		resp.Code = -1
 		resp.Message = "create mail message failed"
@@ -114,8 +150,8 @@ func createMail(req Req, params string) (m model.MessageInfo, resp Resp, err err
 	return
 }
 
-func createSms(req Req, params string) (m model.MessageInfo, resp Resp, err error) {
-	m, err = serviceAddSms(req.Template, params, req.Receiver)
+func createSms(org int, req Req, params string) (m model.MessageInfo, resp Resp, err error) {
+	m, err = serviceAddSms(org, req.Template, params, req.Receiver)
 	if err != nil {
 		resp.Code = -1
 		resp.Message = "create sms message failed"
@@ -123,7 +159,7 @@ func createSms(req Req, params string) (m model.MessageInfo, resp Resp, err erro
 	return
 }
 
-func createApns(req Req, params string) (m model.MessageInfo, resp Resp, err error) {
+func createApns(org int, req Req, params string) (m model.MessageInfo, resp Resp, err error) {
 	if len(req.Title) == 0 {
 		log.Debug("no title, use default: %s", DefaultTitle)
 		req.Title = DefaultTitle
@@ -136,7 +172,7 @@ func createApns(req Req, params string) (m model.MessageInfo, resp Resp, err err
 		return
 	}
 
-	m, err = serviceAddApns(req.Template, params, req.Title, req.Receiver)
+	m, err = serviceAddApns(org, req.Template, params, req.Title, req.Receiver)
 	if err != nil {
 		resp.Code = -1
 		resp.Message = "create sms message failed"

@@ -3,7 +3,7 @@ package model
 import "github.com/lishimeng/app-starter"
 
 type MailTemplateInfo struct {
-	app.Pk
+	app.TenantPk
 	Code        string `orm:"column(code);unique"`
 	Name        string `orm:"column(name)"`
 	Body        string `orm:"column(body)"`

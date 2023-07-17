@@ -17,6 +17,7 @@ func GetSmsByMessageId(msgId int) (m model.SmsMessageInfo, err error) {
 func CreateSmsMessage(ctx persistence.TxContext, message model.MessageInfo, template model.SmsTemplateInfo,
 	templateParams string, receiver string) (m model.SmsMessageInfo, err error) {
 
+	m.Org = message.Org
 	m.MessageId = message.Id
 	m.Template = template.Id
 	m.Params = templateParams

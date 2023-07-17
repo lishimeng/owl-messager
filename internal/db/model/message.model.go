@@ -6,7 +6,7 @@ import (
 )
 
 type MessageHeader struct {
-	app.Pk
+	app.TenantPk
 	app.TableChangeInfo
 	// 消息ID(外键)
 	MessageId int `orm:"column(message_id)"`
@@ -14,7 +14,7 @@ type MessageHeader struct {
 
 // 消息主表
 type MessageInfo struct {
-	app.Pk
+	app.TenantPk
 	app.TableChangeInfo
 	Category     int       `orm:"column(category)"`
 	Subject      string    `orm:"column(subject)"`

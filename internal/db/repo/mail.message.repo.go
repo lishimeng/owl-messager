@@ -17,6 +17,7 @@ func CreateMailMessage(ctx persistence.TxContext, message model.MessageInfo,
 	templateParams string,
 	subject, receiver string) (m model.MailMessageInfo, err error) {
 
+	m.Org = message.Org // 复制message的tenant
 	m.MessageId = message.Id
 	m.Template = template.Id
 	m.Params = templateParams

@@ -6,21 +6,21 @@ import (
 	"github.com/lishimeng/owl-messager/internal/db/service"
 )
 
-func serviceAddMail(templateCode string, cloudTemplate bool, cloudTemplateCode string, params, subject, receiver string) (m model.MessageInfo, err error) {
+func serviceAddMail(org int, templateCode string, cloudTemplate bool, cloudTemplateCode string, params, subject, receiver string) (m model.MessageInfo, err error) {
 	var tpl model.MailTemplateInfo
 	if !cloudTemplate { // 本地模板, 获取模板信息
-		tpl, err = repo.GetMailTemplateByCode(templateCode)
+		tpl, err = repo.GetMailTemplateByCode(templateCode) // TODO org
 		if err != nil {
 			return
 		}
 		m, err = service.CreateMailMessage(
-			nil,
+			org,
 			tpl,
 			params,
 			subject, receiver, "")
 	} else {
 		m, err = service.CreateCloudMailMessage(
-			nil,
+			org,
 			cloudTemplateCode,
 			params,
 			subject, receiver, "")
