@@ -25,7 +25,7 @@ func (f *SmsFactory) Create(vendor model.SmsVendor, config string) (p messager.S
 	log.Info("create sms provider")
 	b, ok := smsProviderBuilders[vendor]
 	if !ok {
-		err = errors.New("unknown mail vendor")
+		err = errors.New("unknown sms vendor")
 		return
 	}
 	p, err = b(config)
