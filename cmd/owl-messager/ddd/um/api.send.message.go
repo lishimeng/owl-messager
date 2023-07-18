@@ -18,12 +18,12 @@ const (
 )
 
 type Req struct {
-	BundleId      string      `json:"bundleId,omitempty"`      // bundle id
-	Template      string      `json:"template"`                // 模板
-	CloudTemplate bool        `json:"cloudTemplate,omitempty"` // 云端模板
-	TemplateParam interface{} `json:"params"`                  // 参数
-	Title         string      `json:"subject,omitempty"`       // 标题
-	Receiver      string      `json:"receiver"`                // 接收者，多个时用逗号分隔
+	BundleId string `json:"bundleId,omitempty"` // bundle id
+	Template string `json:"template"`           // 模板
+	//CloudTemplate bool        `json:"cloudTemplate,omitempty"` // 云端模板
+	TemplateParam interface{} `json:"params"`            // 参数
+	Title         string      `json:"subject,omitempty"` // 标题
+	Receiver      string      `json:"receiver"`          // 接收者，多个时用逗号分隔
 }
 
 type Resp struct {
@@ -142,7 +142,7 @@ func createMail(org int, req Req, params string) (m model.MessageInfo, resp Resp
 		log.Debug("no title, use default: %s", DefaultTitle)
 		req.Title = DefaultTitle
 	}
-	m, err = serviceAddMail(org, req.Template, req.CloudTemplate, req.Template, params, req.Title, req.Receiver)
+	m, err = serviceAddMail(org, req.Template, params, req.Title, req.Receiver)
 	if err != nil {
 		resp.Code = -1
 		resp.Message = "create mail message failed"
