@@ -3,6 +3,7 @@ package midware
 import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter/midware/auth"
+	"github.com/lishimeng/owl-messager/internal/common"
 	"github.com/lishimeng/owl-messager/internal/etc"
 )
 
@@ -12,7 +13,10 @@ import (
 func WithAuth(handler func(iris.Context)) []iris.Handler {
 	var handlers []iris.Handler
 	if etc.Config.Token.Enable {
-		handlers = append(handlers, auth.JwtBasic(), auth.Forbidden401Handler(auth.WithJsonResp))
+		handlers = append(handlers,
+			auth.JwtBasic(),
+			auth.Forbidden401Handler(auth.WithJsonResp(), auth.WithScope(common.Scope)),
+		)
 	}
 	handlers = append(handlers, handler)
 	return handlers
