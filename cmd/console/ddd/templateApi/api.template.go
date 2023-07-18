@@ -4,7 +4,6 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/tool"
-	"github.com/lishimeng/owl-messager/internal/common"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/internal/db/service"
@@ -133,7 +132,7 @@ func CreateTemplate(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	code := tool.GetRandomString(common.DefaultCodeLen)
+	code := tool.UUIDString()
 	switch req.Category {
 	case model.SenderCategoryMail:
 		code = "tl_mail_" + code

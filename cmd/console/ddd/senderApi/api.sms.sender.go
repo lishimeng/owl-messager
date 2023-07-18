@@ -5,7 +5,6 @@ import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/common"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 )
 
@@ -102,7 +101,7 @@ func GetSmsSenderInfo(ctx iris.Context) {
 }
 
 func AddSmsSender(_ iris.Context) {
-	code := tool.GetRandomString(common.DefaultCodeLen)
+	code := tool.UUIDString()
 	code = "sms_sender_" + code
 
 	// TODO

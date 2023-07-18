@@ -5,7 +5,6 @@ import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/common"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/internal/db/service"
@@ -29,8 +28,7 @@ func SetMailSenderInfo(ctx iris.Context) {
 		return
 	}
 	log.Debug("req：%s", req)
-	code := tool.GetRandomString(common.DefaultCodeLen)
-	code = "sender_" + code
+	code := tool.UUIDString()
 	switch req.Category {
 	case model.SenderCategoryMail:
 		_, err = service.CreateMsi(code, req.Vendor, req.Config, req.DefaultSender)

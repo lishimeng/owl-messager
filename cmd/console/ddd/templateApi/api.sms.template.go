@@ -6,7 +6,6 @@ import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/common"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/internal/util"
@@ -82,8 +81,7 @@ func AddSmsTemplate(ctx iris.Context) {
 		return
 	}
 
-	code := tool.GetRandomString(common.DefaultCodeLen)
-	code = "tpl_" + code
+	code := tool.UUIDString()
 
 	m, err := repo.CreateSmsTemplate(code, req.Name, req.TemplateId, req.Params, req.Description, req.Vendor)
 	if err != nil {

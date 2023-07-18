@@ -6,7 +6,6 @@ import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/common"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/internal/db/service"
@@ -171,8 +170,7 @@ func AddMailTemplate(ctx iris.Context) {
 		req.Category = model.MailTemplateCategoryDefault
 	}
 
-	code := tool.GetRandomString(common.DefaultCodeLen)
-	code = "tpl_" + code
+	code := tool.UUIDString()
 
 	m, err := repo.CreateMailTemplate(code, req.Name, req.Body, req.Description, req.Category)
 	if err != nil {
