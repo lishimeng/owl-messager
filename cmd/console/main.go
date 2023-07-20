@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/lishimeng/app-starter"
 	etc2 "github.com/lishimeng/app-starter/etc"
-	"github.com/lishimeng/app-starter/factory"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
@@ -58,17 +57,11 @@ func _main() (err error) {
 			AliasName: "default",
 			SSL:       etc.Config.Db.Ssl,
 		}
-
-		issuer := etc.Config.Token.Issuer
-		tokenKey := []byte(etc.Config.Token.Key)
+		
+		// console的token验证器使用http方式,统一由外部管理,比如passport
 		builder = builder.EnableTokenValidator(func(inject app.TokenValidatorInjectFunc) {
-			provider := token.NewJwtProvider(token.WithIssuer(issuer),
-				token.WithKey(tokenKey, tokenKey), // hs256的秘钥必须是[]byte
-				token.WithAlg("HS256"),
-				token.WithDefaultTTL(etc.TokenTTL),
-			)
-			storage := token.NewLocalStorage(provider)
-			factory.Add(provider)
+			provider := token.HttpStorageConnector{Server: etc.Config.Console.TokenProvider}
+			storage := token.NewHttpStorage(provider)
 			inject(storage)
 		})
 

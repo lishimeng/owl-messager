@@ -1,34 +1,40 @@
 package etc
 
 type Configuration struct {
-	Db    db
-	Web   web
-	Token token
-	Redis redis
+	Db      db      `toml:"db"`
+	Web     web     `toml:"web"`
+	Token   token   `toml:"token"`
+	Redis   redis   `toml:"redis"`
+	Console console `toml:"console"`
 }
 
 type web struct {
-	Listen string
+	Listen string `toml:"listen"`
 }
 
 type redis struct {
-	Enable   bool
-	Addr     string
-	Password string
-	Db       int
+	Enable   bool   `toml:"enable"`
+	Addr     string `toml:"addr"`
+	Password string `toml:"password"`
+	Db       int    `toml:"db"`
 }
 
 type token struct {
-	Enable bool
-	Issuer string
-	Key    string
+	Enable bool   `toml:"enable"`
+	Issuer string `toml:"issuer"`
+	Key    string `toml:"key"`
 }
 
 type db struct {
-	User     string
-	Password string
-	Host     string
-	Port     int
-	Database string
-	Ssl      string
+	User     string `toml:"user"`
+	Password string `toml:"password"`
+	Host     string `toml:"host"`
+	Port     int    `toml:"port"`
+	Database string `toml:"database"`
+	Ssl      string `toml:"ssl"`
+}
+
+// console独有的配置
+type console struct {
+	TokenProvider string `toml:"tokenProvider"`
 }

@@ -95,3 +95,16 @@ func genCredential(ctx iris.Context) {
 	tool.ResponseJSON(ctx, resp)
 	return
 }
+
+type TokenVerifyResp struct {
+	app.Response
+	token.HttpTokenResp
+}
+
+func verify(ctx iris.Context) {
+
+	var resp TokenVerifyResp
+	resp.Valid = true
+	resp.Code = iris.StatusOK
+	tool.ResponseJSON(ctx, resp)
+}

@@ -1,10 +1,13 @@
 package sender
 
-import "github.com/kataras/iris/v12"
+import (
+	"github.com/kataras/iris/v12"
+	"github.com/lishimeng/owl-messager/cmd/console/midware"
+)
 
 func Route(root iris.Party) {
 
-	root.Get("/", list) // 列表
+	root.Get("/", midware.WithAuth(list)...) // 列表
 	root.Get("/mail/{id}", mailSenderInfo)
 	root.Get("/sms/{id}", smsSenderInfo)
 	root.Get("/apns/{id}", apnsSenderInfo)
@@ -13,6 +16,6 @@ func Route(root iris.Party) {
 	root.Post("/mail/set_default", SetMailSenderInfo)                     //新增mail配置
 	root.Post("/mail/up_default", UpMailSenderInfo)                       //编辑mail配置
 	root.Get("/mail/vendor", GetMailSenderInfo)                           //获取mail配置
-	root.Get("/mail/list/page", ListByPage)                               //获取列表
+	root.Get("/mail/list/page", midware.WithAuth(ListByPage)...)          //获取列表
 	root.Get("/mail/info/category", GetSenderInfoByCategory)              //获取列表
 }
