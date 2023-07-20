@@ -21,7 +21,6 @@ require (
 	github.com/lib/pq v1.10.5
 	github.com/lishimeng/app-starter v1.12.1
 	github.com/lishimeng/go-log v1.0.0
-	github.com/lishimeng/go-orm v1.2.2
 	github.com/pkg/errors v0.9.1
 	github.com/qiniu/go-sdk/v7 v7.11.1
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.623

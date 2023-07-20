@@ -2,7 +2,7 @@ package repo
 
 import (
 	"github.com/lishimeng/app-starter"
-	persistence "github.com/lishimeng/go-orm"
+	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 )
 

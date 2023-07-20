@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/lishimeng/app-starter"
 	etc2 "github.com/lishimeng/app-starter/etc"
+	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
-	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd"
 	"github.com/lishimeng/owl-messager/cmd/console/static"
 	"github.com/lishimeng/owl-messager/internal/db/model"
@@ -57,7 +57,7 @@ func _main() (err error) {
 			AliasName: "default",
 			SSL:       etc.Config.Db.Ssl,
 		}
-		
+
 		// console的token验证器使用http方式,统一由外部管理,比如passport
 		builder = builder.EnableTokenValidator(func(inject app.TokenValidatorInjectFunc) {
 			provider := token.HttpStorageConnector{Server: etc.Config.Console.TokenProvider}

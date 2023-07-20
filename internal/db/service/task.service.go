@@ -3,8 +3,8 @@ package service
 import (
 	"fmt"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/go-log"
-	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/internal/messager/msg"
