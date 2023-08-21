@@ -2,6 +2,7 @@ package process
 
 import (
 	"context"
+	"github.com/lishimeng/owl-messager/internal/etc"
 	"github.com/lishimeng/owl-messager/internal/messager/sender"
 	"github.com/lishimeng/owl-messager/internal/messager/task"
 )
@@ -14,7 +15,20 @@ func messageSendProcess(ctx context.Context) (err error) {
 		return
 	}
 
-	messageTask, err := task.New(ctx, taskExecutor)
+	var messageTask task.MessageTask
+	var opts []task.Option
+
+	var strategy = task.Strategy(etc.Config.Sender.Strategy)
+	switch strategy {
+	case task.MemQueue:
+		opts = append(opts, task.WithQueue(etc.Config.Sender.Buff))
+	case task.Db:
+		opts = append(opts, task.WithDb(10)) // etc
+	default:
+		opts = append(opts, task.WithQueue(etc.Config.Sender.Buff)) // 默认使用queue
+	}
+
+	messageTask, err = task.New(ctx, taskExecutor, opts...)
 	if err != nil {
 		return
 	}

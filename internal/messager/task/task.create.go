@@ -16,14 +16,60 @@ type MessageTask interface {
 	HandleMessage(message model.MessageInfo) (err error)
 }
 
+type Strategy int
+
+const (
+	MemQueue Strategy = iota
+	Db
+)
+
+const (
+	DefaultQueueSize      = 1024
+	DefaultDbScanInterval = 10
+)
+
 type messageTask struct {
-	running  bool
-	ctx      context.Context
-	executor sender.TaskExecutor
+	running        bool
+	ctx            context.Context
+	executor       sender.TaskExecutor
+	ch             chan model.MessageInfo
+	Strategy       Strategy
+	queueSize      int // 队列长度
+	scanDbInterval int // 查询数据库频率(秒)
 }
 
-func New(ctx context.Context, executor sender.TaskExecutor) (t MessageTask, err error) {
-	t = &messageTask{ctx: ctx, executor: executor}
+type Option func(task *messageTask)
+
+func WithQueue(queueSize int) Option {
+	return func(mt *messageTask) {
+		log.Debug("Strategy:%s[%d]", "MemQueue", queueSize)
+		mt.queueSize = queueSize
+		mt.Strategy = MemQueue
+		if mt.queueSize <= 0 {
+			log.Debug("use default queue size:%d", DefaultQueueSize)
+			mt.queueSize = DefaultQueueSize
+		}
+	}
+}
+
+func WithDb(scanInternal int) Option {
+	return func(mt *messageTask) {
+		log.Debug("Strategy:%s[%d]", "Db", scanInternal)
+		mt.scanDbInterval = scanInternal
+		mt.Strategy = Db
+		if mt.scanDbInterval <= 0 {
+			log.Debug("use default db scan interval:%d", DefaultDbScanInterval)
+			mt.scanDbInterval = DefaultDbScanInterval
+		}
+	}
+}
+
+func New(ctx context.Context, executor sender.TaskExecutor, opts ...Option) (t MessageTask, err error) {
+	handler := &messageTask{ctx: ctx, executor: executor}
+	for _, opt := range opts {
+		opt(handler)
+	}
+	t = handler
 	return
 }
 
@@ -40,23 +86,52 @@ func (t *messageTask) loop() {
 		case <-t.ctx.Done():
 			return
 		default:
-			messages, err := t.getMessages(1)
-			if err != nil {
-				log.Info("get message failed")
-				log.Info(err)
-			} else {
-				t.handleMessages(messages...)
-			}
-			if len(messages) == 0 {
-				time.Sleep(time.Second * 10)
-			} else {
-				time.Sleep(time.Second * time.Duration(math.Round(10)))
+			switch t.Strategy {
+			case Db:
+				t.sendFromDb()
+			case MemQueue:
+				t.sendFromQueue()
+			default:
+				t.sendFromQueue()
 			}
 		}
 	}
 }
 
-func (t messageTask) getMessages(size int) (messages []model.MessageInfo, err error) {
+func (t *messageTask) sendFromDb() {
+	messages, err := t.getMessages(1)
+	if err != nil {
+		log.Info("get message failed")
+		log.Info(err)
+	} else {
+		t.handleMessages(messages...)
+	}
+	if len(messages) == 0 {
+		time.Sleep(time.Second * time.Duration(t.scanDbInterval))
+	} else {
+		time.Sleep(time.Second * time.Duration(math.Round(float64(t.scanDbInterval))))
+	}
+}
+
+func (t *messageTask) sendFromQueue() {
+	log.Debug("init message queue")
+
+	t.ch = make(chan model.MessageInfo, t.queueSize)
+	for {
+		select {
+		case <-t.ctx.Done():
+			return
+		case m, ok := <-t.ch:
+			if !ok {
+				log.Info("message queue closed")
+				return
+			}
+			t.handleMessages(m)
+		}
+	}
+}
+
+func (t *messageTask) getMessages(size int) (messages []model.MessageInfo, err error) {
 	messages, err = repo.GetMessageToSend(size)
 	return
 }

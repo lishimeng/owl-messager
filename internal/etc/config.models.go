@@ -6,6 +6,7 @@ type Configuration struct {
 	Token   token   `toml:"token"`
 	Redis   redis   `toml:"redis"`
 	Console console `toml:"console"`
+	Sender  sender  `toml:"sender"`
 }
 
 type web struct {
@@ -23,6 +24,11 @@ type token struct {
 	Enable bool   `toml:"enable"`
 	Issuer string `toml:"issuer"`
 	Key    string `toml:"key"`
+}
+
+type sender struct {
+	Strategy int `toml:"strategy"` // task.Strategy
+	Buff     int `toml:"buff"`
 }
 
 type db struct {
