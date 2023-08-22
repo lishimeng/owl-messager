@@ -80,6 +80,15 @@ func (t *messageTask) Run() {
 	go t.loop()
 }
 
+func (t *messageTask) HandleMessage(message model.MessageInfo) (err error) {
+
+	switch t.Strategy {
+	case MemQueue:
+		t.ch <- message
+	}
+	return
+}
+
 func (t *messageTask) loop() {
 	for {
 		select {
@@ -138,7 +147,7 @@ func (t *messageTask) getMessages(size int) (messages []model.MessageInfo, err e
 
 func (t *messageTask) handleMessages(messages ...model.MessageInfo) {
 	for _, message := range messages {
-		e := t.HandleMessage(message)
+		e := t.handleMessage(message)
 		if e != nil {
 			log.Info("handle message failed")
 			log.Info(e)
@@ -146,7 +155,7 @@ func (t *messageTask) handleMessages(messages ...model.MessageInfo) {
 	}
 }
 
-func (t *messageTask) HandleMessage(message model.MessageInfo) (err error) {
+func (t *messageTask) handleMessage(message model.MessageInfo) (err error) {
 	instanceId, err := service.GetMessageInstanceId(message)
 	if err != nil {
 		log.Info("get message instance id failed")

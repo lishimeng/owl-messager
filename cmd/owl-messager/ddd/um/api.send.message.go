@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/factory"
 	"github.com/lishimeng/app-starter/midware/auth"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
+	"github.com/lishimeng/owl-messager/internal/etc"
 	"github.com/lishimeng/owl-messager/internal/messager/msg"
+	"github.com/lishimeng/owl-messager/internal/messager/task"
 )
 
 const (
@@ -112,6 +115,18 @@ func sendMessage(ctx iris.Context) {
 		log.Info(err)
 		tool.ResponseJSON(ctx, resp)
 		return
+	}
+
+	var senderStrategy = task.Strategy(etc.Config.Sender.Strategy)
+	switch senderStrategy {
+	case task.MemQueue:
+		var handler task.MessageTask
+		e := factory.Get(&handler)
+		if e != nil {
+			log.Debug(e)
+		} else {
+			_ = handler.HandleMessage(message)
+		}
 	}
 
 	log.Debug("create message success, id:%d", message.Id)

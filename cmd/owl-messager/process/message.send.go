@@ -2,15 +2,16 @@ package process
 
 import (
 	"context"
+	"github.com/lishimeng/app-starter/factory"
 	"github.com/lishimeng/owl-messager/internal/etc"
 	"github.com/lishimeng/owl-messager/internal/messager/sender"
 	"github.com/lishimeng/owl-messager/internal/messager/task"
 )
 
-var taskExecutor sender.TaskExecutor
+//var taskExecutor sender.TaskExecutor
 
 func messageSendProcess(ctx context.Context) (err error) {
-	taskExecutor, err = sender.New(ctx)
+	taskExecutor, err := sender.New(ctx)
 	if err != nil {
 		return
 	}
@@ -34,6 +35,8 @@ func messageSendProcess(ctx context.Context) (err error) {
 	}
 
 	go messageTask.Run()
+
+	factory.Add(&messageTask)
 
 	return
 }
