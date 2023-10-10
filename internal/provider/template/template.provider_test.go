@@ -1,7 +1,6 @@
 package template
 
 import (
-	"github.com/lishimeng/owl-messager/internal/db/model"
 	"testing"
 )
 
@@ -10,7 +9,7 @@ func TestRender(t *testing.T) {
 	tmp := `haha {{ .A }}--- {{ .C }}`
 	data["A"] = "aaa"
 	data["C"] = "bbb"
-	c, err := Rend(data, tmp, model.MailTemplateCategoryHtml)
+	c, err := Rend(data, tmp)
 	if err != nil {
 		t.Log(err)
 		return
@@ -23,7 +22,7 @@ func TestMapLowerCase(t *testing.T) {
 	tmp := `haha {{ .a }}--- {{ .c }}`
 	data["a"] = "aaa"
 	data["c"] = "bbb"
-	c, err := Rend(data, tmp, model.MailTemplateCategoryHtml)
+	c, err := Rend(data, tmp)
 	if err != nil {
 		t.Log(err)
 		return
@@ -41,7 +40,7 @@ func TestStruct(t *testing.T) {
 	tmp := `haha {{ .A }}--- {{ .A }}`
 	data.A = "aaa"
 	data.B = "bbb"
-	c, err := Rend(data, tmp, model.MailTemplateCategoryHtml)
+	c, err := Rend(data, tmp)
 	if err != nil {
 		t.Log(err)
 		return

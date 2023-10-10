@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/lishimeng/app-starter/factory"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/messager"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
 type SmsFactory struct {
@@ -20,7 +20,7 @@ func GetFactory() (f *SmsFactory) {
 	return
 }
 
-func (f *SmsFactory) Create(vendor model.SmsVendor, config string) (p messager.SmsProvider, err error) {
+func (f *SmsFactory) Create(vendor msg.MessageProvider, config string) (p messager.SmsProvider, err error) {
 
 	log.Info("create sms provider")
 	b, ok := smsProviderBuilders[vendor]
@@ -33,9 +33,9 @@ func (f *SmsFactory) Create(vendor model.SmsVendor, config string) (p messager.S
 	return
 }
 
-var smsProviderBuilders = map[model.SmsVendor]func(config string) (messager.SmsProvider, error){}
+var smsProviderBuilders = map[msg.MessageProvider]func(config string) (messager.SmsProvider, error){}
 
-func RegisterSmsProvider(vendor model.SmsVendor, h func(config string) (messager.SmsProvider, error)) {
+func RegisterSmsProvider(vendor msg.MessageProvider, h func(config string) (messager.SmsProvider, error)) {
 	if h == nil {
 		return
 	}

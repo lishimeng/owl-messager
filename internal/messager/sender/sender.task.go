@@ -5,7 +5,7 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
-	"github.com/lishimeng/owl-messager/internal/messager/msg"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
 type TaskExecutor interface {
@@ -58,7 +58,7 @@ func (c *taskExecutor) Execute(task model.MessageTask) (err error) {
 
 	category := mi.Category
 	switch mi.Category {
-	case msg.Email:
+	case msg.MailMessage:
 		log.Debug("mail task")
 		var m model.MailMessageInfo
 		m, err = repo.GetMailByMessageId(mi.Id)
@@ -67,7 +67,7 @@ func (c *taskExecutor) Execute(task model.MessageTask) (err error) {
 			return
 		}
 		err = c.mailSenders.Send(m)
-	case msg.Sms:
+	case msg.SmsMessage:
 		log.Debug("sms task")
 		var m model.SmsMessageInfo
 		m, err = repo.GetSmsByMessageId(mi.Id)

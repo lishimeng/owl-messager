@@ -5,9 +5,9 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
-	"github.com/lishimeng/owl-messager/internal/db/service"
 	"github.com/lishimeng/owl-messager/internal/messager"
 	"github.com/lishimeng/owl-messager/internal/provider"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
 type Sms interface {
@@ -30,31 +30,36 @@ func NewSmsSender(ctx context.Context) (m Sms, err error) {
 func (m *smsSender) Send(mi model.SmsMessageInfo) (err error) {
 	// sender info
 	log.Info("send sms:%d", mi.Id)
-	var si model.SmsSenderInfo
-	si, err = service.GetDefaultSmsSender(0) // 默认sender
+	// 获取模板
+	tpl, err := repo.GetMessageTemplateById(mi.Template)
 	if err != nil {
-		log.Info("sms sender not exist")
-		log.Info(err)
+		log.Info("tpl not exist")
 		return
 	}
 
-	tpl, err := repo.GetSmsTemplateById(mi.Template)
+	// 获取sender
+	si, err := repo.GetDefMessageSender(tpl.Org, tpl.Category, tpl.Provider) // 使用默认sender
+
 	if err != nil {
-		log.Info("sms template not exist:%d", mi.Template)
+		log.Info("mail sender not exist")
 		return
 	}
 
-	p, err := provider.GetFactory().Create(si.Vendor, string(si.Config))
+	params, err := msg.HandleMessageParams(mi.Params, tpl.Params)
+	if err != nil {
+		return
+	}
+
+	p, err := provider.GetFactory().Create(si.Provider, string(si.Config))
 	if err != nil {
 		log.Info("create sms provider failure:%d", si.Id)
 		return
 	}
 
 	var req = messager.Request{
-		Template:  tpl.CloudTemplateId,
-		Params:    mi.Params,
+		Template:  tpl,
+		Params:    params,
 		Receivers: mi.Receivers,
-		Sign:      tpl.Signature,
 	}
 
 	resp, err := p.Send(req)

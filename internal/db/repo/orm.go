@@ -28,6 +28,9 @@ type PagerRes struct {
 func calcPageOffset(p app.Pager) int {
 	return (p.PageNum - 1) * p.PageSize
 }
+func CalcPageOffset(p app.Pager) int {
+	return calcPageOffset(p)
+}
 
 func calcTotalPage(p app.Pager, count int64) int {
 	t := math.Ceil(float64(count) / float64(p.PageSize))

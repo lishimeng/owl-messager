@@ -2,25 +2,12 @@ package template
 
 import (
 	"bytes"
-	"fmt"
-	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/db/model"
 	html "html/template"
 	text "text/template"
 )
 
-func Rend(data interface{}, temp string, category int) (content string, err error) {
-	switch category {
-	case model.MailTemplateCategoryText:
-		content, err = RendText(data, temp)
-	case model.MailTemplateCategoryHtml:
-		content, err = RendHtml(data, temp)
-	default:
-		log.Debug("unknown mail template category:%d", category)
-		err = fmt.Errorf("unknown mail template category:%d", category)
-		return
-	}
-
+func Rend(data interface{}, temp string) (content string, err error) {
+	content, err = RendHtml(data, temp)
 	return
 }
 

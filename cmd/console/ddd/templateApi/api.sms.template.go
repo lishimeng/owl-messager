@@ -1,14 +1,10 @@
 package templateApi
 
 import (
-	"fmt"
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/tool"
-	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/db/model"
-	"github.com/lishimeng/owl-messager/internal/db/repo"
-	"github.com/lishimeng/owl-messager/internal/util"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
 type SmsVendors struct {
@@ -22,8 +18,9 @@ func GetSmsVendors(ctx iris.Context) {
 	resp.Code = tool.RespCodeSuccess
 	resp.Message = "Sms Vendors"
 
-	for key, v := range model.SmsVendors {
-		if v == model.SmsVendorEnable {
+	providers := msg.Providers[msg.SmsMessage]
+	for key, v := range providers {
+		if v == 1 {
 			resp.Data = append(resp.Data, key)
 		}
 	}
@@ -47,66 +44,66 @@ type SmsTemplateResp struct {
 
 func AddSmsTemplate(ctx iris.Context) {
 
-	log.Debug("add sms template")
-	var req SmsTemplateReq
-	var resp InfoWrapper
-	err := ctx.ReadJSON(&req)
-	if err != nil {
-		resp.Code = -1
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
-
-	// check params
-	if len(req.Name) == 0 {
-		log.Debug("param name nil")
-		resp.Code = -1
-		resp.Message = "name nil"
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
-	if len(req.TemplateId) == 0 {
-		log.Debug("param template nil")
-		resp.Code = -1
-		resp.Message = "template nil"
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
-
-	if len(req.Vendor) == 0 {
-		log.Debug("param vendor nil")
-		resp.Code = -1
-		resp.Message = "vendor nil"
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
-
-	code := tool.UUIDString()
-
-	m, err := repo.CreateSmsTemplate(code, req.Name, req.TemplateId, req.Params, req.Description, req.Vendor)
-	if err != nil {
-		log.Info("can't create template")
-		log.Info(err)
-		resp.Code = -1
-		resp.Message = "create template failed"
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
-
-	log.Debug("create template success, id:%d", m.Id)
-	resp.Id = m.Id
-
-	var tmpInfo = Info{
-		Id:           m.Id,
-		TemplateCode: m.Code,
-		TemplateBody: m.Body,
-		Status:       m.Status,
-		CreateTime:   tool.FormatTime(m.CreateTime),
-		UpdateTime:   tool.FormatTime(m.UpdateTime),
-	}
-	resp.Info = tmpInfo
-	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	//log.Debug("add sms template")
+	//var req SmsTemplateReq
+	//var resp InfoWrapper
+	//err := ctx.ReadJSON(&req)
+	//if err != nil {
+	//	resp.Code = -1
+	//	tool.ResponseJSON(ctx, resp)
+	//	return
+	//}
+	//
+	//// check params
+	//if len(req.Name) == 0 {
+	//	log.Debug("param name nil")
+	//	resp.Code = -1
+	//	resp.Message = "name nil"
+	//	tool.ResponseJSON(ctx, resp)
+	//	return
+	//}
+	//if len(req.TemplateId) == 0 {
+	//	log.Debug("param template nil")
+	//	resp.Code = -1
+	//	resp.Message = "template nil"
+	//	tool.ResponseJSON(ctx, resp)
+	//	return
+	//}
+	//
+	//if len(req.Vendor) == 0 {
+	//	log.Debug("param vendor nil")
+	//	resp.Code = -1
+	//	resp.Message = "vendor nil"
+	//	tool.ResponseJSON(ctx, resp)
+	//	return
+	//}
+	//
+	//code := tool.UUIDString()
+	//
+	//m, err := repo.CreateSmsTemplate(code, req.Name, req.TemplateId, req.Params, req.Description, req.Vendor)
+	//if err != nil {
+	//	log.Info("can't create template")
+	//	log.Info(err)
+	//	resp.Code = -1
+	//	resp.Message = "create template failed"
+	//	tool.ResponseJSON(ctx, resp)
+	//	return
+	//}
+	//
+	//log.Debug("create template success, id:%d", m.Id)
+	//resp.Id = m.Id
+	//
+	//var tmpInfo = Info{
+	//	Id:           m.Id,
+	//	TemplateCode: m.Code,
+	//	TemplateBody: m.Body,
+	//	Status:       m.Status,
+	//	CreateTime:   tool.FormatTime(m.CreateTime),
+	//	UpdateTime:   tool.FormatTime(m.UpdateTime),
+	//}
+	//resp.Info = tmpInfo
+	//resp.Code = tool.RespCodeSuccess
+	//tool.ResponseJSON(ctx, resp) TODO
 }
 
 type SmsStatusReq struct {
@@ -116,52 +113,52 @@ type SmsStatusReq struct {
 
 func ChangeSmsTemplateStatus(ctx iris.Context) {
 
-	var req SmsStatusReq
-	var resp app.Response
-	var err error
-
-	err = ctx.ReadJSON(&req)
-	if err != nil {
-		resp.Code = tool.RespCodeError
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
-
-	if req.Id <= 0 {
-		log.Debug("param id nil")
-		resp.Code = tool.RespCodeError
-		resp.Message = "id nil"
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
-
-	if !util.StatusIn(req.Status, model.SmsTemplateStatus) {
-		log.Debug("param unknown status: %d", req.Status)
-		resp.Code = tool.RespCodeError
-		resp.Message = fmt.Sprintf("unknown status:%d", req.Status)
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
-
-	tpl, err := repo.GetSmsTemplateById(req.Id)
-	if err != nil {
-		log.Debug("template not found")
-		resp.Code = tool.RespCodeNotFound
-		resp.Message = "template not found"
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
-
-	tpl.Status = req.Status
-
-	_, err = repo.UpdateSmsTemplate(tpl, "status")
-	if err != nil {
-		log.Debug(err)
-		resp.Code = tool.RespCodeError
-		resp.Message = err.Error()
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
-	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	//var req SmsStatusReq
+	//var resp app.Response
+	//var err error
+	//
+	//err = ctx.ReadJSON(&req)
+	//if err != nil {
+	//	resp.Code = tool.RespCodeError
+	//	tool.ResponseJSON(ctx, resp)
+	//	return
+	//}
+	//
+	//if req.Id <= 0 {
+	//	log.Debug("param id nil")
+	//	resp.Code = tool.RespCodeError
+	//	resp.Message = "id nil"
+	//	tool.ResponseJSON(ctx, resp)
+	//	return
+	//}
+	//
+	//if !util.StatusIn(req.Status, model.SmsTemplateStatus) {
+	//	log.Debug("param unknown status: %d", req.Status)
+	//	resp.Code = tool.RespCodeError
+	//	resp.Message = fmt.Sprintf("unknown status:%d", req.Status)
+	//	tool.ResponseJSON(ctx, resp)
+	//	return
+	//}
+	//
+	//tpl, err := repo.GetSmsTemplateById(req.Id)
+	//if err != nil {
+	//	log.Debug("template not found")
+	//	resp.Code = tool.RespCodeNotFound
+	//	resp.Message = "template not found"
+	//	tool.ResponseJSON(ctx, resp)
+	//	return
+	//}
+	//
+	//tpl.Status = req.Status
+	//
+	//_, err = repo.UpdateSmsTemplate(tpl, "status")
+	//if err != nil {
+	//	log.Debug(err)
+	//	resp.Code = tool.RespCodeError
+	//	resp.Message = err.Error()
+	//	tool.ResponseJSON(ctx, resp)
+	//	return
+	//}
+	//resp.Code = tool.RespCodeSuccess
+	//tool.ResponseJSON(ctx, resp) TODO
 }

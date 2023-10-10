@@ -1,12 +1,12 @@
 package sender
 
 import (
-	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 	"testing"
 )
 
 func TestVendorConfig(t *testing.T) {
-	var c, ok = vendorSupport[model.MailVendorMicrosoft.String()+model.SenderCategoryMail]
+	var c, ok = vendorSupport[msg.Microsoft.String()+msg.MailMessage.String()]
 	if !ok {
 		t.Log("unknown config")
 		return

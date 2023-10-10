@@ -4,7 +4,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/tool"
-	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 	"reflect"
 	"strings"
 )
@@ -56,11 +56,11 @@ func getJsonConstructor(v interface{}) (m map[string]string) {
 
 // 配置平台支持的sender类型
 var vendorSupport = map[string]interface{}{
-	model.SmsVendorAli.String() + model.SenderCategorySms:     model.AliSmsConfig{},
-	model.SmsVendorTencent.String() + model.SenderCategorySms: model.TencentSmsConfig{},
-	model.SmsVendorHuawei.String() + model.SenderCategorySms:  model.HuaweiSmsConfig{},
+	msg.Ali.String() + msg.SmsMessage.String():     msg.AliSmsConfig{},
+	msg.Tencent.String() + msg.SmsMessage.String(): msg.TencentSmsConfig{},
+	msg.Huawei.String() + msg.SmsMessage.String():  msg.HuaweiSmsConfig{},
 
-	model.MailVendorSmtp.String() + model.SenderCategoryMail:      model.SmtpConfig{},
-	model.MailVendorMicrosoft.String() + model.SenderCategoryMail: model.GraphConfig{},
-	model.MailVendorTencent.String() + model.SenderCategoryMail:   model.TencentConfig{},
+	msg.Smtp.String() + msg.MailMessage.String():      msg.SmtpConfig{},
+	msg.Microsoft.String() + msg.MailMessage.String(): msg.GraphConfig{},
+	msg.Tencent.String() + msg.MailMessage.String():   msg.TencentConfig{},
 }

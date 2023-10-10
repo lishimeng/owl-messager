@@ -21,6 +21,10 @@ func NewSmtp(config string) (s messager.MailProvider, err error) {
 
 func (s *smtpSender) Send(req messager.MailRequest) (err error) {
 
-	err = s.proxy.Send(req.Subject, req.TextContent, req.Receivers...)
+	content, err := buildMailBody(req.Template, req.Params)
+	if err != nil {
+		return
+	}
+	err = s.proxy.Send(req.Subject, content, req.Receivers...)
 	return
 }

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/cmd/owl-messager/ddd/open"
-	"github.com/lishimeng/owl-messager/internal/messager/msg"
+	"github.com/lishimeng/owl-messager/pkg"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 	"github.com/pkg/errors"
 	"net/url"
 )
@@ -33,7 +33,7 @@ func (m *messageClient) SendMail(request MailRequest) (response Response, err er
 	if debugEnable {
 		log.Debug("sendMail to: %s", request.Receiver)
 	}
-	response, err = m.send(msg.EmailCategory, request)
+	response, err = m.send(string(msg.MailMessage), request)
 	if err != nil {
 		log.Debug(err)
 		return
@@ -44,7 +44,7 @@ func (m *messageClient) SendSms(request SmsRequest) (response Response, err erro
 	if debugEnable {
 		log.Debug("sendSms to: %s", request.Receiver)
 	}
-	response, err = m.send(msg.SmsCategory, request)
+	response, err = m.send(string(msg.SmsMessage), request)
 	if err != nil {
 		log.Debug(err)
 		return
@@ -55,7 +55,7 @@ func (m *messageClient) SendApns(request ApnsRequest) (response Response, err er
 	if debugEnable {
 		log.Debug("sendApns to: %s", request.Receiver)
 	}
-	response, err = m.send(msg.ApnsCategory, request)
+	response, err = m.send(string(msg.ApnsMessage), request)
 	if err != nil {
 		log.Debug(err)
 		return
@@ -63,7 +63,7 @@ func (m *messageClient) SendApns(request ApnsRequest) (response Response, err er
 	return
 }
 
-func (m *messageClient) refreshCredential() (response open.CredentialResp, err error) {
+func (m *messageClient) refreshCredential() (response pkg.CredentialResp, err error) {
 	host, err := url.JoinPath(m.host, ApiCredential)
 	if err != nil {
 		return

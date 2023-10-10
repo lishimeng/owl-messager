@@ -5,16 +5,16 @@ import (
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
-	"github.com/lishimeng/owl-messager/internal/messager/msg"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
-func CreateApnsMessage(sender model.ApnsSenderInfo,
+func CreateApnsMessage(sender model.MessageSenderInfo,
 	mode int, bundleId string, params string,
 	subject string, receiver string) (m model.MessageInfo, err error) {
 
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// create message
-		m, e = repo.CreateMessage(ctx, sender.Org, subject, msg.Apns)
+		m, e = repo.CreateMessage(ctx, sender.Org, subject, msg.ApnsMessage)
 		if e != nil {
 			return
 		}

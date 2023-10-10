@@ -2,8 +2,8 @@ package mail
 
 import (
 	"encoding/json"
-	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/messager"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 	"github.com/lishimeng/owl-messager/providers/mail/tencent"
 )
 
@@ -13,7 +13,7 @@ type tencentSender struct {
 
 func NewTencent(config string) (s messager.MailProvider, err error) {
 	p := tencentSender{}
-	var tencentConfig model.TencentConfig
+	var tencentConfig msg.TencentConfig
 	err = json.Unmarshal([]byte(config), &tencentConfig)
 	if err != nil {
 		return

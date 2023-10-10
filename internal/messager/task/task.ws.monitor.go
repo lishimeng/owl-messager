@@ -5,17 +5,18 @@ import (
 	"encoding/json"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 	"sync"
 	"time"
 )
 
 type MonitorData struct {
-	TaskId            int    `json:"taskId,omitempty"`
-	MessageId         int    `json:"messageId,omitempty"`
-	MessageCategory   int    `json:"messageCategory,omitempty"`
-	Subject           string `json:"subject,omitempty"`
-	MessageInstanceId int    `json:"messageInstanceId,omitempty"`
-	Status            int    `json:"status,omitempty"`
+	TaskId            int                 `json:"taskId,omitempty"`
+	MessageId         int                 `json:"messageId,omitempty"`
+	MessageCategory   msg.MessageCategory `json:"messageCategory,omitempty"`
+	Subject           string              `json:"subject,omitempty"`
+	MessageInstanceId int                 `json:"messageInstanceId,omitempty"`
+	Status            int                 `json:"status,omitempty"`
 }
 
 type SendMonitor interface {

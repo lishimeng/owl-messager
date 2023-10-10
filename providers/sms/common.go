@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func map2array(m map[string]interface{}) (arr []string) {
+func map2array(m map[string]any) (arr []string) {
 
 	// {1}为您的登录验证码，请于{2}分钟内填写，如非本人操作，请忽略本短信。
 	// 参数名为数字

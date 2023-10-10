@@ -14,7 +14,7 @@ func GetSmsByMessageId(msgId int) (m model.SmsMessageInfo, err error) {
 	return
 }
 
-func CreateSmsMessage(ctx persistence.TxContext, message model.MessageInfo, template model.SmsTemplateInfo,
+func CreateSmsMessage(ctx persistence.TxContext, message model.MessageInfo, template model.MessageTemplate,
 	templateParams string, receiver string) (m model.SmsMessageInfo, err error) {
 
 	m.Org = message.Org
@@ -23,7 +23,7 @@ func CreateSmsMessage(ctx persistence.TxContext, message model.MessageInfo, temp
 	m.Params = templateParams
 	m.Receivers = receiver
 
-	m.Status = model.SmsTemplateEnable
+	m.Status = model.MessageInit
 
 	_, err = ctx.Context.Insert(&m)
 	return

@@ -3,8 +3,8 @@ package sms
 import (
 	"encoding/json"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/messager"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 	"strings"
 )
 
@@ -17,11 +17,11 @@ import (
 // 腾讯云SMS
 
 type TencentSdk struct {
-	config model.TencentSmsConfig
+	config msg.TencentSmsConfig
 	client *sms.Client
 }
 
-func NewTencent(conf model.TencentSmsConfig) (sdk messager.SmsProvider, err error) {
+func NewTencent(conf msg.TencentSmsConfig) (sdk messager.SmsProvider, err error) {
 
 	credential := common.NewCredential(conf.AppId, conf.AppKey)
 
@@ -40,13 +40,8 @@ func NewTencent(conf model.TencentSmsConfig) (sdk messager.SmsProvider, err erro
 
 func (sdk *TencentSdk) Send(message messager.Request) (resp messager.Response, err error) {
 	to := strings.Split(message.Receivers, ",")
-	var m = make(map[string]interface{})
-	err = json.Unmarshal([]byte(message.Params), &m)
-	if err != nil {
-		// TODO
-		return
-	}
-	params := map2array(m)
+
+	params := map2array(message.Params)
 
 	req := sms.NewSendSmsRequest()
 	req.SmsSdkAppId = common.StringPtr(sdk.config.SmsAppId)
@@ -56,7 +51,7 @@ func (sdk *TencentSdk) Send(message messager.Request) (resp messager.Response, e
 	 * 示例如：+8613711112222， 其中前面有一个+号 ，86为国家码，13711112222为手机号，最多不要超过200个手机号*/
 	req.PhoneNumberSet = common.StringPtrs(to)
 
-	req.TemplateId = common.StringPtr(message.Template)
+	req.TemplateId = common.StringPtr(message.Template.CloudTemplate)
 	if len(params) > 0 {
 		req.TemplateParamSet = common.StringPtrs(params)
 	}

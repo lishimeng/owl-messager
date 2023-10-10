@@ -7,7 +7,7 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
-	"github.com/lishimeng/owl-messager/internal/messager/msg"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
 func HandleExpiredTask(runningTask model.MessageRunningTask) (err error) {
@@ -104,13 +104,13 @@ func CreateMessageTask(message model.MessageInfo, messageInstanceId int) (task m
 
 func GetMessageInstanceId(message model.MessageInfo) (id int, err error) {
 	switch message.Category {
-	case msg.Email:
+	case msg.MailMessage:
 		var mail model.MailMessageInfo
 		mail, err = repo.GetMailByMessageId(message.Id)
 		if err == nil {
 			id = mail.Id
 		}
-	case msg.Sms:
+	case msg.SmsMessage:
 		var sms model.SmsMessageInfo
 		sms, err = repo.GetSmsByMessageId(message.Id)
 		if err == nil {

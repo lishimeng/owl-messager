@@ -1,11 +1,12 @@
 package messager
 
+import "github.com/lishimeng/owl-messager/internal/db/model"
+
 type MailRequest struct {
-	Subject     string                 `json:"subject,omitempty"`
-	TextContent string                 `json:"textContent,omitempty"`
-	Receivers   []string               `json:"receivers,omitempty"`
-	Template    string                 `json:"template,omitempty"`
-	Params      map[string]interface{} `json:"params,omitempty"`
+	Subject   string
+	Receivers []string
+	Template  model.MessageTemplate
+	Params    map[string]any
 }
 
 type MailProvider interface {
@@ -14,9 +15,8 @@ type MailProvider interface {
 
 // Request SMS发送请求
 type Request struct {
-	Template  string
-	Sign      string
-	Params    string
+	Template  model.MessageTemplate
+	Params    map[string]any
 	Receivers string
 }
 

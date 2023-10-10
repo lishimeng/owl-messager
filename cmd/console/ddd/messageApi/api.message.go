@@ -17,7 +17,7 @@ type RespMessageInfo struct {
 	Status       int    `json:"status,omitempty"`
 	CreateTime   string `json:"createTime,omitempty"`
 	UpdateTime   string `json:"updateTime,omitempty"`
-	Category     int    `json:"category,omitempty"`
+	Category     string `json:"category,omitempty"`
 	Subject      string `json:"subject,omitempty"`
 	Priority     int    `json:"priority,omitempty"`
 	NextSendTime string `json:"nextSendTime,omitempty"`
@@ -55,7 +55,7 @@ func GetMessageList(ctx iris.Context) {
 		for _, ms := range messages {
 			var tmpInfo = RespMessageInfo{
 				Id:           ms.Id,
-				Category:     ms.Category,
+				Category:     ms.Category.String(),
 				Subject:      ms.Subject,
 				Priority:     ms.Priority,
 				NextSendTime: tool.FormatTime(ms.NextSendTime),
@@ -97,7 +97,7 @@ func GetMessageInfo(ctx iris.Context) {
 
 	var tmpInfo = RespMessageInfo{
 		Id:           ms.Id,
-		Category:     ms.Category,
+		Category:     ms.Category.String(),
 		Subject:      ms.Subject,
 		Priority:     ms.Priority,
 		NextSendTime: tool.FormatTime(ms.NextSendTime),

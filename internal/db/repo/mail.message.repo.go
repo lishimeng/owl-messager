@@ -13,7 +13,7 @@ func GetMailByMessageId(msgId int) (m model.MailMessageInfo, err error) {
 }
 
 func CreateMailMessage(ctx persistence.TxContext, message model.MessageInfo,
-	template model.MailTemplateInfo,
+	template model.MessageTemplate,
 	templateParams string,
 	subject, receiver string) (m model.MailMessageInfo, err error) {
 
@@ -25,28 +25,7 @@ func CreateMailMessage(ctx persistence.TxContext, message model.MessageInfo,
 	m.Subject = subject
 	m.Receivers = receiver
 
-	m.Status = model.MailTemplateEnable
-	m.CreateTime = time.Now()
-	m.UpdateTime = time.Now()
-
-	_, err = ctx.Context.Insert(&m)
-	return
-}
-
-func CreateCloudMailMessage(ctx persistence.TxContext, message model.MessageInfo,
-	cloudTemplateId string,
-	templateParams string,
-	subject, receiver string) (m model.MailMessageInfo, err error) {
-
-	m.MessageId = message.Id
-	m.CloudTemplate = 1
-	m.CloudTemplateId = cloudTemplateId
-	m.Params = templateParams
-
-	m.Subject = subject
-	m.Receivers = receiver
-
-	m.Status = model.MailTemplateEnable
+	m.Status = model.MessageInit
 	m.CreateTime = time.Now()
 	m.UpdateTime = time.Now()
 

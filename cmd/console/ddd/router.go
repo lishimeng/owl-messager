@@ -24,10 +24,7 @@ func router(root iris.Party) {
 	template(root.Party("/template"))
 	vendor(root.Party("/vendor"))
 	mail(root.Party("/mail"))
-	// send message
-	sendMail(root.Party("/send/mail"))
-	sms(root.Party("/send/sms"))
-	apns(root.Party("/send/apns"))
+
 	sender.Route(root.Party("/sender"))
 }
 
@@ -104,15 +101,4 @@ func mail(p iris.Party) {
 
 	p.Get("/message/sms/{id}", smsApi.GetByMessage)
 	p.Get("/message/apns/{id}", apnsApi.GetByMessage)
-}
-func sendMail(p iris.Party) {
-	p.Post("/", mailApi.SendMail)
-}
-
-func sms(p iris.Party) {
-	p.Post("/", smsApi.SendSms)
-}
-
-func apns(p iris.Party) {
-	p.Post("/", apnsApi.SendApns)
 }

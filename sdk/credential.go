@@ -5,16 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/cmd/owl-messager/ddd/open"
+	"github.com/lishimeng/owl-messager/pkg"
 	"github.com/pkg/errors"
 	"io"
 	"net/http"
 )
 
-func getCredential(host string, appId, secret string) (response open.CredentialResp, err error) {
+func getCredential(host string, appId, secret string) (response pkg.CredentialResp, err error) {
 
 	client := &http.Client{}
-	req := open.CredentialReq{
+	req := pkg.CredentialReq{
 		AppId:  appId,
 		Secret: secret,
 	}

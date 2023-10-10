@@ -1,7 +1,6 @@
 package sms
 
 import (
-	"encoding/json"
 	"github.com/lishimeng/owl-messager/internal/messager"
 	"github.com/qiniu/go-sdk/v7/auth"
 	"github.com/qiniu/go-sdk/v7/sms"
@@ -13,10 +12,9 @@ import (
 type QiniuSdk struct {
 	appKey    string
 	appSecret string
-
-	token *auth.Credentials
-
-	manager *sms.Manager
+	sign      string
+	token     *auth.Credentials
+	manager   *sms.Manager
 }
 
 func NewQiniu(appkey, appSecret string) (sdk messager.SmsProvider) {
@@ -32,15 +30,7 @@ func NewQiniu(appkey, appSecret string) (sdk messager.SmsProvider) {
 
 func (qiniu *QiniuSdk) Send(req messager.Request) (resp messager.Response, err error) {
 	to := strings.Split(req.Receivers, ",")
-
-	var params map[string]interface{}
-	err = json.Unmarshal([]byte(req.Params), &params)
-	if err != nil {
-		// TODO
-		return
-	}
-
-	ret, err := qiniu.SendSms(req.Sign, req.Template, to, params)
+	ret, err := qiniu.SendSms(qiniu.sign, req.Template.CloudTemplate, to, req.Params)
 	if err != nil {
 		return
 	}

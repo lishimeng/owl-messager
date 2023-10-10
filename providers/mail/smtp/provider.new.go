@@ -2,13 +2,13 @@ package smtp
 
 import (
 	"encoding/json"
-	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
 func New(config string) (p *MailSmtpProvider, err error) {
 
 	p = &MailSmtpProvider{}
-	var c model.SmtpConfig
+	var c msg.SmtpConfig
 	err = json.Unmarshal([]byte(config), &c)
 	if err != nil {
 		return

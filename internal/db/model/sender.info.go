@@ -1,41 +1,30 @@
 package model
 
 import (
-	"encoding/base64"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
-type SenderConfig string
-
-func (s *SenderConfig) Encode() error {
-	tmp := base64.StdEncoding.EncodeToString([]byte((*s)))
-	*s = SenderConfig(tmp)
-	return nil
-}
-func (s *SenderConfig) Decode() error {
-	tmp, err := base64.StdEncoding.DecodeString(string(*s))
-	if err != nil {
-		return err
-	}
-	*s = SenderConfig(tmp)
-	return nil
-}
-
-// SenderInfo 发消息账号
-type SenderInfo struct {
+type MessageSenderInfo struct {
 	app.TenantPk
-	Code    string       `orm:"column(code);unique"`    // 编号
-	Default int          `orm:"column(default_sender)"` // 默认账号
-	Config  SenderConfig `orm:"column(config)"`         // json 配置(map: key-value)
+	Code     string              `orm:"column(code);unique"`      // 编号
+	Category msg.MessageCategory `orm:"column(message_category)"` // 消息类型
+	Provider msg.MessageProvider `orm:"column(message_provider)"` // 消息平台
+	SenderAppInfo
+	Default int              `orm:"column(default_sender)"` // 默认账号 unique:org+vendor
+	Config  msg.SenderConfig `orm:"column(config)"`         // json 配置(map: key-value)
 	app.TableChangeInfo
+}
+
+type SenderAppInfo struct { // wechat mini/hms/gms/apns等服务,标记应用程序通道
+	AppIdentify string `orm:"column(app_identify);null"`
 }
 
 const (
 	DefaultSenderDisable = 0
 	DefaultSenderEnable  = 1
 )
-
 const (
-	SenderCategoryMail = "mail"
-	SenderCategorySms  = "sms"
+	SenderDisable = 0
+	SenderEnable  = 1
 )

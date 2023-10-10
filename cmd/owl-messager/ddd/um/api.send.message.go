@@ -12,8 +12,8 @@ import (
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/internal/etc"
-	"github.com/lishimeng/owl-messager/internal/messager/msg"
 	"github.com/lishimeng/owl-messager/internal/messager/task"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
 const (
@@ -21,12 +21,11 @@ const (
 )
 
 type Req struct {
-	BundleId string `json:"bundleId,omitempty"` // bundle id
-	Template string `json:"template"`           // 模板
-	//CloudTemplate bool        `json:"cloudTemplate,omitempty"` // 云端模板
-	TemplateParam interface{} `json:"params"`            // 参数
-	Title         string      `json:"subject,omitempty"` // 标题
-	Receiver      string      `json:"receiver"`          // 接收者，多个时用逗号分隔
+	BundleId      string      `json:"bundleId,omitempty"` // bundle id
+	Template      string      `json:"template"`           // 模板
+	TemplateParam interface{} `json:"params"`             // 参数
+	Title         string      `json:"subject,omitempty"`  // 标题
+	Receiver      string      `json:"receiver"`           // 接收者，多个时用逗号分隔
 }
 
 type Resp struct {
@@ -50,7 +49,7 @@ func sendMessage(ctx iris.Context) {
 	}
 
 	var category = ctx.Params().Get("category")
-	validCategory := checkMessageCategory(category)
+	validCategory := msg.IsValidCategory(msg.MessageCategory(category))
 	if !validCategory {
 		log.Debug("unknown category: %s", category)
 		resp.Code = -1
@@ -98,12 +97,12 @@ func sendMessage(ctx iris.Context) {
 
 	// 检查消息类型(是否支持)
 	var message model.MessageInfo
-	switch category {
-	case msg.EmailCategory:
+	switch msg.MessageCategory(category) {
+	case msg.MailMessage:
 		message, resp, err = createMail(tenant.Id, req, params)
-	case msg.SmsCategory:
+	case msg.SmsMessage:
 		message, resp, err = createSms(tenant.Id, req, params)
-	case msg.ApnsCategory:
+	case msg.ApnsMessage:
 		message, resp, err = createApns(tenant.Id, req, params)
 	default:
 		err = fmt.Errorf("unkown message category")
@@ -136,27 +135,12 @@ func sendMessage(ctx iris.Context) {
 	tool.ResponseJSON(ctx, resp)
 }
 
-func checkMessageCategory(category string) bool {
-	var validCategory = false
-	// TODO support map
-	switch category {
-	case msg.EmailCategory:
-		validCategory = true
-	case msg.SmsCategory:
-		validCategory = true
-	case msg.ApnsCategory:
-		validCategory = true
-	default:
-		validCategory = false
-	}
-	return validCategory
-}
-
 func createMail(org int, req Req, params string) (m model.MessageInfo, resp Resp, err error) {
 	if len(req.Title) == 0 {
 		log.Debug("no title, use default: %s", DefaultTitle)
 		req.Title = DefaultTitle
 	}
+
 	m, err = serviceAddMail(org, req.Template, params, req.Title, req.Receiver)
 	if err != nil {
 		resp.Code = -1

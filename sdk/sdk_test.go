@@ -12,7 +12,6 @@ func TestSdk(t *testing.T) {
 	resp, err := New(WithHost("http://localhost/"),
 		WithAuth("aewfvsfvadv1", "bhnsasdvdzvdvs")).SendMail(MailRequest{
 		Template:      "tpl_test001", // 测试模板
-		CloudTemplate: false,
 		TemplateParam: params,
 		Title:         "验证码",
 		Receiver:      "xxx@qq.com", // 收件人邮箱

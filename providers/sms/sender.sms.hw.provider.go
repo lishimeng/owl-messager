@@ -3,13 +3,12 @@ package sms
 import (
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	uuid "github.com/iris-contrib/go.uuid"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/messager"
 	"github.com/lishimeng/owl-messager/internal/util"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 	"net/url"
 	"strings"
 	"time"
@@ -18,7 +17,7 @@ import (
 // 华为云SMS
 
 type HuaweiSdk struct {
-	config model.HuaweiSmsConfig
+	config msg.HuaweiSmsConfig
 	client util.Rest
 }
 
@@ -28,7 +27,7 @@ const (
 	AuthHeaderValue  = "WSSE realm=\"SDP\",profile=\"UsernameToken\",type=\"Appkey\""
 )
 
-func NewHuawei(conf model.HuaweiSmsConfig) (sdk messager.SmsProvider) {
+func NewHuawei(conf msg.HuaweiSmsConfig) (sdk messager.SmsProvider) {
 
 	h := &HuaweiSdk{
 		config: conf,
@@ -42,16 +41,11 @@ func (sdk *HuaweiSdk) Send(message messager.Request) (resp messager.Response, er
 	signature := sdk.config.SignName // TODO 暂时只支持一个账号唯一签名
 	receiver := message.Receivers
 	statusCallBack := ""
-	var m = make(map[string]interface{})
-	err = json.Unmarshal([]byte(message.Params), &m)
-	if err != nil {
-		// TODO
-		return
-	}
-	params := map2array(m)
+
+	params := map2array(message.Params)
 	templateParas := buildHuaweiTemplateParams(params)
 
-	body := sdk.buildRequestBody(sdk.config.Sender, receiver, message.Template, templateParas, statusCallBack, signature)
+	body := sdk.buildRequestBody(sdk.config.Sender, receiver, message.Template.CloudTemplate, templateParas, statusCallBack, signature)
 
 	headers := sdk.buildHeader()
 	err = sdk._send(body, headers)

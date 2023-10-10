@@ -3,8 +3,8 @@ package tencent
 import (
 	"encoding/json"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/messager"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	ses "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ses/v20201002"
@@ -27,11 +27,11 @@ func newTencentClient(appId, secret, region string) (client *ses.Client, err err
 }
 
 type MailTencentProvider struct {
-	Config model.TencentConfig
+	Config msg.TencentConfig
 	Client *ses.Client
 }
 
-func New(config model.TencentConfig) (s *MailTencentProvider, err error) {
+func New(config msg.TencentConfig) (s *MailTencentProvider, err error) {
 	s = &MailTencentProvider{}
 	client, err := newTencentClient(config.AppId, config.Secret, config.Region)
 	if err != nil {
@@ -58,7 +58,7 @@ func (s *MailTencentProvider) Send(param messager.MailRequest) (err error) {
 	}
 
 	req.Subject = &param.Subject
-	tid, err := strconv.ParseUint(param.Template, 10, 64)
+	tid, err := strconv.ParseUint(param.Template.CloudTemplate, 10, 64)
 	if err != nil {
 		return
 	}

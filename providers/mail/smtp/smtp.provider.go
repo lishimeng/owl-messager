@@ -4,11 +4,11 @@ import (
 	"crypto/tls"
 	"github.com/go-gomail/gomail"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
 type MailSmtpProvider struct {
-	Config model.SmtpConfig
+	Config msg.SmtpConfig
 }
 
 func (s MailSmtpProvider) Send(subject string, body string, receivers ...string) (err error) {

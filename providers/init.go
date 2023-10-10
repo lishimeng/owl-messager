@@ -2,31 +2,31 @@ package providers
 
 import (
 	"encoding/json"
-	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/messager"
 	"github.com/lishimeng/owl-messager/internal/provider"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 	"github.com/lishimeng/owl-messager/providers/mail"
 	"github.com/lishimeng/owl-messager/providers/sms"
 )
 
 func registerMailProviders() {
-	provider.RegisterMailProvider(model.MailVendorSmtp, func(config string) (messager.MailProvider, error) {
+	provider.RegisterMailProvider(msg.Smtp, func(config string) (messager.MailProvider, error) {
 		return mail.NewSmtp(config)
 	})
 
-	provider.RegisterMailProvider(model.MailVendorMicrosoft, func(config string) (messager.MailProvider, error) {
+	provider.RegisterMailProvider(msg.Microsoft, func(config string) (messager.MailProvider, error) {
 		return mail.NewMicrosoft(config)
 	})
 
-	provider.RegisterMailProvider(model.MailVendorTencent, func(config string) (messager.MailProvider, error) {
+	provider.RegisterMailProvider(msg.Tencent, func(config string) (messager.MailProvider, error) {
 		return mail.NewTencent(config)
 	})
 }
 
 func registerSmsProviderBuilders() {
 
-	provider.RegisterSmsProvider(model.SmsVendorAli, func(config string) (p messager.SmsProvider, err error) {
-		var aliSmsConf model.AliSmsConfig
+	provider.RegisterSmsProvider(msg.Ali, func(config string) (p messager.SmsProvider, err error) {
+		var aliSmsConf msg.AliSmsConfig
 		h := sms.AliProvider{}
 		err = json.Unmarshal([]byte(config), &aliSmsConf)
 		if err != nil {
@@ -40,8 +40,8 @@ func registerSmsProviderBuilders() {
 		return
 	})
 
-	provider.RegisterSmsProvider(model.SmsVendorTencent, func(config string) (p messager.SmsProvider, err error) {
-		var tencentSmsConf model.TencentSmsConfig
+	provider.RegisterSmsProvider(msg.Tencent, func(config string) (p messager.SmsProvider, err error) {
+		var tencentSmsConf msg.TencentSmsConfig
 		err = json.Unmarshal([]byte(config), &tencentSmsConf)
 		if err != nil {
 			return

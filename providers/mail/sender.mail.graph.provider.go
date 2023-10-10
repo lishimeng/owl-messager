@@ -24,7 +24,10 @@ func (h *msSender) Send(req messager.MailRequest) (err error) {
 	if h.proxy == nil {
 		err = errors.New("proxy nil")
 	}
-
-	err = h.proxy.Send(req.Subject, req.TextContent, req.Receivers...)
+	content, err := buildMailBody(req.Template, req.Params)
+	if err != nil {
+		return
+	}
+	err = h.proxy.Send(req.Subject, content, req.Receivers...)
 	return
 }

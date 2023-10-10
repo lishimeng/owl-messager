@@ -6,12 +6,12 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/lishimeng/owl-messager/internal/certificate"
-	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
 func New(config string) (p *AzureGraphProvider, err error) {
 
-	var cc model.GraphConfig
+	var cc msg.GraphConfig
 	err = json.Unmarshal([]byte(config), &cc)
 	if err != nil {
 		err = errors.New("config err")

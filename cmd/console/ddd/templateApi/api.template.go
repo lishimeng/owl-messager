@@ -4,9 +4,8 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/tool"
-	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
-	"github.com/lishimeng/owl-messager/internal/db/service"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
 func GetTemplateListByPage(ctx iris.Context) {
@@ -18,9 +17,9 @@ func GetTemplateListByPage(ctx iris.Context) {
 		PageSize: pageSize,
 		PageNum:  pageNum,
 	}
-	switch category {
-	case model.SenderCategoryMail:
-		page, list, err := repo.GetMailTemplateList(1, page)
+	switch msg.MessageCategory(category) {
+	case msg.MailMessage:
+		list, err := repo.GetMessageTemplates(1, msg.MailMessage, msg.Ali) // TODO
 		if err != nil {
 			resp.Code = tool.RespCodeNotFound
 			tool.ResponseJSON(ctx, resp)
@@ -32,8 +31,8 @@ func GetTemplateListByPage(ctx iris.Context) {
 			}
 		}
 		resp.Pager = page
-	case model.SenderCategorySms:
-		page, list, err := repo.GetSmsTemplateList(1, page)
+	case msg.SmsMessage:
+		list, err := repo.GetMessageTemplates(1, msg.SmsMessage, msg.Ali) // TODO
 		if err != nil {
 			resp.Code = tool.RespCodeNotFound
 			tool.ResponseJSON(ctx, resp)
@@ -55,17 +54,15 @@ func GetTemplateListByPage(ctx iris.Context) {
 }
 
 type TemplateReq struct {
-	Name        string `json:"name,omitempty"`
-	Body        string `json:"body,omitempty"`
-	Description string `json:"description,omitempty"`
-	Category    string `json:"category,omitempty"`
-	TemplateId  string `json:"templateId,omitempty"`
-	Params      string `json:"params,omitempty"`
-	Sender      int    `json:"sender,omitempty"`
-	Signature   string `json:"signature,omitempty"`
-	Vendor      string `json:"vendor,omitempty"`
-	Status      int    `json:"status,omitempty"`
-	Code        string `json:"code,omitempty"`
+	Name          string `json:"name,omitempty"`
+	Body          string `json:"body,omitempty"`
+	CloudTemplate string `json:"cloudTemplate,omitempty"`
+	Description   string `json:"description,omitempty"`
+	Category      string `json:"category,omitempty"`
+	Params        string `json:"params,omitempty"`
+	Provider      string `json:"provider,omitempty"`
+	Status        int    `json:"status,omitempty"`
+	Code          string `json:"code,omitempty"`
 }
 type respTemplate struct {
 	app.Response
@@ -76,9 +73,9 @@ func GetTemplateInfo(ctx iris.Context) {
 	var resp respTemplate
 	var code = ctx.URLParamDefault("code", "")
 	var category = ctx.URLParamDefault("category", "")
-	switch category {
-	case model.SenderCategoryMail:
-		info, err := repo.GetMailTemplateByCode(code)
+	switch msg.MessageCategory(category) {
+	case msg.MailMessage:
+		info, err := repo.GetTemplateByCode(code, msg.MailMessage)
 		if err != nil {
 			resp.Code = tool.RespCodeNotFound
 			resp.Message = "未查到记录"
@@ -90,10 +87,10 @@ func GetTemplateInfo(ctx iris.Context) {
 			Name:        info.Name,
 			Body:        info.Body,
 			Description: info.Description,
-			Vendor:      info.Vendor,
+			Provider:    string(info.Provider),
 		}
-	case model.SenderCategorySms:
-		info, err := repo.GetSmsTemplateByCode(code)
+	case msg.SmsMessage:
+		info, err := repo.GetTemplateByCode(code, msg.SmsMessage)
 		if err != nil {
 			resp.Code = tool.RespCodeNotFound
 			resp.Message = "未查到记录"
@@ -103,13 +100,10 @@ func GetTemplateInfo(ctx iris.Context) {
 		resp.Item = TemplateReq{
 			Code:        info.Code,
 			Name:        info.Name,
-			Sender:      info.Sender,
 			Body:        info.Body,
-			TemplateId:  info.CloudTemplateId,
-			Signature:   info.Signature,
 			Description: info.Description,
 			Params:      info.Params,
-			Vendor:      info.Vendor,
+			Provider:    string(info.Provider),
 		}
 	default:
 		resp.Code = tool.RespCodeNotFound
@@ -133,19 +127,25 @@ func CreateTemplate(ctx iris.Context) {
 		return
 	}
 	code := tool.UUIDString()
-	switch req.Category {
-	case model.SenderCategoryMail:
+	switch msg.MessageCategory(req.Category) {
+	case msg.MailMessage:
 		code = "tl_mail_" + code
-		_, err := repo.CreateMailTemplateNew(code, req.Name, req.Body, req.Description, req.Vendor, 2)
+		_, err := repo.CreateMessageTemplate(
+			code, req.Name, req.Body, req.CloudTemplate, req.Params, req.Description,
+			msg.MailMessage, msg.MessageProvider(req.Provider),
+		)
 		if err != nil {
 			resp.Code = tool.RespCodeNotFound
 			resp.Message = "添加失败"
 			tool.ResponseJSON(ctx, resp)
 			return
 		}
-	case model.SenderCategorySms:
+	case msg.SmsMessage:
 		code = "tl_sms_" + code
-		_, err := repo.CreateSmsTemplateNew(code, req.Name, req.TemplateId, req.Params, req.Description, req.Vendor, req.Signature, req.Sender)
+		_, err := repo.CreateMessageTemplate(
+			code, req.Name, req.Body, req.CloudTemplate, req.Params, req.Description,
+			msg.SmsMessage, msg.MessageProvider(req.Provider),
+		)
 		if err != nil {
 			resp.Code = tool.RespCodeNotFound
 			resp.Message = "失败"
@@ -172,17 +172,16 @@ func UpdateTemplate(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	switch req.Category {
-	case model.SenderCategoryMail:
-		_, err := service.UpdateMailTemplateByCode(req.Status, req.Code, req.Name, req.Body, req.Description)
+	switch msg.MessageCategory(req.Category) {
+	case msg.MailMessage: // TODO
+		_, err := repo.UpdateMessageTemplate(req.Status, req.Code, req.Name, req.Body, req.Description)
 		if err != nil {
 			resp.Code = tool.RespCodeNotFound
 			tool.ResponseJSON(ctx, resp)
 			return
 		}
-	case model.SenderCategorySms:
-		_, err := service.UpdateSmsTemplateByCode(req.Status, req.Sender, req.Code, req.Name,
-			req.Body, req.TemplateId, req.Signature, req.Description, req.Params, req.Vendor)
+	case msg.SmsMessage: // TODO
+		_, err := repo.UpdateMessageTemplate(req.Status, req.Code, req.Name, req.Body, req.Description)
 		if err != nil {
 			resp.Code = tool.RespCodeNotFound
 			tool.ResponseJSON(ctx, resp)

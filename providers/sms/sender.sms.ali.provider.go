@@ -3,12 +3,13 @@ package sms
 // 阿里云SMS
 
 import (
+	"encoding/json"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
 	dysmsapi "github.com/alibabacloud-go/dysmsapi-20170525/v2/client"
 	util "github.com/alibabacloud-go/tea-utils/service"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/messager"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
 type AliProvider struct {
@@ -27,10 +28,12 @@ func (p *AliProvider) Send(req messager.Request) (resp messager.Response, err er
 
 	to := req.Receivers
 	var signature = p.signName // sender 中的signature优先级最低
-	if len(req.Sign) > 0 {
-		signature = req.Sign
+
+	bs, err := json.Marshal(req.Params)
+	if err != nil {
+		return
 	}
-	ret, err := p.sendSms(to, signature, req.Template, req.Params)
+	ret, err := p.sendSms(to, signature, req.Template.CloudTemplate, string(bs))
 	if err != nil {
 		return
 	}
@@ -39,7 +42,7 @@ func (p *AliProvider) Send(req messager.Request) (resp messager.Response, err er
 	return
 }
 
-func (p *AliProvider) Init(conf model.AliSmsConfig) (err error) {
+func (p *AliProvider) Init(conf msg.AliSmsConfig) (err error) {
 	var accessKey = conf.AppKey
 	var accessSecret = conf.AppSecret
 	var region = conf.Region
