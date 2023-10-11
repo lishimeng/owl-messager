@@ -50,7 +50,7 @@ func _send(credential string, url string, req []byte) (code int, response Respon
 		}
 		return
 	}
-	if response.Code == float64(CodeNotAllow) {
+	if response.Code == CodeNotAllow {
 		code = CodeNotAllow
 		return
 	}

@@ -12,7 +12,7 @@ const ApiSendMessage = "/messages/"
 
 const ApiCredential = "/open/oauth2/token"
 
-const ApiTemplates = "/templates/%s"
+const ApiTemplates = "/template"
 
 const (
 	CodeNotAllow int = 401
@@ -77,6 +77,9 @@ func (m *messageClient) Templates(request TemplateRequest) (resp TemplateRespons
 	err = NewRpc(m.host).Auth(m.appId, m.secret).BuildReq(func(rest *utils.RestClient, token string) (int, error) {
 		code, e := rest.Path(ApiTemplates, request.Category.String()).
 			Auth(token).ResponseJson(&resp).Get(req)
+		if resp.Code == CodeNotAllow { // 拦截业务异常
+			code = CodeNotAllow
+		}
 		return code, e
 	}).Exec()
 
@@ -94,6 +97,9 @@ func (m *messageClient) send(category string, request any) (response Response, e
 
 	err = NewRpc(m.host).Auth(m.appId, m.secret).BuildReq(func(rest *utils.RestClient, token string) (int, error) {
 		code, e := rest.Path(ApiSendMessage, category).Auth(token).Post(request)
+		if response.Code == CodeNotAllow { // 拦截业务异常
+			code = CodeNotAllow
+		}
 		return code, e
 	}).Exec()
 

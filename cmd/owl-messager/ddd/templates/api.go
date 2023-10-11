@@ -66,12 +66,15 @@ func getEmailTemplate(org int, pageNo, pageSize int) (tpls []pkg.TemplateInfo, e
 	}
 	for _, d := range data {
 		tpls = append(tpls, pkg.TemplateInfo{
-			Id:       d.Id,
-			Code:     d.Code,
-			Name:     d.Name,
-			Category: string(msg.MailMessage),
-			Body:     d.Body,
-			Params:   d.Description, // description保存参数列表
+			Id:            d.Id,
+			Code:          d.Code,
+			Name:          d.Name,
+			Category:      d.Category.String(),
+			Body:          d.Body,
+			Params:        d.Params,
+			Provider:      d.Provider.String(),
+			CloudTemplate: d.CloudTemplate,
+			Description:   d.Description,
 		})
 	}
 	return

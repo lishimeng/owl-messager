@@ -39,6 +39,7 @@ func (rc *RestClient) build(method string, body []byte) (code int, err error) {
 	var requestUri string
 	var request *http.Request
 
+	log.Debug("path:", rc.path)
 	requestUri, err = url.JoinPath(rc.host, rc.path...) // 拼接uri
 	if len(rc.query) > 0 {                              // 拼接query部分
 		var content = ""
@@ -46,6 +47,9 @@ func (rc *RestClient) build(method string, body []byte) (code int, err error) {
 			content = content + fmt.Sprintf("%s=%s&", key, value)
 		}
 		requestUri = fmt.Sprintf("%s?%s", requestUri, content)
+	}
+	if DebugEnable {
+		log.Debug("request: [%s]%s", method, requestUri)
 	}
 
 	request, err = http.NewRequest(method, requestUri, bytes.NewBuffer(body))
@@ -57,9 +61,15 @@ func (rc *RestClient) build(method string, body []byte) (code int, err error) {
 		return
 	}
 	for key, value := range rc.headers { // 设置header
+		if DebugEnable {
+			log.Debug("header: [%s:%s]", key, value)
+		}
 		request.Header.Set(key, value)
 	}
 
+	if DebugEnable {
+		log.Debug("start http request...")
+	}
 	resp, err := rc.proxy.Do(request)
 	if err != nil {
 		err = errors.Wrap(err, "client Post err")
@@ -73,6 +83,9 @@ func (rc *RestClient) build(method string, body []byte) (code int, err error) {
 	}(resp.Body)
 
 	code = resp.StatusCode
+	if DebugEnable {
+		log.Debug("response code: %d", code)
+	}
 	if code != 200 { // http不成功
 		return
 	}

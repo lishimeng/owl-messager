@@ -2,6 +2,7 @@ package sdk
 
 import (
 	"encoding/json"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 	"testing"
 )
 
@@ -22,4 +23,18 @@ func TestSdk(t *testing.T) {
 	}
 	bs, _ := json.Marshal(resp)
 	t.Logf("Response %s", string(bs))
+}
+
+func TestTemplateList(t *testing.T) {
+	Debug(true)
+	resp, err := New(WithHost("http://localhost/"),
+		WithAuth("aewfvsfvadv", "bhnsasdvdzvdvs"),
+	).Templates(TemplateRequest{
+		Category: msg.MailMessage,
+	})
+	if err != nil {
+		t.Fatal(err)
+		return
+	}
+	t.Log(resp)
 }

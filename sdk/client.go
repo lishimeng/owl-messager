@@ -1,6 +1,9 @@
 package sdk
 
-import "errors"
+import (
+	"errors"
+	"github.com/lishimeng/owl-messager/utils"
+)
 
 type Client interface {
 	SendMail(req MailRequest) (resp Response, err error)
@@ -23,6 +26,7 @@ var (
 // Debug 输出sdk中的log
 func Debug(enable bool) {
 	debugEnable = enable
+	utils.DebugEnable = enable
 }
 
 func WithHost(host string) Option {
