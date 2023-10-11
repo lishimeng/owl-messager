@@ -12,7 +12,7 @@ type Rpc struct {
 	appId, secret string
 	token         string
 
-	logic func(rest *utils.RestClient, token string) (code int, err error)
+	logic func(rest *utils.RestClient) (code int, err error)
 }
 
 func NewRpc(host string) *Rpc {
@@ -20,7 +20,7 @@ func NewRpc(host string) *Rpc {
 	return r
 }
 
-func (r *Rpc) BuildReq(handler func(*utils.RestClient, string) (int, error)) *Rpc {
+func (r *Rpc) BuildReq(handler func(*utils.RestClient) (int, error)) *Rpc {
 	r.logic = handler
 	return r
 }
@@ -31,7 +31,7 @@ func (r *Rpc) Exec() (err error) {
 		return
 	}
 	// 执行logic
-	code, err := r.logic(utils.NewRest(r.host), r.token)
+	code, err := r.logic(utils.NewRest(r.host).Auth(r.token))
 	if err != nil {
 		return
 	}
@@ -43,7 +43,7 @@ func (r *Rpc) Exec() (err error) {
 			return
 		}
 		// 再执行
-		code, err = r.logic(utils.NewRest(r.host), r.token)
+		code, err = r.logic(utils.NewRest(r.host).Auth(r.token))
 	}
 
 	if code != CodeSuccess {

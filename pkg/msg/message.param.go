@@ -27,8 +27,9 @@ func (mp MessageParams) Marshal() string {
 }
 
 func HandleMessageParams(input string, mapping string) (params map[string]any, err error) {
+	var templateParams = make(map[string]any)
 	params = make(map[string]any)
-	err = json.Unmarshal([]byte(input), &params)
+	err = json.Unmarshal([]byte(input), &templateParams)
 	if err != nil {
 		log.Info("params of mail template is not json format:%s", input)
 		return
@@ -42,11 +43,11 @@ func HandleMessageParams(input string, mapping string) (params map[string]any, e
 			return
 		}
 	}
-	var templateParams = make(map[string]any)
+
 	for k, innerParams := range paraMappings {
-		if value, ok := params[k]; ok {
+		if value, ok := templateParams[k]; ok {
 			for _, innerParam := range innerParams {
-				templateParams[innerParam] = value
+				params[innerParam] = value
 			}
 		}
 	}

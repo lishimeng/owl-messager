@@ -74,9 +74,9 @@ func (m *messageClient) Templates(request TemplateRequest) (resp TemplateRespons
 		req["pageSize"] = fmt.Sprintf("%d", request.PageSize)
 	}
 
-	err = NewRpc(m.host).Auth(m.appId, m.secret).BuildReq(func(rest *utils.RestClient, token string) (int, error) {
+	err = NewRpc(m.host).Auth(m.appId, m.secret).BuildReq(func(rest *utils.RestClient) (int, error) {
 		code, e := rest.Path(ApiTemplates, request.Category.String()).
-			Auth(token).ResponseJson(&resp).Get(req)
+			ResponseJson(&resp).Get(req)
 		if resp.Code == CodeNotAllow { // 拦截业务异常
 			code = CodeNotAllow
 		}
@@ -95,8 +95,8 @@ func (m *messageClient) Templates(request TemplateRequest) (resp TemplateRespons
 
 func (m *messageClient) send(category string, request any) (response Response, err error) {
 
-	err = NewRpc(m.host).Auth(m.appId, m.secret).BuildReq(func(rest *utils.RestClient, token string) (int, error) {
-		code, e := rest.Path(ApiSendMessage, category).Auth(token).Post(request)
+	err = NewRpc(m.host).Auth(m.appId, m.secret).BuildReq(func(rest *utils.RestClient) (int, error) {
+		code, e := rest.Path(ApiSendMessage, category).ResponseJson(&response).Post(request)
 		if response.Code == CodeNotAllow { // 拦截业务异常
 			code = CodeNotAllow
 		}

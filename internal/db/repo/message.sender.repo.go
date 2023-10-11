@@ -8,13 +8,13 @@ import (
 )
 
 // GetDefMessageSender 获取默认的消息发送者
-func GetDefMessageSender(org int, category msg.MessageCategory, vendor msg.MessageProvider) (s model.MessageSenderInfo, err error) {
+func GetDefMessageSender(org int, category msg.MessageCategory, provider msg.MessageProvider) (s model.MessageSenderInfo, err error) {
 
 	var senders []model.MessageSenderInfo
 	_, err = app.GetOrm().Context.QueryTable(new(model.MessageSenderInfo)).
 		Filter("Org", org).
 		Filter("Category", category).
-		Filter("Vendor", vendor).
+		Filter("Provider", provider).
 		Filter("Status", model.SenderEnable).
 		OrderBy("-Default").
 		Limit(10).All(&senders)
@@ -26,5 +26,6 @@ func GetDefMessageSender(org int, category msg.MessageCategory, vendor msg.Messa
 		return
 	}
 	s = senders[0]
+	err = s.Config.Decode()
 	return
 }
