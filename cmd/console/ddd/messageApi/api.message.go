@@ -122,7 +122,7 @@ func Send(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
-		resp.Code = tool.RespMsgNotFount
+		resp.Code = tool.RespCodeNotFound
 		resp.Message = tool.RespMsgNotFount
 		tool.ResponseJSON(ctx, resp)
 		return
