@@ -50,6 +50,7 @@ func templates(ctx iris.Context) {
 		}
 	}
 	resp.Code = iris.StatusOK
+	resp.Message = "OK"
 	tool.ResponseJSON(ctx, resp)
 }
 

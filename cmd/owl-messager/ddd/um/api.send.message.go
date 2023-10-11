@@ -132,6 +132,7 @@ func sendMessage(ctx iris.Context) {
 	resp.MessageId = message.Id
 
 	resp.Code = tool.RespCodeSuccess
+	resp.Message = "OK"
 	tool.ResponseJSON(ctx, resp)
 }
 

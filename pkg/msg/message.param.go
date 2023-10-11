@@ -6,13 +6,27 @@ import (
 )
 
 // MessageParams 消息参数
-type MessageParams map[string][]string
+type MessageParams map[string]MessageParam
 
-func (mp MessageParams) AddParam(name string, data string) MessageParams {
-	var v []string
-	v = mp[name]
-	v = append(v, data)
-	mp[name] = v
+type MessageParam struct {
+	Attr        []string `json:"attr,omitempty"`
+	Description string   `json:"description,omitempty"`
+}
+
+func (mp MessageParams) AddParam(name string, data string, description string) MessageParams {
+	var v MessageParam
+
+	vv, ok := mp[name]
+	if !ok {
+		mp[name] = v
+	} else {
+		v = vv
+	}
+	if len(description) > 0 {
+		vv.Description = description
+	}
+	v.Attr = append(v.Attr, data)
+	mp[name] = vv
 	return mp
 }
 
@@ -46,7 +60,7 @@ func HandleMessageParams(input string, mapping string) (params map[string]any, e
 
 	for k, innerParams := range paraMappings {
 		if value, ok := templateParams[k]; ok {
-			for _, innerParam := range innerParams {
+			for _, innerParam := range innerParams.Attr {
 				params[innerParam] = value
 			}
 		}
