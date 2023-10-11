@@ -30,7 +30,7 @@ func TestTemplateList(t *testing.T) {
 	resp, err := New(WithHost("http://localhost/"),
 		WithAuth("aewfvsfvadv", "bhnsasdvdzvdvs"),
 	).Templates(TemplateRequest{
-		Category: msg.MailMessage,
+		Category: msg.SmsMessage,
 	})
 	if err != nil {
 		t.Fatal(err)

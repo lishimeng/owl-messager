@@ -37,13 +37,7 @@ func templates(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	switch msg.MessageCategory(category) {
-	case msg.MailMessage:
-		tpls, err = getEmailTemplate(tenant.Id, pageNo, pageSize)
-	case msg.SmsMessage:
-		tpls, err = getSmsTemplate(tenant.Id, pageNo, pageSize)
-	case msg.ApnsMessage:
-	}
+	tpls, err = getTemplates(msg.MessageCategory(category), tenant.Id, pageNo, pageSize)
 
 	if err != nil {
 		resp.Code = iris.StatusOK
@@ -59,8 +53,8 @@ func templates(ctx iris.Context) {
 	tool.ResponseJSON(ctx, resp)
 }
 
-func getEmailTemplate(org int, pageNo, pageSize int) (tpls []pkg.TemplateInfo, err error) {
-	data, err := mailTemplates(org, 0, app.Pager{PageSize: pageSize, PageNum: pageNo})
+func getTemplates(category msg.MessageCategory, org int, pageNo, pageSize int) (tpls []pkg.TemplateInfo, err error) {
+	data, err := getList(org, 0, category, app.Pager{PageSize: pageSize, PageNum: pageNo})
 	if err != nil {
 		return
 	}
@@ -77,9 +71,5 @@ func getEmailTemplate(org int, pageNo, pageSize int) (tpls []pkg.TemplateInfo, e
 			Description:   d.Description,
 		})
 	}
-	return
-}
-
-func getSmsTemplate(org int, pageNo, pageSize int) (tpls []pkg.TemplateInfo, err error) {
 	return
 }
