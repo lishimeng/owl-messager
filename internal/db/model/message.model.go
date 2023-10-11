@@ -8,9 +8,10 @@ import (
 
 type MessageHeader struct {
 	app.TenantPk
-	app.TableChangeInfo
+
 	// 消息ID(外键)
 	MessageId int `orm:"column(message_id)"`
+	app.TableChangeInfo
 }
 
 // MessageInfo 消息主表

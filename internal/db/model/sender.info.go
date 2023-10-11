@@ -10,9 +10,9 @@ type MessageSenderInfo struct {
 	Code     string              `orm:"column(code);unique"`      // 编号
 	Category msg.MessageCategory `orm:"column(message_category)"` // 消息类型
 	Provider msg.MessageProvider `orm:"column(message_provider)"` // 消息平台
+	Default  int                 `orm:"column(default_sender)"`   // 默认账号 unique:org+vendor
+	Config   msg.SenderConfig    `orm:"column(config)"`           // json 配置(map: key-value)
 	SenderAppInfo
-	Default int              `orm:"column(default_sender)"` // 默认账号 unique:org+vendor
-	Config  msg.SenderConfig `orm:"column(config)"`         // json 配置(map: key-value)
 	app.TableChangeInfo
 }
 

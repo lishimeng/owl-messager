@@ -10,7 +10,6 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd"
 	"github.com/lishimeng/owl-messager/cmd/console/static"
-	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/etc"
 	"net/http"
 	"time"
@@ -66,7 +65,7 @@ func _main() (err error) {
 		})
 
 		builder.EnableDatabase(dbConfig.Build(),
-			model.Tables()...).
+			ddd.Tables()...).
 			EnableStaticWeb(func() http.FileSystem {
 				return http.FS(static.Static)
 			}).

@@ -6,7 +6,6 @@ import "github.com/lishimeng/app-starter"
 // 管理员系统账号
 type Admin struct {
 	app.Pk
-
 	Username string
 	Password string
 }
