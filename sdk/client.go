@@ -1,12 +1,20 @@
 package sdk
 
+import "errors"
+
 type Client interface {
 	SendMail(req MailRequest) (resp Response, err error)
 	SendSms(req SmsRequest) (resp Response, err error)
 	SendApns(req ApnsRequest) (resp Response, err error)
+	Templates(req TemplateRequest) (resp TemplateResponse, err error)
 }
 
 type Option func(*messageClient)
+
+var (
+	InnerServerErr = errors.New("500")
+	NotFoundErr    = errors.New("404")
+)
 
 var (
 	debugEnable = false
