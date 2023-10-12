@@ -46,6 +46,16 @@ func _main() (err error) {
 		if err != nil {
 			return err
 		}
+
+		if len(etc.Config.LogLevel) > 0 {
+			var lvl log.Level
+			lvl, err = log.FormatLevel(etc.Config.LogLevel)
+			if err != nil {
+				return err
+			}
+			log.SetLevelAll(lvl)
+		}
+
 		dbConfig := persistence.PostgresConfig{
 			UserName:  etc.Config.Db.User,
 			Password:  etc.Config.Db.Password,

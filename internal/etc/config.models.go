@@ -1,12 +1,13 @@
 package etc
 
 type Configuration struct {
-	Db      db      `toml:"db"`
-	Web     web     `toml:"web"`
-	Token   token   `toml:"token"`
-	Redis   redis   `toml:"redis"`
-	Console console `toml:"console"`
-	Sender  sender  `toml:"sender"`
+	Db       db      `toml:"db"`
+	Web      web     `toml:"web"`
+	Token    token   `toml:"token"`
+	Redis    redis   `toml:"redis"`
+	Console  console `toml:"console"`
+	Sender   sender  `toml:"sender"`
+	LogLevel string  `toml:"log-level"`
 }
 
 type web struct {
