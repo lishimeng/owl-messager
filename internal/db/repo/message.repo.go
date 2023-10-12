@@ -63,7 +63,7 @@ func UpdateMessagePriority(id int, priority int) (m model.MessageInfo, err error
 }
 
 func CreateMessage(ctx persistence.TxContext, org int, subject string, category msg.MessageCategory) (m model.MessageInfo, err error) {
-	log.Debug("create message %s[category:%d]", subject, category)
+	log.Debug("create message %s[category:%s]", subject, category)
 	m.Org = org
 	m.Subject = subject
 	m.Priority = model.MessagePriorityNormal

@@ -27,11 +27,17 @@ func (r *Rpc) BuildReq(handler func(*utils.RestClient) (int, error)) *Rpc {
 
 func (r *Rpc) Exec() (err error) {
 
+	var code int
 	if r.logic == nil {
 		return
 	}
-	// 执行logic
-	code, err := r.logic(utils.NewRest(r.host).Auth(r.token))
+	if len(r.token) <= 0 { // 预先检查token长度, 初始化时token是空的
+		code = CodeNotAllow
+	} else {
+		// 执行logic
+		code, err = r.logic(utils.NewRest(r.host).Auth(r.token))
+	}
+
 	if err != nil {
 		return
 	}
