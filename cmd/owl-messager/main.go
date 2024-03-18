@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/lishimeng/app-starter"
-	"github.com/lishimeng/app-starter/factory"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/cmd/owl-messager/ddd"
 	"github.com/lishimeng/owl-messager/cmd/owl-messager/process"
 	"github.com/lishimeng/owl-messager/internal/etc"
+	"github.com/lishimeng/x/container"
 	"time"
 )
 import _ "github.com/lib/pq"
@@ -72,7 +72,7 @@ func _main() (err error) {
 				token.WithDefaultTTL(etc.TokenTTL),
 			)
 			storage := token.NewLocalStorage(provider)
-			factory.Add(provider)
+			container.Add(provider)
 			inject(storage)
 		})
 
