@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/lishimeng/app-starter"
-	etc2 "github.com/lishimeng/app-starter/etc"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
@@ -33,16 +32,13 @@ func main() {
 }
 
 func _main() (err error) {
-	configName := "config"
 
 	application := app.New()
 
 	err = application.Start(func(ctx context.Context, builder *app.ApplicationBuilder) error {
 
 		var err error
-		err = builder.LoadConfig(&etc.Config, func(loader etc2.Loader) {
-			loader.SetFileSearcher(configName, ".").SetEnvPrefix("").SetEnvSearcher()
-		})
+		err = builder.LoadConfig(&etc.Config, nil)
 		if err != nil {
 			return err
 		}
