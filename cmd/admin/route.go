@@ -1,11 +1,11 @@
 package admin
 
 import (
-	"github.com/kataras/iris/v12"
+	"github.com/lishimeng/app-starter/server"
 	tenant "github.com/lishimeng/owl-messager/cmd/admin/ddd/app"
 )
 
-func Route(p iris.Party) {
+func Route(p server.Router) {
 	// admin下的资源
-	tenant.Route(p.Party("/tenant"))
+	tenant.Route(p.Path("/tenant"))
 }

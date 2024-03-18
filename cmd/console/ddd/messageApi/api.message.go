@@ -1,12 +1,13 @@
 package messageApi
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
+	"github.com/lishimeng/x/util"
 )
 
 type Req struct {
@@ -32,12 +33,12 @@ type RespMessageInfoListWrapper struct {
 	app.PagerResponse
 }
 
-func GetMessageList(ctx iris.Context) {
+func GetMessageList(ctx server.Context) {
 	var resp app.PagerResponse
-	var status = ctx.URLParamIntDefault("status", repo.ConditionIgnore)
-	var category = ctx.URLParamIntDefault("category", repo.ConditionIgnore)
-	var pageSize = ctx.URLParamIntDefault("pageSize", repo.DefaultPageSize)
-	var pageNo = ctx.URLParamIntDefault("pageNo", repo.DefaultPageNo)
+	var status = ctx.C.URLParamIntDefault("status", repo.ConditionIgnore)
+	var category = ctx.C.URLParamIntDefault("category", repo.ConditionIgnore)
+	var pageSize = ctx.C.URLParamIntDefault("pageSize", repo.DefaultPageSize)
+	var pageNo = ctx.C.URLParamIntDefault("pageNo", repo.DefaultPageNo)
 	page := app.Pager{
 		PageSize: pageSize,
 		PageNum:  pageNo,
@@ -48,7 +49,7 @@ func GetMessageList(ctx iris.Context) {
 		log.Debug(err)
 		resp.Code = -1
 		resp.Message = "get messages failed"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	if len(messages) > 0 {
@@ -58,10 +59,10 @@ func GetMessageList(ctx iris.Context) {
 				Category:     ms.Category.String(),
 				Subject:      ms.Subject,
 				Priority:     ms.Priority,
-				NextSendTime: tool.FormatTime(ms.NextSendTime),
+				NextSendTime: util.FormatTime(ms.NextSendTime),
 				Status:       ms.Status,
-				CreateTime:   tool.FormatTime(ms.CreateTime),
-				UpdateTime:   tool.FormatTime(ms.UpdateTime),
+				CreateTime:   util.FormatTime(ms.CreateTime),
+				UpdateTime:   util.FormatTime(ms.UpdateTime),
 			}
 			page.Data = append(page.Data, tmpInfo)
 		}
@@ -69,19 +70,19 @@ func GetMessageList(ctx iris.Context) {
 
 	resp.Pager = page
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 
 }
 
-func GetMessageInfo(ctx iris.Context) {
+func GetMessageInfo(ctx server.Context) {
 	log.Debug("get message")
 	var resp RespMessageInfoWrapper
-	id, err := ctx.Params().GetInt("id")
+	id, err := ctx.C.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
 		resp.Code = tool.RespCodeNotFound
-		resp.Message = tool.RespMsgIdNum
-		tool.ResponseJSON(ctx, resp)
+		//resp.Message = tool.RespMsgIdNum
+		ctx.Json(resp)
 		return
 	}
 	log.Debug("id:%d", id)
@@ -90,8 +91,8 @@ func GetMessageInfo(ctx iris.Context) {
 		log.Debug("get message failed")
 		log.Debug(err)
 		resp.Response.Code = tool.RespCodeNotFound
-		resp.Message = tool.RespMsgNotFount
-		tool.ResponseJSON(ctx, resp)
+		//resp.Message = tool.RespMsgNotFount
+		ctx.Json(resp)
 		return
 	}
 
@@ -100,14 +101,14 @@ func GetMessageInfo(ctx iris.Context) {
 		Category:     ms.Category.String(),
 		Subject:      ms.Subject,
 		Priority:     ms.Priority,
-		NextSendTime: tool.FormatTime(ms.NextSendTime),
+		NextSendTime: util.FormatTime(ms.NextSendTime),
 		Status:       ms.Status,
-		CreateTime:   tool.FormatTime(ms.CreateTime),
-		UpdateTime:   tool.FormatTime(ms.UpdateTime),
+		CreateTime:   util.FormatTime(ms.CreateTime),
+		UpdateTime:   util.FormatTime(ms.UpdateTime),
 	}
 	resp.RespMessageInfo = tmpInfo
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
 // Send
@@ -116,15 +117,15 @@ func GetMessageInfo(ctx iris.Context) {
 
 @Router /api/message/send/{id} [post]
 */
-func Send(ctx iris.Context) {
+func Send(ctx server.Context) {
 	log.Debug("send message[manual]")
 	var resp app.Response
-	id, err := ctx.Params().GetInt("id")
+	id, err := ctx.C.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
 		resp.Code = tool.RespCodeNotFound
-		resp.Message = tool.RespMsgNotFount
-		tool.ResponseJSON(ctx, resp)
+		//resp.Message = tool.RespMsgNotFount
+		ctx.Json(resp)
 		return
 	}
 	log.Info("set message high priority:%d", id)
@@ -134,9 +135,9 @@ func Send(ctx iris.Context) {
 		log.Info(err)
 		resp.Code = -1
 		resp.Message = "failed"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }

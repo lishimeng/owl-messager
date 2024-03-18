@@ -1,11 +1,11 @@
 package sender
 
 import (
-	"github.com/kataras/iris/v12"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/owl-messager/cmd/console/midware"
 )
 
-func Route(root iris.Party) {
+func Route(root server.Router) {
 
 	root.Get("/", midware.WithAuth(list)...) // 列表
 	root.Get("/mail/{id}", mailSenderInfo)

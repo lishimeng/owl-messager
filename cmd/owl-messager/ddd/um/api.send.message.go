@@ -3,10 +3,9 @@ package um
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
-	"github.com/lishimeng/app-starter/factory"
 	"github.com/lishimeng/app-starter/midware/auth"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/model"
@@ -14,6 +13,7 @@ import (
 	"github.com/lishimeng/owl-messager/internal/etc"
 	"github.com/lishimeng/owl-messager/internal/messager/task"
 	"github.com/lishimeng/owl-messager/pkg/msg"
+	"github.com/lishimeng/x/container"
 )
 
 const (
@@ -33,28 +33,28 @@ type Resp struct {
 	MessageId int `json:"messageId,omitempty"`
 }
 
-func sendMessage(ctx iris.Context) {
+func sendMessage(ctx server.Context) {
 	log.Info("Union message send function")
 	var req Req
 	var resp Resp
-	var org = ctx.GetHeader(auth.OrgKey)
-	err := ctx.ReadJSON(&req)
+	var org = ctx.C.GetHeader(auth.OrgKey)
+	err := ctx.C.ReadJSON(&req)
 	if err != nil {
 		log.Info("read req fail")
 		log.Info(err)
 		resp.Code = -1
 		resp.Message = "req error"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 
-	var category = ctx.Params().Get("category")
+	var category = ctx.C.Params().Get("category")
 	validCategory := msg.IsValidCategory(msg.MessageCategory(category))
 	if !validCategory {
 		log.Debug("unknown category: %s", category)
 		resp.Code = -1
 		resp.Message = "unknown category"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 
@@ -63,7 +63,7 @@ func sendMessage(ctx iris.Context) {
 		log.Debug("param receiver nil")
 		resp.Code = -1
 		resp.Message = "receiver nil"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 
@@ -71,7 +71,7 @@ func sendMessage(ctx iris.Context) {
 		log.Debug("param template code nil")
 		resp.Code = -1
 		resp.Message = "template nil"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 
@@ -91,7 +91,7 @@ func sendMessage(ctx iris.Context) {
 		log.Debug("unknown tenant: %s", org)
 		resp.Code = -1
 		resp.Message = "unknown tenant"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 
@@ -112,7 +112,7 @@ func sendMessage(ctx iris.Context) {
 	if err != nil {
 		log.Info("can't create message")
 		log.Info(err)
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 
@@ -120,7 +120,7 @@ func sendMessage(ctx iris.Context) {
 	switch senderStrategy {
 	case task.MemQueue:
 		var handler task.MessageTask
-		e := factory.Get(&handler)
+		e := container.Get(&handler)
 		if e != nil {
 			log.Debug(e)
 		} else {
@@ -133,7 +133,7 @@ func sendMessage(ctx iris.Context) {
 
 	resp.Code = tool.RespCodeSuccess
 	resp.Message = "OK"
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
 func createMail(org int, req Req, params string) (m model.MessageInfo, resp Resp, err error) {

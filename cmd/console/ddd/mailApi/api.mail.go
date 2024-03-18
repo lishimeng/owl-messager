@@ -1,8 +1,8 @@
 package mailApi
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/go-log"
 )
 
@@ -21,7 +21,7 @@ type RespWrapper struct {
 	MailInfoResp
 }
 
-func GetByMessage(ctx iris.Context) {
+func GetByMessage(ctx server.Context) {
 	log.Debug("get mail")
 	//var resp RespWrapper
 	//id, err := ctx.Params().GetInt("id")

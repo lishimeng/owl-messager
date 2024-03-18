@@ -1,11 +1,12 @@
 package taskApi
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
+	"github.com/lishimeng/x/util"
 )
 
 type TaskInfoResp struct {
@@ -22,13 +23,13 @@ type RespWrapper struct {
 	TaskInfoResp
 }
 
-func GetTaskList(ctx iris.Context) {
+func GetTaskList(ctx server.Context) {
 	log.Debug("get task list")
 	var resp app.PagerResponse
 
-	var status = ctx.URLParamIntDefault("status", repo.ConditionIgnore)
-	var pageSize = ctx.URLParamIntDefault("pageSize", repo.DefaultPageSize)
-	var pageNo = ctx.URLParamIntDefault("pageNo", repo.DefaultPageNo)
+	var status = ctx.C.URLParamIntDefault("status", repo.ConditionIgnore)
+	var pageSize = ctx.C.URLParamIntDefault("pageSize", repo.DefaultPageSize)
+	var pageNo = ctx.C.URLParamIntDefault("pageNo", repo.DefaultPageNo)
 	page := app.Pager{
 		PageSize: pageSize,
 		PageNum:  pageNo,
@@ -39,7 +40,7 @@ func GetTaskList(ctx iris.Context) {
 		log.Debug(err)
 		resp.Code = -1
 		resp.Message = "get templates failed"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	if len(tasks) > 0 {
@@ -49,8 +50,8 @@ func GetTaskList(ctx iris.Context) {
 				MessageId:         ms.MessageId,
 				MessageInstanceId: ms.MessageInstanceId,
 				Status:            ms.Status,
-				CreateTime:        tool.FormatTime(ms.CreateTime),
-				UpdateTime:        tool.FormatTime(ms.UpdateTime),
+				CreateTime:        util.FormatTime(ms.CreateTime),
+				UpdateTime:        util.FormatTime(ms.UpdateTime),
 			}
 			page.Data = append(page.Data, tmpInfo)
 		}
@@ -58,19 +59,19 @@ func GetTaskList(ctx iris.Context) {
 
 	resp.Code = tool.RespCodeSuccess
 	resp.Pager = page
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
-func GetTaskInfo(ctx iris.Context) {
+func GetTaskInfo(ctx server.Context) {
 
 	log.Debug("get task")
 	var resp RespWrapper
-	id, err := ctx.Params().GetInt("id")
+	id, err := ctx.C.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
 		resp.Response.Code = tool.RespCodeNotFound
-		resp.Message = tool.RespMsgIdNum
-		tool.ResponseJSON(ctx, resp)
+		//resp.Message = tool.RespMsgIdNum
+		ctx.Json(resp)
 		return
 	}
 	log.Debug("id:%d", id)
@@ -79,8 +80,8 @@ func GetTaskInfo(ctx iris.Context) {
 		log.Debug("get task failed")
 		log.Debug(err)
 		resp.Response.Code = tool.RespCodeNotFound
-		resp.Message = tool.RespMsgNotFount
-		tool.ResponseJSON(ctx, resp)
+		//resp.Message = tool.RespMsgNotFount
+		ctx.Json(resp)
 		return
 	}
 
@@ -89,23 +90,23 @@ func GetTaskInfo(ctx iris.Context) {
 		MessageId:         ms.MessageId,
 		MessageInstanceId: ms.MessageInstanceId,
 		Status:            ms.Status,
-		CreateTime:        tool.FormatTime(ms.CreateTime),
-		UpdateTime:        tool.FormatTime(ms.UpdateTime),
+		CreateTime:        util.FormatTime(ms.CreateTime),
+		UpdateTime:        util.FormatTime(ms.UpdateTime),
 	}
 	resp.TaskInfoResp = tmpInfo
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
-func GetByMessage(ctx iris.Context) {
+func GetByMessage(ctx server.Context) {
 	log.Debug("get task by message")
 	var resp RespWrapper
-	id, err := ctx.Params().GetInt("id")
+	id, err := ctx.C.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
 		resp.Response.Code = tool.RespCodeNotFound
-		resp.Message = tool.RespMsgIdNum
-		tool.ResponseJSON(ctx, resp)
+		//resp.Message = tool.RespMsgIdNum
+		ctx.Json(resp)
 		return
 	}
 	log.Debug("id:%d", id)
@@ -114,8 +115,8 @@ func GetByMessage(ctx iris.Context) {
 		log.Debug("get task failed")
 		log.Debug(err)
 		resp.Response.Code = tool.RespCodeNotFound
-		resp.Message = tool.RespMsgNotFount
-		tool.ResponseJSON(ctx, resp)
+		//resp.Message = tool.RespMsgNotFount
+		ctx.Json(resp)
 		return
 	}
 
@@ -124,10 +125,10 @@ func GetByMessage(ctx iris.Context) {
 		MessageId:         ms.MessageId,
 		MessageInstanceId: ms.MessageInstanceId,
 		Status:            ms.Status,
-		CreateTime:        tool.FormatTime(ms.CreateTime),
-		UpdateTime:        tool.FormatTime(ms.UpdateTime),
+		CreateTime:        util.FormatTime(ms.CreateTime),
+		UpdateTime:        util.FormatTime(ms.UpdateTime),
 	}
 	resp.TaskInfoResp = tmpInfo
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }

@@ -3,11 +3,12 @@ package tenant
 import (
 	"crypto/sha256"
 	"fmt"
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/common"
+	"github.com/lishimeng/x/util"
 	"strings"
 	"time"
 )
@@ -22,17 +23,17 @@ type AddResp struct {
 	OrgCode string `json:"orgCode,omitempty"`
 }
 
-func add(ctx iris.Context) {
+func add(ctx server.Context) {
 
 	var err error
 	var req AddReq
 	var resp AddResp
 
-	err = ctx.ReadJSON(&req)
+	err = ctx.C.ReadJSON(&req)
 	if err != nil {
 		log.Debug(err)
 		resp.Code = tool.RespCodeError
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 
@@ -45,10 +46,10 @@ func add(ctx iris.Context) {
 
 	// TODO create tenant --> db(check duplicate:name and code)
 
-	resp.Code = tenantCode
+	resp.OrgCode = tenantCode
 	resp.OrgName = req.Name
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
 func genTenantCode() (code string) {
@@ -57,6 +58,6 @@ func genTenantCode() (code string) {
 	sh := sha256.New()
 	sh.Write([]byte(tmp))
 	bs := sh.Sum(nil)
-	code = strings.ToLower(tool.BytesToHex(bs))
+	code = strings.ToLower(util.BytesToHex(bs))
 	return
 }

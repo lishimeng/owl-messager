@@ -1,10 +1,11 @@
 package senderApi
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/x/util"
 )
 
 type Info struct {
@@ -21,7 +22,7 @@ type InfoWrapper struct {
 	Info
 }
 
-func GetMailSenderList(ctx iris.Context) {
+func GetMailSenderList(ctx server.Context) {
 	//var resp app.PagerResponse
 	//var status = ctx.URLParamIntDefault("status", repo.ConditionIgnore)
 	//var pageSize = ctx.URLParamIntDefault("pageSize", repo.DefaultPageSize)
@@ -57,14 +58,14 @@ func GetMailSenderList(ctx iris.Context) {
 	//
 	//resp.Pager = page
 	//resp.Code = tool.RespCodeSuccess
-	//tool.ResponseJSON(ctx, resp) TODO
+	//ctx.Json(resp) TODO
 }
 
 // GetMailSenderInfo
 /**
 @Router /api/mail_sender/{id} [get]
 */
-func GetMailSenderInfo(ctx iris.Context) {
+func GetMailSenderInfo(ctx server.Context) {
 	//log.Debug("get mail sender")
 	//var resp InfoWrapper
 	//id, err := ctx.Params().GetInt("id")
@@ -96,22 +97,22 @@ func GetMailSenderInfo(ctx iris.Context) {
 	//}
 	//resp.Info = tmpInfo
 	//resp.Code = tool.RespCodeSuccess
-	//tool.ResponseJSON(ctx, resp) TODO
+	//ctx.Json(resp) TODO
 }
 
-func AddMailSender(_ iris.Context) {
-	code := tool.UUIDString()
+func AddMailSender(_ server.Context) {
+	code := util.UUIDString()
 	code = "sender_" + code
 }
 
-func UpdateMailSender(ctx iris.Context) {
+func UpdateMailSender(ctx server.Context) {
 	log.Debug("update mail sender")
 	var resp app.Response
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
-func DeleteMailSender(ctx iris.Context) {
+func DeleteMailSender(ctx server.Context) {
 	//log.Debug("delete mail sender")
 	//var resp app.Response
 	//id, err := ctx.Params().GetInt("id")

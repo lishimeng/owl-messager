@@ -1,8 +1,8 @@
 package templateApi
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 )
@@ -12,7 +12,7 @@ type SmsVendors struct {
 }
 
 // GetSmsVendors 平台支持的sms类型
-func GetSmsVendors(ctx iris.Context) {
+func GetSmsVendors(ctx server.Context) {
 	var resp SmsVendors
 
 	resp.Code = tool.RespCodeSuccess
@@ -24,7 +24,7 @@ func GetSmsVendors(ctx iris.Context) {
 			resp.Data = append(resp.Data, key)
 		}
 	}
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
 // SmsTemplateReq
@@ -42,7 +42,7 @@ type SmsTemplateReq struct {
 type SmsTemplateResp struct {
 }
 
-func AddSmsTemplate(ctx iris.Context) {
+func AddSmsTemplate(ctx server.Context) {
 
 	//log.Debug("add sms template")
 	//var req SmsTemplateReq
@@ -111,7 +111,7 @@ type SmsStatusReq struct {
 	Id     int `json:"id,omitempty"`
 }
 
-func ChangeSmsTemplateStatus(ctx iris.Context) {
+func ChangeSmsTemplateStatus(ctx server.Context) {
 
 	//var req SmsStatusReq
 	//var resp app.Response

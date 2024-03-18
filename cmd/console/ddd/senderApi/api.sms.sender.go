@@ -1,10 +1,11 @@
 package senderApi
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/x/util"
 )
 
 type SmsSenderInfo struct {
@@ -21,7 +22,7 @@ type SmsInfoWrapper struct {
 	SmsSenderInfo
 }
 
-func GetSmsSenderList(ctx iris.Context) {
+func GetSmsSenderList(ctx server.Context) {
 	//var resp app.PagerResponse
 	//var status = ctx.URLParamIntDefault("status", repo.ConditionIgnore)
 	//var pageSize = ctx.URLParamIntDefault("pageSize", repo.DefaultPageSize)
@@ -64,7 +65,7 @@ func GetSmsSenderList(ctx iris.Context) {
 /**
 @Router /api/sms_sender/{id} [get]
 */
-func GetSmsSenderInfo(ctx iris.Context) {
+func GetSmsSenderInfo(ctx server.Context) {
 	//log.Debug("get sms sender")
 	//var resp SmsInfoWrapper
 	//id, err := ctx.Params().GetInt("id")
@@ -99,23 +100,23 @@ func GetSmsSenderInfo(ctx iris.Context) {
 	//tool.ResponseJSON(ctx, resp) TODO
 }
 
-func AddSmsSender(_ iris.Context) {
-	code := tool.UUIDString()
+func AddSmsSender(_ server.Context) {
+	code := util.UUIDString()
 	code = "sms_sender_" + code
 
 	// TODO
 }
 
-func UpdateSmsSender(ctx iris.Context) {
+func UpdateSmsSender(ctx server.Context) {
 	log.Debug("update sms sender")
 	var resp app.Response
 
 	// TODO
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
-func DeleteSmsSender(ctx iris.Context) {
+func DeleteSmsSender(ctx server.Context) {
 	//log.Debug("delete sms sender")
 	//var resp app.Response
 	//id, err := ctx.Params().GetInt("id")

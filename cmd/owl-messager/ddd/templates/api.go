@@ -1,9 +1,9 @@
 package templates
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/midware/auth"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
@@ -12,21 +12,21 @@ import (
 	"strings"
 )
 
-func templates(ctx iris.Context) {
+func templates(ctx server.Context) {
 
 	var err error
 	var resp app.PagerResponse
 	var tpls []pkg.TemplateInfo
-	var org = ctx.GetHeader(auth.OrgKey)
-	var pageNo = ctx.URLParamIntDefault("pageNo", 1)      // ?
-	var pageSize = ctx.URLParamIntDefault("pageSize", 10) // ?
-	var category = ctx.Params().GetStringDefault("category", "")
+	var org = ctx.C.GetHeader(auth.OrgKey)
+	var pageNo = ctx.C.URLParamIntDefault("pageNo", 1)      // ?
+	var pageSize = ctx.C.URLParamIntDefault("pageSize", 10) // ?
+	var category = ctx.C.Params().GetStringDefault("category", "")
 	category = strings.TrimSpace(category)
 
 	valid := msg.IsValidCategory(msg.MessageCategory(category))
 	if !valid { // 不支持的类型,数据列表为空
-		resp.Code = iris.StatusOK
-		tool.ResponseJSON(ctx, resp)
+		resp.Code = tool.RespCodeSuccess
+		ctx.Json(resp)
 		return
 	}
 	tenant, err := repo.GetTenant(org)
@@ -34,24 +34,24 @@ func templates(ctx iris.Context) {
 		log.Debug("unknown tenant: %s", org)
 		resp.Code = -1
 		resp.Message = "unknown tenant"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	tpls, err = getTemplates(msg.MessageCategory(category), tenant.Id, pageNo, pageSize)
 
 	if err != nil {
-		resp.Code = iris.StatusOK
+		resp.Code = tool.RespCodeSuccess
 		resp.Message = err.Error()
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	} else {
 		for _, tpl := range tpls {
 			resp.Data = append(resp.Data, tpl)
 		}
 	}
-	resp.Code = iris.StatusOK
+	resp.Code = tool.RespCodeSuccess
 	resp.Message = "OK"
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
 func getTemplates(category msg.MessageCategory, org int, pageNo, pageSize int) (tpls []pkg.TemplateInfo, err error) {

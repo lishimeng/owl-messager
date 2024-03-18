@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/app-starter/midware/auth/bearer"
 	"github.com/lishimeng/go-log"
 	"github.com/pkg/errors"
 	"io"
@@ -106,7 +106,7 @@ func (rc *RestClient) build(method string, body []byte) (code int, err error) {
 }
 
 func (rc *RestClient) Auth(token string) *RestClient {
-	rc.headers[tool.AuthHeader] = tool.Realm + token
+	rc.headers[bearer.AuthHeader] = bearer.Realm + token
 	return rc
 }
 

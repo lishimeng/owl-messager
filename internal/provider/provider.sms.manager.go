@@ -2,21 +2,21 @@ package provider
 
 import (
 	"errors"
-	"github.com/lishimeng/app-starter/factory"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/messager"
 	"github.com/lishimeng/owl-messager/pkg/msg"
+	"github.com/lishimeng/x/container"
 )
 
 type SmsFactory struct {
 }
 
 func init() {
-	factory.Add(&SmsFactory{})
+	container.Add(&SmsFactory{})
 }
 
 func GetFactory() (f *SmsFactory) {
-	_ = factory.Get(f)
+	_ = container.Get(f)
 	return
 }
 

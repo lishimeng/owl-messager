@@ -1,11 +1,12 @@
 package smsApi
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
+	"github.com/lishimeng/x/util"
 )
 
 type SmsInfoResp struct {
@@ -24,15 +25,15 @@ type RespWrapper struct {
 	SmsInfoResp
 }
 
-func GetByMessage(ctx iris.Context) {
+func GetByMessage(ctx server.Context) {
 	log.Debug("get sms")
 	var resp RespWrapper
-	id, err := ctx.Params().GetInt("id")
+	id, err := ctx.C.Params().GetInt("id")
 	if err != nil {
 		log.Debug("id must be a int value")
 		resp.Response.Code = tool.RespCodeNotFound
-		resp.Message = tool.RespMsgIdNum
-		tool.ResponseJSON(ctx, resp)
+		//resp.Message = tool.RespMsgIdNum
+		ctx.Json(resp)
 		return
 	}
 	log.Debug("id:%d", id)
@@ -41,8 +42,8 @@ func GetByMessage(ctx iris.Context) {
 		log.Debug("get sms failed")
 		log.Debug(err)
 		resp.Response.Code = tool.RespCodeNotFound
-		resp.Message = tool.RespMsgNotFount
-		tool.ResponseJSON(ctx, resp)
+		//resp.Message = tool.RespMsgNotFount
+		ctx.Json(resp)
 		return
 	}
 
@@ -52,10 +53,10 @@ func GetByMessage(ctx iris.Context) {
 		TemplateId: ms.Template,
 		Params:     ms.Params,
 		Status:     ms.Status,
-		CreateTime: tool.FormatTime(ms.CreateTime),
-		UpdateTime: tool.FormatTime(ms.UpdateTime),
+		CreateTime: util.FormatTime(ms.CreateTime),
+		UpdateTime: util.FormatTime(ms.UpdateTime),
 	}
 	resp.SmsInfoResp = tmpInfo
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }

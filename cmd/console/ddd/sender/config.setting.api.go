@@ -1,8 +1,8 @@
 package sender
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/server"
 )
 
 type req struct {
@@ -13,7 +13,7 @@ type req struct {
 	Category      string `json:"category,omitempty"`
 }
 
-func SetMailSenderInfo(ctx iris.Context) {
+func SetMailSenderInfo(ctx server.Context) {
 	//var resp app.Response TODO
 	//var req req
 	//err := ctx.ReadJSON(&req)
@@ -48,7 +48,7 @@ func SetMailSenderInfo(ctx iris.Context) {
 	//tool.ResponseJSON(ctx, resp)
 }
 
-func UpMailSenderInfo(ctx iris.Context) {
+func UpMailSenderInfo(ctx server.Context) {
 	//var resp app.Response TODO
 	//var req req
 	//err := ctx.ReadJSON(&req)
@@ -90,7 +90,7 @@ type RespInfo struct {
 	Scode         string `json:"scode,omitempty"`
 }
 
-func GetMailSenderInfo(ctx iris.Context) {
+func GetMailSenderInfo(ctx server.Context) {
 	//var resp RespInfo
 	//var vendor = ctx.URLParamDefault("vendor", "")
 	//log.Debug("vendor:%s", vendor)
@@ -110,7 +110,7 @@ func GetMailSenderInfo(ctx iris.Context) {
 	//tool.ResponseJSON(ctx, resp) TODO
 }
 
-func ListByPage(ctx iris.Context) {
+func ListByPage(ctx server.Context) {
 	//var resp app.PagerResponse
 	//var pageNum = ctx.URLParamIntDefault("pageNum", 1)
 	//var pageSize = ctx.URLParamIntDefault("pageSize", 10)
@@ -161,7 +161,7 @@ type AllSenderInfo struct {
 	Data interface{} `json:"item,omitempty"`
 }
 
-func GetSenderInfoByCategory(ctx iris.Context) {
+func GetSenderInfoByCategory(ctx server.Context) {
 	//var resp AllSenderInfo
 	//var category = ctx.URLParamDefault("category", "")
 	//var code = ctx.URLParamDefault("code", "")

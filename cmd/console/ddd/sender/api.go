@@ -1,15 +1,15 @@
 package sender
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 )
 
 type Item struct {
 }
 
-func list(ctx iris.Context) {
+func list(ctx server.Context) {
 
 	var resp app.PagerResponse
 
@@ -21,22 +21,22 @@ func list(ctx iris.Context) {
 	}
 	// TODO pager
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
-func mailSenderInfo(ctx iris.Context) {
-
-}
-
-func smsSenderInfo(ctx iris.Context) {
+func mailSenderInfo(ctx server.Context) {
 
 }
 
-func apnsSenderInfo(ctx iris.Context) {
+func smsSenderInfo(ctx server.Context) {
 
 }
 
-func setDefaultSender(ctx iris.Context) {
+func apnsSenderInfo(ctx server.Context) {
+
+}
+
+func setDefaultSender(ctx server.Context) {
 
 	//var err error
 	//var resp app.Response

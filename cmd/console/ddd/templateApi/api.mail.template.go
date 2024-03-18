@@ -1,12 +1,13 @@
 package templateApi
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/pkg/msg"
+	"github.com/lishimeng/x/util"
 )
 
 type Info struct {
@@ -24,7 +25,7 @@ type InfoWrapper struct {
 }
 
 // GetMailVendors 平台支持的mail类型
-func GetMailVendors(ctx iris.Context) {
+func GetMailVendors(ctx server.Context) {
 	var resp SmsVendors
 
 	resp.Code = tool.RespCodeSuccess
@@ -32,15 +33,15 @@ func GetMailVendors(ctx iris.Context) {
 	for key, _ := range msg.MailProviders {
 		resp.Data = append(resp.Data, key)
 	}
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
-func GetMailTemplateList(ctx iris.Context) {
+func GetMailTemplateList(ctx server.Context) {
 	log.Debug("get mail template list")
 	var resp app.PagerResponse
 	//var status = ctx.URLParamIntDefault("status", repo.ConditionIgnore)
-	var pageSize = ctx.URLParamIntDefault("pageSize", repo.DefaultPageSize)
-	var pageNo = ctx.URLParamIntDefault("pageNo", repo.DefaultPageNo)
+	var pageSize = ctx.C.URLParamIntDefault("pageSize", repo.DefaultPageSize)
+	var pageNo = ctx.C.URLParamIntDefault("pageNo", repo.DefaultPageNo)
 	page := app.Pager{ // TODO
 		PageSize: pageSize,
 		PageNum:  pageNo,
@@ -51,7 +52,7 @@ func GetMailTemplateList(ctx iris.Context) {
 		log.Debug(err)
 		resp.Code = -1
 		resp.Message = "get templates failed"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 
@@ -61,18 +62,18 @@ func GetMailTemplateList(ctx iris.Context) {
 			TemplateCode: tpl.Code,
 			TemplateBody: tpl.Body,
 			Status:       tpl.Status,
-			CreateTime:   tool.FormatTime(tpl.CreateTime),
-			UpdateTime:   tool.FormatTime(tpl.UpdateTime),
+			CreateTime:   util.FormatTime(tpl.CreateTime),
+			UpdateTime:   util.FormatTime(tpl.UpdateTime),
 		}
 		page.Data = append(page.Data, tmpInfo)
 	}
 
 	resp.Pager = page
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
-func GetMailTemplateInfo(ctx iris.Context) {
+func GetMailTemplateInfo(ctx server.Context) {
 	//log.Debug("get mail template") TODO
 	//var resp InfoWrapper
 	//id, err := ctx.Params().GetInt("id")
@@ -132,14 +133,14 @@ http://localhost/api/mail_template
 
 {"body":"fasfasgasd", "category":2,"name":"电量低超提醒"}
 */
-func AddMailTemplate(ctx iris.Context) {
+func AddMailTemplate(ctx server.Context) {
 	log.Debug("add mail template")
 	var req MailTemplateReq
 	var resp InfoWrapper
-	err := ctx.ReadJSON(&req)
+	err := ctx.C.ReadJSON(&req)
 	if err != nil {
 		resp.Code = -1
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 
@@ -148,14 +149,14 @@ func AddMailTemplate(ctx iris.Context) {
 		log.Debug("param name nil")
 		resp.Code = -1
 		resp.Message = "name nil"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	if len(req.Body) == 0 {
 		log.Debug("param body nil")
 		resp.Code = -1
 		resp.Message = "body nil"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 
@@ -189,10 +190,10 @@ func AddMailTemplate(ctx iris.Context) {
 	//}
 	//resp.Info = tmpInfo
 	//resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
-func UpdateMailTemplate(ctx iris.Context) {
+func UpdateMailTemplate(ctx server.Context) {
 	//log.Debug("update mail template") TODO
 	//var req MailTemplateReq
 	//var resp InfoWrapper
@@ -248,7 +249,7 @@ func UpdateMailTemplate(ctx iris.Context) {
 	//tool.ResponseJSON(ctx, resp)
 }
 
-func DeleteMailTemplate(ctx iris.Context) {
+func DeleteMailTemplate(ctx server.Context) {
 
 	//log.Debug("delete mail template")
 	//var resp app.Response
@@ -277,7 +278,7 @@ type MailStatusReq struct {
 	Id     int `json:"id,omitempty"`
 }
 
-func ChangeMailTemplateStatus(ctx iris.Context) {
+func ChangeMailTemplateStatus(ctx server.Context) {
 
 	//var req SmsStatusReq
 	//var resp app.Response

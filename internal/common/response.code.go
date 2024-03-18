@@ -2,9 +2,8 @@ package common
 
 import (
 	"fmt"
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
-	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/app-starter/server"
 )
 
 // 业务回复码
@@ -23,9 +22,9 @@ const (
 	MsgParamNil       = "Param lost"
 )
 
-func RespLostParam(param string, ctx iris.Context) {
+func RespLostParam(param string, ctx server.Context) {
 	var resp app.Response
 	resp.Code = CodeParamNil
 	resp.Message = fmt.Sprintf("%s:%s", MsgParamNil, param)
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }

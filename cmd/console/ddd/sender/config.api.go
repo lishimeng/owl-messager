@@ -1,8 +1,8 @@
 package sender
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 	"reflect"
@@ -22,19 +22,19 @@ type VendorConfigReq struct {
 // getConfigStruct
 // 显示sender的配置字段,以map格式展示
 // VendorConfigResp
-func getConfigStruct(ctx iris.Context) {
+func getConfigStruct(ctx server.Context) {
 
 	var resp VendorConfigResp
 	var req VendorConfigReq
-	req.Vendor = ctx.Params().Get("vendor")
-	req.Method = ctx.Params().Get("category")
+	req.Vendor = ctx.C.Params().Get("vendor")
+	req.Method = ctx.C.Params().Get("category")
 	config, ok := vendorSupport[req.Vendor+req.Method]
 	if ok {
 		m := getJsonConstructor(config)
 		resp.Config = m
 	}
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
 func getJsonConstructor(v interface{}) (m map[string]string) {

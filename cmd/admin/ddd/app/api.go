@@ -3,12 +3,13 @@ package tenant
 import (
 	"crypto/sha256"
 	"fmt"
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/common"
 	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/x/util"
 	"strings"
 	"time"
 )
@@ -26,17 +27,17 @@ type AddResp struct {
 	Secret  string `json:"secret,omitempty"`
 }
 
-func add(ctx iris.Context) {
+func add(ctx server.Context) {
 
 	var err error
 	var req AddReq
 	var resp AddResp
 
-	err = ctx.ReadJSON(&req)
+	err = ctx.C.ReadJSON(&req)
 	if err != nil {
 		log.Debug(err)
 		resp.Code = tool.RespCodeError
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 
@@ -58,7 +59,7 @@ func add(ctx iris.Context) {
 	if err != nil {
 		log.Debug("can't find tenant: %s", tenantCode)
 		resp.Code = tool.RespCodeNotFound
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 	}
 
 	var appInfo = model.OpenClient{
@@ -73,7 +74,7 @@ func add(ctx iris.Context) {
 	resp.AppName = req.Name
 	resp.AppId = appId
 	resp.Secret = secret
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
 func genAppId(tenant string) (code string) {
@@ -82,7 +83,7 @@ func genAppId(tenant string) (code string) {
 	sh := sha256.New()
 	sh.Write([]byte(tmp))
 	bs := sh.Sum(nil)
-	code = strings.ToLower(tool.BytesToHex(bs))
+	code = strings.ToLower(util.BytesToHex(bs))
 	return
 }
 
@@ -92,6 +93,6 @@ func genSecret(appId string) (code string) {
 	sh := sha256.New()
 	sh.Write([]byte(tmp))
 	bs := sh.Sum(nil)
-	code = strings.ToLower(tool.BytesToHex(bs))
+	code = strings.ToLower(util.BytesToHex(bs))
 	return
 }
