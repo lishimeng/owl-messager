@@ -19,7 +19,7 @@ require (
 	github.com/iris-contrib/go.uuid v2.0.0+incompatible
 	github.com/iris-contrib/jade v1.1.4
 	github.com/jongio/azidext/go/azidext v0.5.0
-	github.com/kataras/iris/v12 v12.2.7
+	github.com/kataras/iris/v12 v12.2.10
 	github.com/lib/pq v1.10.9
 	github.com/lishimeng/app-starter v1.18.3
 	github.com/lishimeng/go-log v1.0.0
