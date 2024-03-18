@@ -91,7 +91,6 @@ require (
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/lishimeng/go-app-shutdown v1.0.1 // indirect
 	github.com/lishimeng/log4go v1.0.0 // indirect
-	github.com/lishimeng/x v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mailgun/raymond/v2 v2.0.48 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
