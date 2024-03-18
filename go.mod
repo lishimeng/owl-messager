@@ -21,7 +21,7 @@ require (
 	github.com/jongio/azidext/go/azidext v0.5.0
 	github.com/kataras/iris/v12 v12.2.7
 	github.com/lib/pq v1.10.9
-	github.com/lishimeng/app-starter v1.15.1
+	github.com/lishimeng/app-starter v1.18.3
 	github.com/lishimeng/go-log v1.0.0
 	github.com/pkg/errors v0.9.1
 	github.com/qiniu/go-sdk/v7 v7.17.1
