@@ -8,10 +8,15 @@ type Configuration struct {
 	Console  console `toml:"console"`
 	Sender   sender  `toml:"sender"`
 	LogLevel string  `toml:"log-level"`
+	Sqlite   sqlite  `toml:"sqlite"`
 }
 
 type web struct {
 	Listen string `toml:"listen"`
+}
+
+type sqlite struct {
+	db string `toml:"db"`
 }
 
 type redis struct {
