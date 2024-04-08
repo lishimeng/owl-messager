@@ -51,16 +51,28 @@ func _main() (err error) {
 			}
 			log.SetLevelAll(lvl)
 		}
-
-		dbConfig := persistence.PostgresConfig{
-			UserName:  etc.Config.Db.User,
-			Password:  etc.Config.Db.Password,
-			Host:      etc.Config.Db.Host,
-			Port:      etc.Config.Db.Port,
-			DbName:    etc.Config.Db.Database,
-			InitDb:    true,
-			AliasName: "default",
-			SSL:       etc.Config.Db.Ssl,
+		var dbConfig persistence.BaseConfig
+		if len(etc.Config.Db.Host) > 0 {
+			c := persistence.PostgresConfig{
+				UserName:  etc.Config.Db.User,
+				Password:  etc.Config.Db.Password,
+				Host:      etc.Config.Db.Host,
+				Port:      etc.Config.Db.Port,
+				DbName:    etc.Config.Db.Database,
+				InitDb:    true,
+				AliasName: "default",
+				SSL:       etc.Config.Db.Ssl,
+			}
+			dbConfig = c.Build()
+		} else if len(etc.Config.Sqlite.Db) > 0 {
+			c := persistence.SqliteConfig{
+				Database:  etc.Config.Sqlite.Db,
+				AliasName: "default",
+				InitDb:    true,
+			}
+			dbConfig = c.Build()
+		} else {
+			panic("no db config")
 		}
 
 		issuer := etc.Config.Token.Issuer
@@ -76,7 +88,7 @@ func _main() (err error) {
 			inject(storage)
 		})
 
-		builder.EnableDatabase(dbConfig.Build(),
+		builder.EnableDatabase(dbConfig,
 			ddd.Tables()...).
 			PrintVersion().
 			EnableWeb(etc.Config.Web.Listen, ddd.Route).

@@ -16,7 +16,7 @@ type web struct {
 }
 
 type sqlite struct {
-	db string `toml:"db"`
+	Db string `toml:"db"`
 }
 
 type redis struct {
