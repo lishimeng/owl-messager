@@ -41,3 +41,10 @@ func RegisterSmsProvider(vendor msg.MessageProvider, h func(config string) (mess
 	}
 	smsProviderBuilders[vendor] = h
 }
+
+func GetSmsProviders() (list []msg.MessageProvider) {
+	for p := range smsProviderBuilders {
+		list = append(list, p)
+	}
+	return
+}
