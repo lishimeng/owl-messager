@@ -34,3 +34,10 @@ func RegisterMailProvider(vendor msg.MessageProvider, h func(config string) (mes
 	}
 	providerBuilders[vendor] = h
 }
+
+func GetMailProviders() (list []msg.MessageProvider) {
+	for p := range providerBuilders {
+		list = append(list, p)
+	}
+	return
+}
