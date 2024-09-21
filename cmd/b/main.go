@@ -7,7 +7,9 @@ import (
 
 func main() {
 	err := buildscript.Generate(
-		"lishimeng",
+		buildscript.Project{
+			Namespace: "lishimeng",
+		},
 		buildscript.Application{
 			Name:    "owl-messager",
 			AppPath: "cmd/owl-messager",
