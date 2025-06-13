@@ -1,70 +1,74 @@
 package templateApi
 
 import (
+	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 	"github.com/lishimeng/x/util"
+	"time"
 )
 
+type respPager struct {
+	app.PagerResponse
+	app.BasePager
+	Items []TemplateResp `json:"items"`
+}
+
 func GetTemplateListByPage(ctx server.Context) {
-	var resp app.PagerResponse
+	var resp respPager
 	var category = ctx.C.URLParamDefault("category", "")
 	var pageNum = ctx.C.URLParamIntDefault("pageNum", 1)
 	var pageSize = ctx.C.URLParamIntDefault("pageSize", 10)
-	page := app.Pager{
-		PageSize: pageSize,
-		PageNum:  pageNum,
+	var pager app.SimplePager[model.MessageTemplate, TemplateResp]
+	pager.PageSize = pageSize
+	pager.PageNum = pageNum
+	pager.Transform = func(src model.MessageTemplate, dst *TemplateResp) {
+		dst.Id = src.Id
+		dst.Name = src.Name
+		dst.Body = src.Body
+		dst.CloudTemplate = src.CloudTemplate
+		dst.Description = src.Description
+		dst.Category = string(src.Category)
+		dst.Params = src.Params
+		dst.Provider = string(src.Provider)
+		dst.Status = src.Status
+		dst.Code = src.Code
+		dst.CreateTime = src.CreateTime.UTC().Format(time.RFC3339)
+		dst.UpdateTime = src.UpdateTime.UTC().Format(time.RFC3339)
 	}
-	switch msg.MessageCategory(category) {
-	case msg.MailMessage:
-		list, err := repo.GetMessageTemplates(1, msg.MailMessage, msg.Ali) // TODO
-		if err != nil {
-			resp.Code = tool.RespCodeNotFound
-			ctx.Json(resp)
-			return
+	pager.QueryBuilder = func(tx persistence.TxContext) any {
+		cond := orm.NewCondition()
+		cond = cond.And("org", 1)
+		cond = cond.And("org", 1)
+		if len(category) > 0 {
+			cond = cond.And("message_category", category)
 		}
-		if len(list) > 0 {
-			for _, tl := range list {
-				page.Data = append(page.Data, tl)
-			}
-		}
-		resp.Pager = page
-	case msg.SmsMessage:
-		list, err := repo.GetMessageTemplates(1, msg.SmsMessage, msg.Ali) // TODO
-		if err != nil {
-			resp.Code = tool.RespCodeNotFound
-			ctx.Json(resp)
-			return
-		}
-		if len(list) > 0 {
-			for _, tl := range list {
-				page.Data = append(page.Data, tl)
-			}
-		}
-		resp.Pager = page
-	default:
+		//todo: 按 Provider SenderEnable 筛选
+		return tx.Context.QueryTable(new(model.MessageTemplate)).SetCond(cond)
+	}
+	//pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	err := app.QueryPage(&pager)
+	if err != nil {
+		log.Info("GetTemplateListByPage failed: %s ", err)
 		resp.Code = tool.RespCodeNotFound
+		resp.Message = "not found"
 		ctx.Json(resp)
 		return
 	}
+	resp.Items = pager.Data
+	resp.BasePager = pager.BasePager
+	resp.BasePager.More = pager.TotalPage * pager.PageSize
+
 	resp.Code = tool.RespCodeSuccess
 	ctx.Json(resp)
 }
 
-type TemplateReq struct {
-	Name          string `json:"name,omitempty"`
-	Body          string `json:"body,omitempty"`
-	CloudTemplate string `json:"cloudTemplate,omitempty"`
-	Description   string `json:"description,omitempty"`
-	Category      string `json:"category,omitempty"`
-	Params        string `json:"params,omitempty"`
-	Provider      string `json:"provider,omitempty"`
-	Status        int    `json:"status,omitempty"`
-	Code          string `json:"code,omitempty"`
-}
 type respTemplate struct {
 	app.Response
 	Item TemplateReq `json:"item"`
