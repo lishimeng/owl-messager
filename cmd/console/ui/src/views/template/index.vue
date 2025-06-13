@@ -13,18 +13,18 @@
     </el-form>
     <div style="margin-top: 10px">
       <el-table :data="state.dataList" border style="width: 100%">
-        <el-table-column prop="Id" label="Id" width="60"/>
-        <el-table-column prop="Code" label="Code" width="360"/>
-        <el-table-column prop="Name" label="模板名称" width="120"/>
-        <el-table-column prop="Description" label="模板描述" width="120"/>
-        <el-table-column prop="CreateTime" label="创建时间">
+        <el-table-column prop="id" label="Id" width="60"/>
+        <el-table-column prop="code" label="Code" width="360"/>
+        <el-table-column prop="name" label="模板名称" width="120"/>
+        <el-table-column prop="description" label="模板描述" width="120"/>
+        <el-table-column prop="createTime" label="创建时间">
           <template #default="scope">
-            {{ formatDate(new Date(scope.row.CreateTime), 'YYYY-mm-dd HH:MM:SS') }}
+            {{ formatDate(new Date(scope.row.createTime), 'YYYY-mm-dd HH:MM:SS') }}
           </template>
         </el-table-column>
         <el-table-column prop="UpdateTime" label="更新时间">
           <template #default="scope">
-            {{ formatDate(new Date(scope.row.UpdateTime), 'YYYY-mm-dd HH:MM:SS') }}
+            {{ formatDate(new Date(scope.row.updateTime), 'YYYY-mm-dd HH:MM:SS') }}
           </template>
         </el-table-column>
         <el-table-column label="操作">
@@ -130,6 +130,7 @@ const state = reactive({
     totalNum: 0,
     category: ''
   },
+  // 新增模版
   subForm: {
     code: "",
     name: "",
@@ -142,6 +143,7 @@ const state = reactive({
     sender: 0,
     category: "",
   },
+  // 新增模版: 通讯方式选项
   vendors: [],
   mailVendors: [
     "smtp",
@@ -211,6 +213,7 @@ const onSubmit = () => {
 const getTemplateList = () => {
   state.queryValue.category = state.category
   getTemplateListAPi(state.queryValue).then(res => {
+    console.log(res)
     if (res.items && res.items.length > 0) {
       state.dataList = res.items
       state.queryValue.totalNum = res.totalPage
