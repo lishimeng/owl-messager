@@ -42,6 +42,7 @@ func template(p server.Router) {
 	p.Post("/createTemplate", templateApi.CreateTemplate)
 	p.Post("/updateTemplate", templateApi.UpdateTemplate)
 	p.Get("/getTemplateInfo", templateApi.GetTemplateInfo)
+	p.Post("/delTemplate", templateApi.DeleteTemplate)
 }
 
 func message(p server.Router) {

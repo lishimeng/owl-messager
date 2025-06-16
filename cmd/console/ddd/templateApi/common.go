@@ -1,5 +1,7 @@
 package templateApi
 
+import "github.com/lishimeng/app-starter"
+
 type TemplateResp struct {
 	Id            int    `json:"id,omitempty"`
 	Name          string `json:"name,omitempty"`
@@ -25,4 +27,9 @@ type TemplateReq struct {
 	Provider      string `json:"provider,omitempty"`
 	Status        int    `json:"status,omitempty"`
 	Code          string `json:"code,omitempty"`
+}
+
+type respTemplate struct {
+	app.Response
+	Item TemplateResp `json:"item"`
 }
