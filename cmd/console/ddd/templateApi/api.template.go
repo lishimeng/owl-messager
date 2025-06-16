@@ -8,9 +8,6 @@ import (
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/model"
-	"github.com/lishimeng/owl-messager/internal/db/repo"
-	"github.com/lishimeng/owl-messager/pkg/msg"
-	"github.com/lishimeng/x/util"
 	"time"
 )
 
@@ -52,7 +49,7 @@ func GetTemplateListByPage(ctx server.Context) {
 		//todo: 按 Provider SenderEnable 筛选
 		return tx.Context.QueryTable(new(model.MessageTemplate)).SetCond(cond)
 	}
-	//pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	pager.OrderByExp = append(pager.OrderByExp, "createTime")
 	err := app.QueryPage(&pager)
 	if err != nil {
 		log.Info("GetTemplateListByPage failed: %s ", err)
@@ -65,138 +62,6 @@ func GetTemplateListByPage(ctx server.Context) {
 	resp.BasePager = pager.BasePager
 	resp.BasePager.More = pager.TotalPage * pager.PageSize
 
-	resp.Code = tool.RespCodeSuccess
-	ctx.Json(resp)
-}
-
-type respTemplate struct {
-	app.Response
-	Item TemplateReq `json:"item"`
-}
-
-func GetTemplateInfo(ctx server.Context) {
-	var resp respTemplate
-	var code = ctx.C.URLParamDefault("code", "")
-	var category = ctx.C.URLParamDefault("category", "")
-	switch msg.MessageCategory(category) {
-	case msg.MailMessage:
-		info, err := repo.GetTemplateByCode(code, msg.MailMessage)
-		if err != nil {
-			resp.Code = tool.RespCodeNotFound
-			resp.Message = "未查到记录"
-			ctx.Json(resp)
-			return
-		}
-		resp.Item = TemplateReq{
-			Code:        info.Code,
-			Name:        info.Name,
-			Body:        info.Body,
-			Description: info.Description,
-			Provider:    string(info.Provider),
-		}
-	case msg.SmsMessage:
-		info, err := repo.GetTemplateByCode(code, msg.SmsMessage)
-		if err != nil {
-			resp.Code = tool.RespCodeNotFound
-			resp.Message = "未查到记录"
-			ctx.Json(resp)
-			return
-		}
-		resp.Item = TemplateReq{
-			Code:        info.Code,
-			Name:        info.Name,
-			Body:        info.Body,
-			Description: info.Description,
-			Params:      info.Params,
-			Provider:    string(info.Provider),
-		}
-	default:
-		resp.Code = tool.RespCodeNotFound
-		resp.Message = "失败,无此类型"
-		ctx.Json(resp)
-		return
-	}
-	resp.Code = tool.RespCodeSuccess
-	resp.Message = "成功"
-	ctx.Json(resp)
-}
-
-func CreateTemplate(ctx server.Context) {
-	var resp app.Response
-	var req TemplateReq
-	err := ctx.C.ReadJSON(&req)
-	if err != nil {
-		resp.Code = tool.RespCodeNotFound
-		resp.Message = "json参数解析失败"
-		ctx.Json(resp)
-		return
-	}
-	code := util.UUIDString()
-	switch msg.MessageCategory(req.Category) {
-	case msg.MailMessage:
-		code = "tl_mail_" + code
-		_, err := repo.CreateMessageTemplate(
-			code, req.Name, req.Body, req.CloudTemplate, req.Params, req.Description,
-			msg.MailMessage, msg.MessageProvider(req.Provider),
-		)
-		if err != nil {
-			resp.Code = tool.RespCodeNotFound
-			resp.Message = "添加失败"
-			ctx.Json(resp)
-			return
-		}
-	case msg.SmsMessage:
-		code = "tl_sms_" + code
-		_, err := repo.CreateMessageTemplate(
-			code, req.Name, req.Body, req.CloudTemplate, req.Params, req.Description,
-			msg.SmsMessage, msg.MessageProvider(req.Provider),
-		)
-		if err != nil {
-			resp.Code = tool.RespCodeNotFound
-			resp.Message = "失败"
-			ctx.Json(resp)
-			return
-		}
-	default:
-		resp.Code = tool.RespCodeNotFound
-		resp.Message = "失败,无此类型"
-		ctx.Json(resp)
-		return
-	}
-	resp.Code = tool.RespCodeSuccess
-	resp.Message = "成功"
-	ctx.Json(resp)
-}
-
-func UpdateTemplate(ctx server.Context) {
-	var resp app.Response
-	var req TemplateReq
-	err := ctx.C.ReadJSON(&req)
-	if err != nil {
-		resp.Code = tool.RespCodeNotFound
-		ctx.Json(resp)
-		return
-	}
-	switch msg.MessageCategory(req.Category) {
-	case msg.MailMessage: // TODO
-		_, err := repo.UpdateMessageTemplate(req.Status, req.Code, req.Name, req.Body, req.Description)
-		if err != nil {
-			resp.Code = tool.RespCodeNotFound
-			ctx.Json(resp)
-			return
-		}
-	case msg.SmsMessage: // TODO
-		_, err := repo.UpdateMessageTemplate(req.Status, req.Code, req.Name, req.Body, req.Description)
-		if err != nil {
-			resp.Code = tool.RespCodeNotFound
-			ctx.Json(resp)
-			return
-		}
-	default:
-		resp.Code = tool.RespCodeNotFound
-		ctx.Json(resp)
-		return
-	}
 	resp.Code = tool.RespCodeSuccess
 	ctx.Json(resp)
 }

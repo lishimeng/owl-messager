@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container layout-pd">
+  <div class="home-container layout-pd" style="margin-top: 10px">
     <el-form :inline="true">
       <el-form-item label="通讯方式">
         <el-select v-model="state.category" @change="chooseCategory" placeholder="请选择通讯方式">
@@ -8,15 +8,15 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="showEdit()" icon="ele-CirclePlus">新增</el-button>
+        <el-button type="primary" @click="openCreate" icon="ele-CirclePlus">新增</el-button>
       </el-form-item>
     </el-form>
     <div style="margin-top: 10px">
       <el-table :data="state.dataList" border style="width: 100%">
         <el-table-column prop="id" label="Id" width="60"/>
-        <el-table-column prop="code" label="Code" width="360"/>
+        <el-table-column prop="code" label="Code" width="180" show-overflow-tooltip/>
         <el-table-column prop="name" label="模板名称" width="120"/>
-        <el-table-column prop="description" label="模板描述" width="120"/>
+        <el-table-column prop="description" label="模板描述" width="180" show-overflow-tooltip/>
         <el-table-column prop="createTime" label="创建时间">
           <template #default="scope">
             {{ formatDate(new Date(scope.row.createTime), 'YYYY-mm-dd HH:MM:SS') }}
@@ -29,76 +29,62 @@
         </el-table-column>
         <el-table-column label="操作">
           <template #default="scope">
-            <el-button icon="ele-Edit" type="primary" @click="showEdit(scope.row)">
+            <el-button icon="ele-Edit" type="primary" @click="openEdit(scope.row.code)">
               编辑
             </el-button>
+            <el-popconfirm
+                title="是否删除?"
+                @confirm="deleteDeviceRow(scope.row.code)">
+              <template #reference>
+                <el-button icon="ele-Delete" type="danger">删除</el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
       <div style="margin: 10px 10px 10px 10px;">
         <el-pagination background
-                       layout="total, sizes, prev, pager, next, jumper"
+                       layout="sizes, prev, pager, next, jumper"
                        v-model:currentPage="state.queryValue.pageNum"
                        v-model:page-size="state.queryValue.pageSize"
                        :page-sizes="[5,10,15,30,50,100]"
                        :page-count="state.queryValue.totalNum"
-                       :total="state.queryValue.totalNum"
                        @size-change="onSizeChange"
                        @current-change="onCurrentChange"
         />
       </div>
     </div>
     <el-drawer
-        :title="state.title"
-        v-model="state.showDrawer"
+        :title="'创建模版'"
+        v-model="state.showCreateDrawer"
         direction="rtl"
         :size="1000"
         :before-close="handleClose">
-      <div style="width:100%;padding: 10px">
-        <el-form style="margin-top: 20px"
-                 :model="state.subForm"
-                 ref="mailFormFormRef"
-                 label-width="120px">
-          <el-form-item label="配置平台" prop="vendor">
-            <el-select class="input_width"
-                       v-model="state.subForm.vendor"
-                       placeholder="请选择通讯方式">
-              <el-option v-for="(item,index) in state.vendors" :key="index" :label="item" :value="item">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item v-if="state.subForm.code.length>0" label="code" prop="code">
-            <el-input v-model="state.subForm.code" :disabled="state.subForm.code.length>0" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="名称" prop="name">
-            <el-input v-model="state.subForm.name" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="描述" prop="description">
-            <el-input v-model="state.subForm.description" clearable></el-input>
-          </el-form-item>
-          <el-form-item v-if="state.category=='sms'" label="第三方模板ID" prop="templateId">
-            <el-input v-model="state.subForm.templateId" clearable></el-input>
-          </el-form-item>
-          <el-form-item v-if="state.category=='sms'" label="第三方模板签名" prop="signature">
-            <el-input type="textarea" v-model="state.subForm.signature" clearable></el-input>
-          </el-form-item>
-          <el-form-item v-if="state.category=='sms'" label="指定发送平台" prop="sender">
-            <el-input type="number" v-model="state.subForm.sender" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="模板内容">
-            <wngEditor mode="default" height="300px" v-model:getHtml="state.getHtml"
-                       v-model:getText="state.getText"></wngEditor>
-          </el-form-item>
-          <el-form-item>
-            <el-input disabled style="width: 100%;height: 400px" type="textarea"
-                      v-model="state.subForm.body"></el-input>
-          </el-form-item>
-        </el-form>
-
-      </div>
+      <TemplateForm
+          :category="state.category"
+          ref="createRef"
+      ></TemplateForm>
       <template #footer>
         <div style="margin: 50px">
-          <el-button type="primary" @click="onSubmit()">提交</el-button>
+          <el-button type="primary" @click="onSubmit">提交</el-button>
+        </div>
+      </template>
+    </el-drawer>
+    <el-drawer
+        :title="'编辑模版'"
+        v-model="state.showEditDrawer"
+        direction="rtl"
+        :destroy-on-close="true"
+        :size="1000"
+        :before-close="handleClose">
+      <TemplateForm
+          :category="state.category"
+          :template-code="state.selected"
+          ref="editRef"
+      ></TemplateForm>
+      <template #footer>
+        <div style="margin: 50px">
+          <el-button type="primary" @click="onEditSubmit">保存</el-button>
         </div>
       </template>
     </el-drawer>
@@ -107,16 +93,17 @@
 
 <script setup lang="ts" name="Template">
 // 引入组件
-import {createTemplateApi, getTemplateInfoAPi, getTemplateListAPi, updateTemplateApi} from "/@/api/template";
-import {defineAsyncComponent, onMounted, reactive, ref, watch} from 'vue';
+import {delTemplateApi, getTemplateListAPi} from "/@/api/template";
+import {onMounted, reactive, ref} from 'vue';
 import {formatDate} from "../../utils/formatTime";
+import TemplateForm from "/@/views/template/templateForm.vue";
 import {ElMessage} from "element-plus";
 
-const JsEditor = defineAsyncComponent(() => import('/@/components/js/index.vue'))
-const wngEditor = defineAsyncComponent(() => import('/@/components/editor/index.vue'));
-const mailFormFormRef = ref()
+const createRef = ref();
+const editRef = ref();
 const state = reactive({
-  showDrawer: false,
+  showCreateDrawer: false,
+  showEditDrawer: false,
   title: '新增模版',
   category: 'mail',
   categoryList: [
@@ -143,73 +130,32 @@ const state = reactive({
     sender: 0,
     category: "",
   },
-  // 新增模版: 通讯方式选项
-  vendors: [],
-  mailVendors: [
-    "smtp",
-    "microsoft",
-    "tencent"
-  ],
-  smsVendors: [
-    "ali_yun",
-    "tencent_yun",
-    "huawei_yun",
-  ],
   getHtml: "",
   getText: "",
   editorVal: "",
+  selected:"",
 })
 onMounted(() => {
   chooseCategory()
 })
-watch(() => state.getHtml, (newVal, oldVal) => {
-  console.log('监听：', newVal)
-  state.subForm.body = "<html>" +
-      "<head>" +
-      "<meta charset=\"utf-8\">" +
-      "</head>" +
-      "<body>" + newVal +
-      "</body>" +
-      "</html>"
-  console.log(state.subForm.body)
-})
-const onSubmit = () => {
-  state.subForm.category = state.category
-  // console.log(state.getText,state.getHtml)
-  if (state.getText) {
-    state.subForm.body = "<html>" +
-        "<head>" +
-        "<meta charset=\"utf-8\">" +
-        "</head>" +
-        "<body>" + state.getHtml +
-        "</body>" +
-        "</html>"
-  } else {
-    state.subForm.body = state.getText
-  }
-  if (state.subForm.sender) {
-    state.subForm.sender = parseInt(state.subForm.sender)
-  }
-  if (state.subForm.code) {
-    // console.log("编辑")
-    updateTemplateApi(state.subForm).then(res => {
-      if (res.code && res.code == 200) {
-        ElMessage.success(`提交成功！`);
-        state.showDrawer = false
-        getTemplateList();
-      }
-    })
-  } else {
-    // console.log("新增")
-    createTemplateApi(state.subForm).then(res => {
-      if (res.code && res.code == 200) {
-        ElMessage.success(`提交成功！`);
-        state.showDrawer = false
-        getTemplateList();
-      }
-    })
+
+const onSubmit = async () => {
+  const success = await createRef.value.onSubmit();
+  if (success) {
+    state.showCreateDrawer = false;
+    getTemplateList();
   }
 }
+
+const onEditSubmit = async () => {
+  const success = await editRef.value.onSubmit();
+  console.log(success);
+  if (success) {
+    state.showEditDrawer = false;
+    getTemplateList();
+  }
+}
+
 const getTemplateList = () => {
   state.queryValue.category = state.category
   getTemplateListAPi(state.queryValue).then(res => {
@@ -224,7 +170,7 @@ const getTemplateList = () => {
   })
 }
 const handleClose = (done: any) => {
-  state.showDrawer = false
+  // state.showCreateDrawer = false
   done();
 }
 const onSizeChange = (val: any) => {
@@ -237,47 +183,31 @@ const onCurrentChange = (val: any) => {
 }
 const chooseCategory = () => {
   getTemplateList();
-  switch (state.category) {
-    case "mail":
-      state.vendors = state.mailVendors
-      break;
-    case "sms":
-      state.vendors = state.smsVendors
-      break;
-  }
 
 }
-const showEdit = (data: any) => {
-  state.showDrawer = true
-  if (data) {
-    // console.log("编辑模版")
-    state.title = "编辑模版"
-    getTemplateInfoAPi({
-      code: data.Code,
-      category: state.category
-    }).then(res => {
-      if (res.code && res.code == 200) {
-        state.subForm = res.item
-        state.getHtml = res.item.body.replace("<html>", "")
-            .replace("</html>", "")
-            .replace("<head>", "")
-            .replace("</head>", "")
-            .replace("<body>", "")
-            .replace("</body>", "")
-            .replace("<meta charset=\"utf-8\">", "")
-      }
-    })
-  } else {
-    // console.log("新增模版")
-    mailFormFormRef.value.resetFields();
-    state.subForm.code = ""
-    state.title = "新增模版"
-    state.getText = ""
-    state.getHtml = ""
-    state.subForm.body = ""
-  }
+const openCreate = () => {
+  state.showCreateDrawer = true
+};
 
+const openEdit = (code:string) => {
+  state.selected = code;
+  state.showEditDrawer = true
+};
+
+const deleteDeviceRow = (code:string) => {
+  delTemplateApi({
+    code:code,
+  })
+      .then((res) => {
+        console.log(res);
+        ElMessage.success('删除成功');
+        getTemplateList();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 }
+
 </script>
 
 <style scoped lang="scss">

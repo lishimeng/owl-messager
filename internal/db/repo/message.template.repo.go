@@ -59,15 +59,24 @@ func GetMessageTemplateByCode(code string) (tpl model.MessageTemplate, err error
 	return
 }
 
-func CreateMessageTemplate(code, name, body, templateId, params, description string, category msg.MessageCategory, provider msg.MessageProvider) (m model.MessageTemplate, err error) {
+func CreateMessageTemplate(
+	code,
+	name,
+	body,
+	cloudTemplate,
+	params,
+	description string,
+	category msg.MessageCategory,
+	provider msg.MessageProvider,
+) (m model.MessageTemplate, err error) {
 	m = model.MessageTemplate{
 		Code:          code,
 		Name:          name,
 		Params:        params,
 		Category:      category,
 		Provider:      provider,
-		Body:          "",
-		CloudTemplate: "",
+		Body:          body,
+		CloudTemplate: cloudTemplate,
 	}
 	m.Org = 1 // TODO
 	if len(description) > 0 {
@@ -79,7 +88,7 @@ func CreateMessageTemplate(code, name, body, templateId, params, description str
 	return
 }
 
-func UpdateMessageTemplate(status int, code, name, body, description string) (m model.MessageTemplate, err error) {
+func UpdateMessageTemplate(status int, code, name, body, description string, provider string) (m model.MessageTemplate, err error) {
 
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		e = ctx.Context.QueryTable(new(model.MessageTemplate)).Filter("Code", code).One(&m)
@@ -102,6 +111,10 @@ func UpdateMessageTemplate(status int, code, name, body, description string) (m 
 		if len(description) > 0 {
 			m.Description = description
 			cols = append(cols, "Description")
+		}
+		if len(provider) > 0 {
+			m.Provider = msg.MessageProvider(provider)
+			cols = append(cols, "Provider")
 		}
 
 		_, err = ctx.Context.Update(&m, cols...)
