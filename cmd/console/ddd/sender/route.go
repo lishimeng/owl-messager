@@ -15,7 +15,8 @@ func Route(root server.Router) {
 	root.Get("/config/{category}/{vendor}", getConfigStruct)              // 列出配置字段
 	root.Post("/mail/set_default", SetMailSenderInfo)                     //新增mail配置
 	root.Post("/mail/up_default", UpMailSenderInfo)                       //编辑mail配置
+	root.Post("/mail/del", DeleteSender)                                  //删除发送人
 	root.Get("/mail/vendor", GetMailSenderInfo)                           //获取mail配置
-	root.Get("/mail/list/page", midware.WithAuth(ListByPage)...)          //获取列表
+	root.Get("/mail/list/page", ListByPage)                               //获取列表
 	root.Get("/mail/info/category", GetSenderInfoByCategory)              //获取列表
 }

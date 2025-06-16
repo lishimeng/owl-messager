@@ -1,93 +1,93 @@
 package sender
 
+import "C"
 import (
+	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
+	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/repo"
+	"github.com/lishimeng/owl-messager/pkg/msg"
+	"github.com/lishimeng/x/util"
+	"time"
 )
 
-type req struct {
-	DefaultSender int    `json:"defaultSender,omitempty"`
-	Vendor        string `json:"vendor,omitempty"`
-	Config        string `json:"config,omitempty"`
-	Code          string `json:"code,omitempty"`
-	Category      string `json:"category,omitempty"`
+type reqSender struct {
+	DefaultSender int                 `json:"defaultSender,omitempty"`
+	Vendor        msg.MessageProvider `json:"vendor,omitempty"`
+	Config        msg.SenderConfig    `json:"config,omitempty"`
+	Code          string              `json:"code,omitempty"`
+	Category      msg.MessageCategory `json:"category,omitempty"`
 }
 
 func SetMailSenderInfo(ctx server.Context) {
-	//var resp app.Response TODO
-	//var req req
-	//err := ctx.ReadJSON(&req)
-	//if err != nil {
-	//	resp.Code = tool.RespCodeNotFound
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//log.Debug("req：%s", req)
-	//code := tool.UUIDString()
-	//switch req.Category {
-	//case model.SenderCategoryMail:
-	//	_, err = service.CreateMsi(code, req.Vendor, req.Config, req.DefaultSender)
-	//	if err != nil {
-	//		resp.Code = tool.RespCodeNotFound
-	//		tool.ResponseJSON(ctx, resp)
-	//		return
-	//	}
-	//case model.SenderCategorySms:
-	//	_, err = service.CreateSsi(code, req.Vendor, req.Config, req.DefaultSender)
-	//	if err != nil {
-	//		resp.Code = tool.RespCodeNotFound
-	//		tool.ResponseJSON(ctx, resp)
-	//		return
-	//	}
-	//default:
-	//	resp.Code = tool.RespCodeNotFound
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//resp.Code = tool.RespCodeSuccess
-	//tool.ResponseJSON(ctx, resp)
+	var resp app.Response
+	var req reqSender
+	err := ctx.C.ReadJSON(&req)
+	if err != nil {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "json参数解析失败"
+		ctx.Json(resp)
+		return
+	}
+	code := util.UUIDString()
+	switch req.Category {
+	case msg.MailMessage:
+		code = "sender_mail_" + code
+	case msg.SmsMessage:
+		code = "sender_sms_" + code
+	default:
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "失败：未知通讯方式"
+		ctx.Json(resp)
+	}
+
+	_, err = repo.CreateMessageSender(1, req.Category, req.Vendor, req.DefaultSender, code, req.Config)
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		resp.Message = "创建失败"
+		ctx.Json(resp)
+		return
+	}
+	resp.Code = tool.RespCodeSuccess
+	ctx.Json(resp)
 }
 
 func UpMailSenderInfo(ctx server.Context) {
-	//var resp app.Response TODO
-	//var req req
-	//err := ctx.ReadJSON(&req)
-	//if err != nil {
-	//	resp.Code = tool.RespCodeNotFound
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//log.Debug("req：%s", req)
-	//switch req.Category {
-	//case model.SenderCategoryMail:
-	//	_, err = service.UpdateMsi(req.Code, req.Vendor, req.Config, req.DefaultSender)
-	//	if err != nil {
-	//		resp.Code = tool.RespCodeNotFound
-	//		tool.ResponseJSON(ctx, resp)
-	//		return
-	//	}
-	//case model.SenderCategorySms:
-	//	_, err = service.UpdateSsi(req.Code, req.Vendor, req.Config, req.DefaultSender)
-	//	if err != nil {
-	//		resp.Code = tool.RespCodeNotFound
-	//		tool.ResponseJSON(ctx, resp)
-	//		return
-	//	}
-	//default:
-	//	resp.Code = tool.RespCodeNotFound
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//resp.Code = tool.RespCodeSuccess
-	//tool.ResponseJSON(ctx, resp)
+	var resp app.Response
+	var req reqSender
+	err := ctx.C.ReadJSON(&req)
+	if err != nil {
+		resp.Code = tool.RespCodeNotFound
+		ctx.Json(resp)
+		return
+	}
+	_, err = repo.UpdateMessageSender(req.Code, req.DefaultSender, req.Config)
+	if err != nil {
+		resp.Code = tool.RespCodeNotFound
+		ctx.Json(resp)
+		return
+	}
+	resp.Code = tool.RespCodeSuccess
+	ctx.Json(resp)
 }
 
-type RespInfo struct {
-	app.Response
+type respSender struct {
+	Id            int    `json:"id,omitempty"`
 	DefaultSender int    `json:"defaultSender,omitempty"`
 	Vendor        string `json:"vendor,omitempty"`
+	Code          string `json:"code,omitempty"`
 	Config        string `json:"config,omitempty"`
-	Scode         string `json:"scode,omitempty"`
+	CreateTime    string `json:"createTime,omitempty"`
+	UpdateTime    string `json:"updateTime,omitempty"`
+}
+
+type respPager struct {
+	app.PagerResponse
+	app.BasePager
+	Items []respSender `json:"items"`
 }
 
 func GetMailSenderInfo(ctx server.Context) {
@@ -111,82 +111,117 @@ func GetMailSenderInfo(ctx server.Context) {
 }
 
 func ListByPage(ctx server.Context) {
-	//var resp app.PagerResponse
-	//var pageNum = ctx.URLParamIntDefault("pageNum", 1)
-	//var pageSize = ctx.URLParamIntDefault("pageSize", 10)
-	//var category = ctx.URLParamDefault("category", "")
-	//page := app.Pager{
-	//	PageSize: pageSize,
-	//	PageNum:  pageNum,
-	//}
-	//log.Debug("category:%s", category)
-	//switch category {
-	//case model.SenderCategoryMail:
-	//	page, list, err := repo.GetMailSenderList(1, page)
-	//	if err != nil {
-	//		resp.Code = tool.RespCodeNotFound
-	//		tool.ResponseJSON(ctx, resp)
-	//		return
-	//	}
-	//	if len(list) > 0 {
-	//		for _, ms := range list {
-	//			page.Data = append(page.Data, ms)
-	//		}
-	//	}
-	//	resp.Pager = page
-	//case model.SenderCategorySms:
-	//	page, list, err := repo.GetSmsSenderList(1, page)
-	//	if err != nil {
-	//		resp.Code = tool.RespCodeNotFound
-	//		tool.ResponseJSON(ctx, resp)
-	//		return
-	//	}
-	//	if len(list) > 0 {
-	//		for _, ms := range list {
-	//			page.Data = append(page.Data, ms)
-	//		}
-	//	}
-	//	resp.Pager = page
-	//default:
-	//	resp.Code = tool.RespCodeNotFound
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//resp.Code = tool.RespCodeSuccess
-	//tool.ResponseJSON(ctx, resp) TODO
+	var resp respPager
+	var category = ctx.C.URLParamDefault("category", "")
+	var pageNum = ctx.C.URLParamIntDefault("pageNum", 1)
+	var pageSize = ctx.C.URLParamIntDefault("pageSize", 10)
+	var pager app.SimplePager[model.MessageSenderInfo, respSender]
+	pager.PageSize = pageSize
+	pager.PageNum = pageNum
+	pager.Transform = func(src model.MessageSenderInfo, dst *respSender) {
+		dst.Id = src.Id
+		dst.Vendor = string(src.Provider)
+		dst.Code = src.Code
+		dst.DefaultSender = src.Default
+		dst.CreateTime = src.CreateTime.UTC().Format(time.RFC3339)
+		dst.UpdateTime = src.UpdateTime.UTC().Format(time.RFC3339)
+	}
+	pager.QueryBuilder = func(tx persistence.TxContext) any {
+		cond := orm.NewCondition()
+		cond = cond.And("org", 1)
+		if len(category) > 0 {
+			cond = cond.And("message_category", category)
+		}
+		return tx.Context.QueryTable(new(model.MessageSenderInfo)).SetCond(cond)
+	}
+	pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	err := app.QueryPage(&pager)
+	if err != nil {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "not found"
+		ctx.Json(resp)
+		return
+	}
+	resp.Items = pager.Data
+	resp.BasePager = pager.BasePager
+	resp.BasePager.More = pager.TotalPage * pager.PageSize
+
+	resp.Code = tool.RespCodeSuccess
+	ctx.Json(resp)
 }
 
-type AllSenderInfo struct {
+type respSenderOne struct {
 	app.Response
-	Data interface{} `json:"item,omitempty"`
+	Item respSender `json:"item"`
 }
 
 func GetSenderInfoByCategory(ctx server.Context) {
-	//var resp AllSenderInfo
-	//var category = ctx.URLParamDefault("category", "")
-	//var code = ctx.URLParamDefault("code", "")
-	//switch category {
-	//case model.SenderCategoryMail:
-	//	info, err := repo.GetMailSenderByCode(code)
-	//	if err != nil {
-	//		resp.Code = tool.RespCodeNotFound
-	//		tool.ResponseJSON(ctx, resp)
-	//		return
-	//	}
-	//	resp.Data = info
-	//case model.SenderCategorySms:
-	//	info, err := repo.GetSmsSenderByCode(code)
-	//	if err != nil {
-	//		resp.Code = tool.RespCodeNotFound
-	//		tool.ResponseJSON(ctx, resp)
-	//		return
-	//	}
-	//	resp.Data = info
-	//default:
-	//	resp.Code = tool.RespCodeNotFound
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//resp.Code = tool.RespCodeSuccess
-	//tool.ResponseJSON(ctx, resp) TODO
+	var resp respSenderOne
+	var code = ctx.C.URLParamDefault("code", "")
+	//var category = ctx.C.URLParamDefault("category", "")
+	if code == "" {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "请求中code为空"
+		ctx.Json(resp)
+		return
+	}
+
+	tpl, err := repo.GetMessageSenderByCode(code)
+	if err != nil {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "未查到记录"
+		ctx.Json(resp)
+		return
+	}
+	err = tpl.Config.Decode()
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		resp.Message = "记录异常"
+		ctx.Json(resp)
+		return
+	}
+	resp.Item = respSender{
+		Code:          tpl.Code,
+		DefaultSender: tpl.Default,
+		Vendor:        string(tpl.Provider),
+		Config:        string(tpl.Config),
+	}
+	resp.Code = tool.RespCodeSuccess
+	resp.Message = "成功"
+	ctx.Json(resp)
+}
+
+func DeleteSender(ctx server.Context) {
+	var req reqSender
+	var respJson app.Response
+
+	err := ctx.C.ReadJSON(&req)
+	if err != nil {
+		respJson.Code = tool.RespCodeNotFound
+		respJson.Message = "json参数解析失败"
+		ctx.Json(respJson)
+		return
+	}
+
+	code := req.Code
+
+	if code == "" {
+		respJson.Message = "code为空"
+		respJson.Code = tool.RespCodeNotFound
+		ctx.Json(respJson)
+		return
+	}
+
+	_, err = app.GetOrm().Context.QueryTable(new(model.MessageSenderInfo)).
+		Filter("Code", code).
+		Delete()
+	if err != nil {
+		respJson.Message = "删除失败"
+		respJson.Code = tool.RespCodeNotFound
+		ctx.Json(respJson)
+		return
+	}
+	respJson.Code = tool.RespCodeSuccess
+	respJson.Message = "成功！"
+	ctx.Json(respJson)
 }

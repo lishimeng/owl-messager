@@ -14,18 +14,33 @@
 
     <div style="margin-top: 10px">
       <el-table :data="state.dataList" border style="width: 100%">
-        <el-table-column prop="Id" label="id" width="60"/>
-        <el-table-column prop="Code" label="code" width="360"/>
-        <el-table-column prop="Default" label="Default" width="120"/>
-        <el-table-column prop="Vendor" label="Vendor" width="120"/>
-        <el-table-column prop="CreateTime" label="创建时间">
-          <template #default="scope">
-            {{ formatDate(new Date(scope.row.CreateTime), 'YYYY-mm-dd HH:MM:SS') }}
+        <el-table-column prop="id" label="id" width="60"/>
+        <el-table-column prop="code" label="code" width="380"/>
+        <el-table-column prop="defaultSender" label="默认发送人" width="120">
+          <template v-slot="scope">
+<!--            <el-switch-->
+<!--                :active-value="1"-->
+<!--                :inactive-value="0"-->
+<!--                v-model="scope.row.defaultSender"-->
+<!--                disabled-->
+<!--            />-->
+              <span v-if="scope.row.defaultSender===1">
+                是
+              </span>
+              <span v-else>
+                否
+              </span>
           </template>
         </el-table-column>
-        <el-table-column prop="UpdateTime" label="更新时间">
+        <el-table-column prop="vendor" label="Vendor" width="120"/>
+        <el-table-column prop="createTime" label="创建时间">
           <template #default="scope">
-            {{ formatDate(new Date(scope.row.UpdateTime), 'YYYY-mm-dd HH:MM:SS') }}
+            {{ formatDate(new Date(scope.row.createTime), 'YYYY-mm-dd HH:MM:SS') }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="updateTime" label="更新时间">
+          <template #default="scope">
+            {{ formatDate(new Date(scope.row.updateTime), 'YYYY-mm-dd HH:MM:SS') }}
           </template>
         </el-table-column>
         <el-table-column label="操作">
@@ -33,18 +48,24 @@
             <el-button icon="ele-Edit" type="primary" @click="showEdit(scope.row)">
               编辑
             </el-button>
+            <el-popconfirm
+                title="是否删除?"
+                @confirm="deleteSender(scope.row)">
+              <template #reference>
+                <el-button icon="ele-Delete" type="danger">删除</el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
 
       <div style="margin: 10px 10px 10px 10px;">
         <el-pagination background
-                       layout="total, sizes, prev, pager, next, jumper"
+                       layout="sizes, prev, pager, next, jumper"
                        v-model:currentPage="state.queryValue.pageNum"
                        v-model:page-size="state.queryValue.pageSize"
                        :page-sizes="[5,10,15,30,50,100]"
                        :page-count="state.queryValue.totalNum"
-                       :total="state.queryValue.totalNum"
                        @size-change="onSizeChange"
                        @current-change="onCurrentChange"
         />
@@ -225,7 +246,7 @@
 <script setup lang="ts" name="Mail">
 import {onMounted, reactive, ref} from 'vue';
 import {
-  createMailSenderConfigApi,
+  createMailSenderConfigApi, delSenderApi,
   getMailSendersApi,
   getSenderInfoByCategoryAPi,
   updateMailSenderConfigApi
@@ -323,19 +344,32 @@ onMounted(() => {
   getMailSenders();
 })
 const showEdit = (row: object) => {
-  state.showDialog = true
   // console.log(row)
   if (row) {
     state.title = '编辑'
     state.isDisabled = true
     state.isShowText = true
-    getSenderInfoByCategory(row.Code)
+    getSenderInfoByCategory(row.code)
   } else {
+    state.showDialog = true
     state.isDisabled = false
     state.isShowText = false
     state.title = '新增'
     state.form.vendor = ''
   }
+}
+const deleteSender = (row: object) => {
+  delSenderApi({
+    code: row.code
+  }).then(res => {
+    if (res && res.code == 200) {
+      ElMessage.success(`删除成功！`);
+      getMailSenders();
+    }
+  }).catch(err => {
+    console.log(err)
+    ElMessage.error(`删除失败`)
+  })
 }
 const onSubmit = () => {
   switch (state.form.vendor) {
@@ -373,7 +407,6 @@ const createConfig = () => {
       }
     })
   } else {
-    console.log("新增")
     createMailSenderConfigApi(state.form).then(res => {
       if (res && res.code == 200) {
         ElMessage.success(`提交成功！`);
@@ -415,30 +448,31 @@ const getSenderInfoByCategory = (code: string) => {
     code: code
   }).then(res => {
     if (res.item) {
-      state.form.vendor = res.item.Vendor
-      state.form.code = res.item.Code
-      state.form.defaultSender = res.item.Default
-      state.form.config = res.item.Config
-      switch (res.item.Vendor) {
+      state.form.vendor = res.item.vendor
+      state.form.code = res.item.code
+      state.form.defaultSender = res.item.defaultSender === 1 ? 1 : 0
+      state.form.config = res.item.config
+      switch (res.item.vendor) {
         case 'smtp':
-          state.smtp = JSON.parse(res.item.Config)
+          state.smtp = JSON.parse(res.item.config)
           break;
         case 'microsoft':
-          state.microsoft = JSON.parse(res.item.Config)
+          state.microsoft = JSON.parse(res.item.config)
           break;
         case 'tencent':
-          state.tencent = JSON.parse(res.item.Config)
+          state.tencent = JSON.parse(res.item.config)
           break;
         case 'ali_yun':
-          state.aliYun = JSON.parse(res.item.Config)
+          state.aliYun = JSON.parse(res.item.config)
           break;
         case 'tencent_yun':
-          state.tencentYun = JSON.parse(res.item.Config)
+          state.tencentYun = JSON.parse(res.item.config)
           break;
         case 'huawei_yun':
-          state.huaweiYun = JSON.parse(res.item.Config)
+          state.huaweiYun = JSON.parse(res.item.config)
           break;
       }
+      state.showDialog = true
     }
   })
 }

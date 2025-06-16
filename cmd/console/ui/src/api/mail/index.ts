@@ -6,3 +6,4 @@ export const updateMailSenderConfigApi = (p: object) => post(baseUrl + "/sender/
 export const getMailSenderInfoApi = (p: object) => get(baseUrl + "/sender/mail/vendor", p);
 export const getMailSendersApi = (p: object) => get(baseUrl + "/sender/mail/list/page", p);
 export const getSenderInfoByCategoryAPi = (p: object) => get(baseUrl + "/sender/mail/info/category", p);
+export const delSenderApi = (p: object) => post(baseUrl + "/sender/mail/del", p);
