@@ -10,6 +10,8 @@ func Tables() (t []interface{}) {
 		new(model.OpenClient),
 		new(model.SmsMessageInfo),
 		new(model.ApnsMessageInfo),
+		new(model.MessageTemplate),
+		new(model.MessageSenderInfo),
 	)
 	return
 }
