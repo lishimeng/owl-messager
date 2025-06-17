@@ -1,10 +1,13 @@
 package taskApi
 
 import (
+	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/x/util"
 )
@@ -23,18 +26,40 @@ type RespWrapper struct {
 	TaskInfoResp
 }
 
+type respTaskInfo struct {
+	app.PagerResponse
+	app.BasePager
+	Items []TaskInfoResp `json:"items"`
+}
+
 func GetTaskList(ctx server.Context) {
 	log.Debug("get task list")
-	var resp app.PagerResponse
+	var resp respTaskInfo
 
 	var status = ctx.C.URLParamIntDefault("status", repo.ConditionIgnore)
 	var pageSize = ctx.C.URLParamIntDefault("pageSize", repo.DefaultPageSize)
 	var pageNo = ctx.C.URLParamIntDefault("pageNo", repo.DefaultPageNo)
-	page := app.Pager{
-		PageSize: pageSize,
-		PageNum:  pageNo,
+	var pager app.SimplePager[model.MessageTask, TaskInfoResp]
+	pager.PageSize = pageSize
+	pager.PageNum = pageNo
+	pager.Transform = func(src model.MessageTask, dst *TaskInfoResp) {
+		dst.Id = src.Id
+		dst.MessageId = src.MessageId
+		dst.MessageInstanceId = src.MessageInstanceId
+		dst.Status = src.Status
+		dst.CreateTime = util.FormatTime(src.CreateTime)
+		dst.UpdateTime = util.FormatTime(src.UpdateTime)
 	}
-	page, tasks, err := repo.GetTaskList(status, page)
+	pager.QueryBuilder = func(tx persistence.TxContext) any {
+		cond := orm.NewCondition()
+		if status > repo.ConditionIgnore {
+			cond = cond.And("status", status)
+		}
+		return tx.Context.QueryTable(new(model.MessageTask)).SetCond(cond)
+	}
+	pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	err := app.QueryPage(&pager)
+
 	if err != nil {
 		log.Debug("get templates failed")
 		log.Debug(err)
@@ -43,22 +68,11 @@ func GetTaskList(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
-	if len(tasks) > 0 {
-		for _, ms := range tasks {
-			var tmpInfo = TaskInfoResp{
-				Id:                ms.Id,
-				MessageId:         ms.MessageId,
-				MessageInstanceId: ms.MessageInstanceId,
-				Status:            ms.Status,
-				CreateTime:        util.FormatTime(ms.CreateTime),
-				UpdateTime:        util.FormatTime(ms.UpdateTime),
-			}
-			page.Data = append(page.Data, tmpInfo)
-		}
-	}
 
 	resp.Code = tool.RespCodeSuccess
-	resp.Pager = page
+	resp.Items = pager.Data
+	resp.BasePager = pager.BasePager
+	resp.BasePager.More = pager.TotalPage * pager.PageSize
 	ctx.Json(resp)
 }
 

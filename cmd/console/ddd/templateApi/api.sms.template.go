@@ -9,6 +9,7 @@ import (
 
 type SmsVendors struct {
 	app.PagerResponse
+	Data []msg.MessageProvider
 }
 
 // GetSmsVendors 平台支持的sms类型

@@ -11,14 +11,12 @@ type Item struct {
 
 func list(ctx server.Context) {
 
-	var resp app.PagerResponse
+	var resp app.ResponseWrapper
 
 	var items []Item
 	// TODO
 
-	for _, item := range items {
-		resp.Data = append(resp.Data, item)
-	}
+	resp.Data = items
 	// TODO pager
 	resp.Code = tool.RespCodeSuccess
 	ctx.Json(resp)

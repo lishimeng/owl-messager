@@ -90,21 +90,3 @@ func DeleteRunningTask(ctx persistence.TxContext, id int) (err error) {
 	_, err = ctx.Context.Delete(&runningTask)
 	return
 }
-
-func GetTaskList(status int, page app.Pager) (p app.Pager, list []model.MessageTask, err error) {
-	var qs = app.GetOrm().Context.QueryTable(new(model.MessageTask))
-	if status > ConditionIgnore {
-		qs = qs.Filter("Status", status)
-	}
-	all, err := qs.Count()
-	if err != nil {
-		return
-	}
-	page.TotalPage = calcTotalPage(page, all)
-	qs = qs.Offset(calcPageOffset(page)).Limit(page.PageSize)
-	qs = qs.OrderBy("CreateTime")
-
-	_, err = qs.All(&list)
-	p = page
-	return
-}
