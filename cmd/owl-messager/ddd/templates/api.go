@@ -1,21 +1,29 @@
 package templates
 
 import (
+	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/midware/auth"
+	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/pkg"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 	"strings"
 )
 
+type resp struct {
+	app.PagerResponse
+	Data []pkg.TemplateInfo
+}
+
 func templates(ctx server.Context) {
 
 	var err error
-	var resp app.PagerResponse
+	var resp resp
 	var tpls []pkg.TemplateInfo
 	var org = ctx.C.GetHeader(auth.OrgKey)
 	var pageNo = ctx.C.URLParamIntDefault("pageNo", 1)      // ?
@@ -55,22 +63,30 @@ func templates(ctx server.Context) {
 }
 
 func getTemplates(category msg.MessageCategory, org int, pageNo, pageSize int) (tpls []pkg.TemplateInfo, err error) {
-	data, err := getList(org, 0, category, app.Pager{PageSize: pageSize, PageNum: pageNo})
-	if err != nil {
-		return
+
+	var pager app.SimplePager[model.MessageTemplate, pkg.TemplateInfo]
+	pager.PageSize = pageSize
+	pager.PageNum = pageNo
+	pager.Transform = func(src model.MessageTemplate, dst *pkg.TemplateInfo) {
+		dst.Id = src.Id
+		dst.Name = src.Name
+		dst.Body = src.Body
+		dst.CloudTemplate = src.CloudTemplate
+		dst.Description = src.Description
+		dst.Category = src.Category.String()
+		dst.Params = src.Params
+		dst.Provider = src.Provider.String()
+		dst.Code = src.Code
 	}
-	for _, d := range data {
-		tpls = append(tpls, pkg.TemplateInfo{
-			Id:            d.Id,
-			Code:          d.Code,
-			Name:          d.Name,
-			Category:      d.Category.String(),
-			Body:          d.Body,
-			Params:        d.Params,
-			Provider:      d.Provider.String(),
-			CloudTemplate: d.CloudTemplate,
-			Description:   d.Description,
-		})
+	pager.QueryBuilder = func(tx persistence.TxContext) any {
+		cond := orm.NewCondition()
+		cond = cond.And("org", org)
+		if len(category) > 0 {
+			cond = cond.And("message_category", category)
+		}
+		return tx.Context.QueryTable(new(model.MessageTemplate)).SetCond(cond)
 	}
+	pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	err = app.QueryPage(&pager)
 	return
 }

@@ -1,10 +1,13 @@
 package templateApi
 
 import (
+	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 	"github.com/lishimeng/x/util"
@@ -17,6 +20,12 @@ type Info struct {
 	Status       int    `json:"status,omitempty"`
 	CreateTime   string `json:"createTime,omitempty"`
 	UpdateTime   string `json:"updateTime,omitempty"`
+}
+
+type respInfo struct {
+	app.PagerResponse
+	app.BasePager
+	Items []Info `json:"items"`
 }
 
 type InfoWrapper struct {
@@ -38,15 +47,30 @@ func GetMailVendors(ctx server.Context) {
 
 func GetMailTemplateList(ctx server.Context) {
 	log.Debug("get mail template list")
-	var resp app.PagerResponse
+	var resp respInfo
 	//var status = ctx.URLParamIntDefault("status", repo.ConditionIgnore)
 	var pageSize = ctx.C.URLParamIntDefault("pageSize", repo.DefaultPageSize)
 	var pageNo = ctx.C.URLParamIntDefault("pageNo", repo.DefaultPageNo)
-	page := app.Pager{ // TODO
-		PageSize: pageSize,
-		PageNum:  pageNo,
+	var pager app.SimplePager[model.MessageTemplate, Info]
+	pager.PageSize = pageSize
+	pager.PageNum = pageNo
+	pager.Transform = func(src model.MessageTemplate, dst *Info) {
+		dst.Id = src.Id
+		dst.TemplateCode = src.Code
+		dst.TemplateBody = src.Body
+		dst.Status = src.Status
+		dst.CreateTime = util.FormatTime(src.CreateTime)
+		dst.UpdateTime = util.FormatTime(src.UpdateTime)
 	}
-	tpls, err := repo.GetMessageTemplates(1, msg.MailMessage, msg.Ali)
+	pager.QueryBuilder = func(tx persistence.TxContext) any {
+		cond := orm.NewCondition()
+		cond = cond.And("org", 1)
+		cond = cond.And("message_category", msg.MailMessage)
+		cond = cond.And("message_provider", msg.Ali)
+		return tx.Context.QueryTable(new(model.MessageTemplate)).SetCond(cond)
+	}
+	pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	err := app.QueryPage(&pager)
 	if err != nil {
 		log.Debug("get templates failed")
 		log.Debug(err)
@@ -55,20 +79,9 @@ func GetMailTemplateList(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
-
-	for _, tpl := range tpls {
-		var tmpInfo = Info{
-			Id:           tpl.Id,
-			TemplateCode: tpl.Code,
-			TemplateBody: tpl.Body,
-			Status:       tpl.Status,
-			CreateTime:   util.FormatTime(tpl.CreateTime),
-			UpdateTime:   util.FormatTime(tpl.UpdateTime),
-		}
-		page.Data = append(page.Data, tmpInfo)
-	}
-
-	resp.Pager = page
+	resp.Items = pager.Data
+	resp.BasePager = pager.BasePager
+	resp.BasePager.More = pager.TotalPage * pager.PageSize
 	resp.Code = tool.RespCodeSuccess
 	ctx.Json(resp)
 }

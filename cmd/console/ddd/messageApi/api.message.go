@@ -1,7 +1,9 @@
 package messageApi
 
 import (
+	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
@@ -33,17 +35,44 @@ type RespMessageInfoListWrapper struct {
 	app.PagerResponse
 }
 
+type respMessageInfo struct {
+	app.PagerResponse
+	app.BasePager
+	Items []RespMessageInfo `json:"items"`
+}
+
 func GetMessageList(ctx server.Context) {
-	var resp app.PagerResponse
+	var resp respMessageInfo
 	var status = ctx.C.URLParamIntDefault("status", repo.ConditionIgnore)
 	var category = ctx.C.URLParamIntDefault("category", repo.ConditionIgnore)
 	var pageSize = ctx.C.URLParamIntDefault("pageSize", repo.DefaultPageSize)
 	var pageNo = ctx.C.URLParamIntDefault("pageNo", repo.DefaultPageNo)
-	page := app.Pager{
-		PageSize: pageSize,
-		PageNum:  pageNo,
+	var pager app.SimplePager[model.MessageInfo, RespMessageInfo]
+	pager.PageSize = pageSize
+	pager.PageNum = pageNo
+	pager.Transform = func(src model.MessageInfo, dst *RespMessageInfo) {
+		dst.Id = src.Id
+		dst.Category = src.Category.String()
+		dst.Subject = src.Subject
+		dst.Priority = src.Priority
+		dst.NextSendTime = util.FormatTime(src.NextSendTime)
+		dst.Status = src.Status
+		dst.CreateTime = util.FormatTime(src.CreateTime)
+		dst.UpdateTime = util.FormatTime(src.UpdateTime)
 	}
-	page, messages, err := repo.GetMessages(status, category, page)
+	pager.QueryBuilder = func(tx persistence.TxContext) any {
+		cond := orm.NewCondition()
+		if status > repo.ConditionIgnore {
+			cond = cond.And("status", status)
+		}
+		if category > repo.ConditionIgnore {
+			cond = cond.And("category", category)
+		}
+		return tx.Context.QueryTable(new(model.MessageInfo)).SetCond(cond)
+	}
+	pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	err := app.QueryPage(&pager)
+
 	if err != nil {
 		log.Debug("get messages failed")
 		log.Debug(err)
@@ -52,24 +81,10 @@ func GetMessageList(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
-	if len(messages) > 0 {
-		for _, ms := range messages {
-			var tmpInfo = RespMessageInfo{
-				Id:           ms.Id,
-				Category:     ms.Category.String(),
-				Subject:      ms.Subject,
-				Priority:     ms.Priority,
-				NextSendTime: util.FormatTime(ms.NextSendTime),
-				Status:       ms.Status,
-				CreateTime:   util.FormatTime(ms.CreateTime),
-				UpdateTime:   util.FormatTime(ms.UpdateTime),
-			}
-			page.Data = append(page.Data, tmpInfo)
-		}
-	}
-
-	resp.Pager = page
 	resp.Code = tool.RespCodeSuccess
+	resp.Items = pager.Data
+	resp.BasePager = pager.BasePager
+	resp.BasePager.More = pager.TotalPage * pager.PageSize
 	ctx.Json(resp)
 
 }

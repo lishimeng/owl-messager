@@ -11,6 +11,7 @@ require (
 	github.com/alibabacloud-go/tea-utils v1.4.5
 	github.com/aymerick/raymond v2.0.3-0.20180322193309-b565731e1464+incompatible
 	github.com/baidubce/bce-sdk-go v0.9.157
+	github.com/beego/beego/v2 v2.3.6
 	github.com/go-gomail/gomail v0.0.0-20160411212932-81ebce5c23df
 	github.com/go-resty/resty/v2 v2.15.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
@@ -56,7 +57,6 @@ require (
 	github.com/aliyun/credentials-go v1.3.1 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
-	github.com/beego/beego/v2 v2.3.6 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/clbanning/mxj/v2 v2.5.6 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect

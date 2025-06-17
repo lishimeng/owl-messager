@@ -25,14 +25,14 @@ type PagerRes struct {
 	LastPage bool
 }
 
-func calcPageOffset(p app.Pager) int {
+func calcPageOffset(p app.BasePager) int {
 	return (p.PageNum - 1) * p.PageSize
 }
-func CalcPageOffset(p app.Pager) int {
+func CalcPageOffset(p app.BasePager) int {
 	return calcPageOffset(p)
 }
 
-func calcTotalPage(p app.Pager, count int64) int {
+func calcTotalPage(p app.BasePager, count int64) int {
 	t := math.Ceil(float64(count) / float64(p.PageSize))
 	return int(t)
 }
