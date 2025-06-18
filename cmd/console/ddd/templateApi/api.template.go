@@ -20,6 +20,7 @@ type respPager struct {
 func GetTemplateListByPage(ctx server.Context) {
 	var resp respPager
 	var category = ctx.C.URLParamDefault("category", "")
+	var provider = ctx.C.URLParamDefault("provider", "")
 	var pageNum = ctx.C.URLParamIntDefault("pageNum", 1)
 	var pageSize = ctx.C.URLParamIntDefault("pageSize", 10)
 	var pager app.SimplePager[model.MessageTemplate, TemplateResp]
@@ -42,11 +43,12 @@ func GetTemplateListByPage(ctx server.Context) {
 	pager.QueryBuilder = func(tx persistence.TxContext) any {
 		cond := orm.NewCondition()
 		cond = cond.And("org", 1)
-		cond = cond.And("org", 1)
 		if len(category) > 0 {
 			cond = cond.And("message_category", category)
 		}
-		//todo: 按 Provider SenderEnable 筛选
+		if len(provider) > 0 {
+			cond = cond.And("message_provider", provider)
+		}
 		return tx.Context.QueryTable(new(model.MessageTemplate)).SetCond(cond)
 	}
 	pager.OrderByExp = append(pager.OrderByExp, "createTime")
