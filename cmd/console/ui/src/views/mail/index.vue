@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container layout-pd">
+  <div class="home-container layout-pd" style="margin-top: 10px">
     <el-form :inline="true">
       <el-form-item label="通讯方式">
         <el-select v-model="state.category" @change="getMailSenders" placeholder="请选择通讯方式">
@@ -43,16 +43,19 @@
             {{ formatDate(new Date(scope.row.updateTime), 'YYYY-mm-dd HH:MM:SS') }}
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column fixed="right" label="操作" width="200">
           <template #default="scope">
-            <el-button icon="ele-Edit" type="primary" @click="showEdit(scope.row)">
+            <el-button size="small" type="text" @click="showEdit(scope.row)">
               编辑
+            </el-button>
+            <el-button size="small" type="text" :disabled="!scope.row.defaultSender" @click="showTest(scope.row)">
+              测试
             </el-button>
             <el-popconfirm
                 title="是否删除?"
                 @confirm="deleteSender(scope.row)">
               <template #reference>
-                <el-button icon="ele-Delete" type="danger">删除</el-button>
+                <el-button size="small" type="text">删除</el-button>
               </template>
             </el-popconfirm>
           </template>
@@ -94,150 +97,45 @@
             </el-radio-group>
           </el-form-item>
         </el-form>
-        <!--    smtp      -->
-        <div v-show="state.form.vendor=='smtp'">
-          <el-form ref="smtpFormRef"
-                   style="margin-top: 20px"
-                   :model="state.smtp"
-                   label-width="120px">
-            <el-form-item label="host" prop="host">
-              <el-input v-model="state.smtp.host" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="port" prop="port">
-              <el-input v-model="state.smtp.port" type="number" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="senderEmail" prop="senderEmail">
-              <el-input v-model="state.smtp.senderEmail" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="senderAlias" prop="senderAlias">
-              <el-input v-model="state.smtp.senderAlias" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="authUser" prop="authUser">
-              <el-input v-model="state.smtp.authUser" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="authPass" prop="authPass">
-              <el-input v-model="state.smtp.authPass" clearable></el-input>
-            </el-form-item>
-          </el-form>
-        </div>
-        <!--    microsoft      -->
-        <div v-show="state.form.vendor=='microsoft'">
-          <el-form style="margin-top: 20px"
-                   :model="state.microsoft"
-                   ref="microsoftFormRef"
-                   label-width="120px">
-            <el-form-item label="clientId" prop="clientId">
-              <el-input v-model="state.microsoft.clientId" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="tenant" prop="tenant">
-              <el-input v-model="state.microsoft.tenant" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="scope" prop="scope">
-              <el-input v-model="state.microsoft.scope" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="sender" prop="sender">
-              <el-input v-model="state.microsoft.sender" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="certificate" prop="certificate">
-              <el-input v-model="state.microsoft.certificate" :rows="4"
-                        type="textarea" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="certificateKey" prop="certificateKey">
-              <el-input v-model="state.microsoft.certificateKey" :rows="4"
-                        type="textarea" clearable></el-input>
-            </el-form-item>
-          </el-form>
-        </div>
-        <!--    tencent      -->
-        <div v-show="state.form.vendor=='tencent'">
-          <el-form style="margin-top: 20px"
-                   :model="state.tencent"
-                   ref="tencentFormRef"
-                   label-width="120px">
-            <el-form-item label="appId" prop="appId">
-              <el-input v-model="state.tencent.appId" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="secret" prop="secret">
-              <el-input v-model="state.tencent.secret" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="region" prop="region">
-              <el-input v-model="state.tencent.region" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="sender" prop="sender">
-              <el-input v-model="state.tencent.sender" clearable></el-input>
-            </el-form-item>
-          </el-form>
-        </div>
-        <!--        阿里云sms ali_yun-->
-        <div v-show="state.form.vendor=='ali_yun'">
-          <el-form style="margin-top: 20px"
-                   :model="state.aliYun"
-                   ref="aliYunFormRef"
-                   label-width="120px">
-            <el-form-item label="appKey" prop="appKey">
-              <el-input v-model="state.aliYun.appKey" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="appSecret" prop="appSecret">
-              <el-input v-model="state.aliYun.appSecret" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="region" prop="region">
-              <el-input v-model="state.aliYun.region" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="signName" prop="signName">
-              <el-input v-model="state.aliYun.signName" clearable></el-input>
-            </el-form-item>
-          </el-form>
-        </div>
-        <!--        腾讯云sms tencent_yun-->
-        <div v-show="state.form.vendor=='tencent_yun'">
-          <el-form style="margin-top: 20px"
-                   :model="state.tencentYun"
-                   ref="tencentYunFormRef"
-                   label-width="120px">
-            <el-form-item label="appId" prop="appId">
-              <el-input v-model="state.tencentYun.appId" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="appKey" prop="appKey">
-              <el-input v-model="state.tencentYun.appKey" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="smsAppId" prop="smsAppId">
-              <el-input v-model="state.tencentYun.smsAppId" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="region" prop="region">
-              <el-input v-model="state.tencentYun.region" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="signName" prop="signName">
-              <el-input v-model="state.tencentYun.signName" clearable></el-input>
-            </el-form-item>
-          </el-form>
-        </div>
-        <!--        华为云sms huawei_yun-->
-        <div v-show="state.form.vendor=='huawei_yun'">
-          <el-form style="margin-top: 20px"
-                   :model="state.huaweiYun"
-                   ref="huaweiYunFormRef"
-                   label-width="120px">
-            <el-form-item label="host" prop="host">
-              <el-input v-model="state.huaweiYun.host" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="appId" prop="appId">
-              <el-input v-model="state.huaweiYun.appId" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="appKey" prop="appKey">
-              <el-input v-model="state.huaweiYun.appKey" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="sender" prop="sender">
-              <el-input v-model="state.huaweiYun.sender" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="signName" prop="signName">
-              <el-input v-model="state.huaweiYun.signName" clearable></el-input>
-            </el-form-item>
-          </el-form>
-        </div>
+        <SenderConfigForm
+            :vendor="state.form.vendor"
+            :config="state.form.config"
+            ref="senderForm"/>
       </div>
       <span class="dialog-footer">
         <el-button @click="state.showDialog = false">取消</el-button>
         <el-button type="primary" @click="onSubmit()">提交</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+        v-model="state.showTest"
+        :title="state.testTitle"
+        width="50%"
+        center>
+      <el-form style="margin-top: 20px"
+               :model="state.testForm"
+               label-width="120px">
+        <el-form-item label="平台" prop="vendor">
+          <el-input v-model="state.testForm.vendor" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="发送人" prop="code">
+          <el-input v-model="state.testForm.code" disabled></el-input>
+        </el-form-item>
+        <el-form-item :label="state.testReceiver" prop="receiver">
+          <el-input v-model="state.testForm.receiver"></el-input>
+        </el-form-item>
+        <el-form-item label="使用模板">
+          <el-select v-model="state.testForm.tpl" placeholder="已配置的模板..." style="width: 100%">
+            <el-option v-for="v in state.tplList" :key="v.code" :label="v.name" :value="v.code">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <!--      <el-form-item label="模板参数" prop="tpl">-->
+        <!--        <el-input v-model="state.testForm.tplParam" disabled></el-input>-->
+        <!--      </el-form-item>-->
+      </el-form>
+      <span class="dialog-footer mt30" style="display: flex; justify-content: center;">
+        <el-button type="primary" @click="sendTest()">发送</el-button>
       </span>
     </el-dialog>
   </div>
@@ -248,25 +146,22 @@ import {onMounted, reactive, ref} from 'vue';
 import {
   createMailSenderConfigApi, delSenderApi,
   getMailSendersApi,
-  getSenderInfoByCategoryAPi,
+  getSenderInfoByCategoryAPi, senderTestApi,
   updateMailSenderConfigApi
 } from "/@/api/mail";
 import {ElMessage} from "element-plus";
 import {formatDate} from "/@/utils/formatTime";
+import SenderConfigForm from "/@/views/mail/senderConfigForm.vue";
+import {getTemplateListAPi} from "/@/api/template";
 
-const formRef = ref()
-const smtpFormRef = ref()
-const microsoftFormRef = ref()
-const tencentFormRef = ref()
-const aliYunFormRef = ref()
-const tencentYunFormRef = ref()
-const huaweiYunFormRef = ref()
+const senderForm = ref();
 
 const state = reactive({
   isShowText: true,
   isDisabled: false,
   title: "新增",
   showDialog: false,
+  showTest: false,
   queryValue: {
     pageSize: 10,
     pageNum: 1,
@@ -297,48 +192,16 @@ const state = reactive({
     config: "",
     category: "",
   },
-  smtp: {
-    host: "",
-    port: 0,
-    senderEmail: "",
-    senderAlias: "",
-    authUser: "",
-    authPass: ""
+  testTitle: "",
+  testReceiver: "",
+  testForm: {
+    code: "",
+    vendor: "",
+    receiver: "",
+    tpl: "",
+    tplParam: "",
   },
-  microsoft: {
-    clientId: "",
-    tenant: "",
-    scope: "",
-    sender: "",
-    certificate: "",
-    certificateKey: ""
-  },
-  tencent: {
-    appId: "",
-    secret: "",
-    region: "",
-    sender: ""
-  },
-  aliYun: {
-    appKey: "",
-    appSecret: "",
-    region: "",
-    signName: ""
-  },
-  tencentYun: {
-    appId: "",
-    appKey: "",
-    smsAppId: "",
-    region: "",
-    signName: ""
-  },
-  huaweiYun: {
-    host: "",
-    appId: "",
-    appKey: "",
-    sender: "",
-    signName: ""
-  },
+  tplList: [],
 })
 onMounted(() => {
   getMailSenders();
@@ -358,6 +221,52 @@ const showEdit = (row: object) => {
     state.form.vendor = ''
   }
 }
+const showTest = async (row: object) => {
+  switch (state.category) {
+    case 'mail':
+      state.testTitle = "邮件发送测试"
+      state.testReceiver = "收件邮箱"
+      break
+    case 'sms':
+      state.testTitle = "SMS发送测试"
+      state.testReceiver = "收信手机"
+      break
+  }
+  state.testForm.vendor = row.vendor
+  state.testForm.code = row.code
+  await loadTemplate(state.category, state.testForm.vendor)
+  state.showTest = true
+}
+const loadTemplate = async (category: string, vendor: string) => {
+  const res = await getTemplateListAPi({
+    pageNum: 1,
+    pageSize: 100,
+    category: category,
+    provider: vendor,
+  })
+  if (res.items && res.items.length > 0) {
+    state.tplList = res.items
+  } else {
+    state.tplList = []
+  }
+}
+const sendTest = () => {
+  state.showTest = false
+  senderTestApi({
+    category: state.category,
+    subject: "Owl-messager: 测试邮件", // sms无需subject
+    receiver: state.testForm.receiver,
+    template: state.testForm.tpl,
+  }).then(res => {
+    if (res && res.code == 200) {
+      ElMessage.success(`请检查收件邮箱`);
+      getMailSenders();
+    }
+  }).catch(err => {
+    console.log(err)
+    ElMessage.error(`发送失败`)
+  })
+}
 const deleteSender = (row: object) => {
   delSenderApi({
     code: row.code
@@ -372,27 +281,7 @@ const deleteSender = (row: object) => {
   })
 }
 const onSubmit = () => {
-  switch (state.form.vendor) {
-    case 'smtp':
-      state.smtp.port = parseInt(state.smtp.port)
-      state.form.config = JSON.stringify(state.smtp)
-      break;
-    case 'microsoft':
-      state.form.config = JSON.stringify(state.microsoft)
-      break;
-    case 'tencent':
-      state.form.config = JSON.stringify(state.tencent)
-      break;
-    case 'ali_yun':
-      state.form.config = JSON.stringify(state.aliYun)
-      break;
-    case 'tencent_yun':
-      state.form.config = JSON.stringify(state.tencentYun)
-      break;
-    case 'huawei_yun':
-      state.form.config = JSON.stringify(state.huaweiYun)
-      break;
-  }
+  state.form.config = senderForm.value.exportJson();
   state.form.category = state.category
   createConfig();
 }
@@ -421,26 +310,7 @@ const getMailSenderInfo = () => {
   state.form.code = ''
   state.form.defaultSender = 1
   state.form.config = ''
-  switch (state.form.vendor) {
-    case 'smtp':
-      smtpFormRef.value.resetFields();
-      break;
-    case 'microsoft':
-      microsoftFormRef.value?.resetFields();
-      break;
-    case 'tencent':
-      tencentFormRef.value?.resetFields();
-      break;
-    case 'ali_yun':
-      aliYunFormRef.value?.resetFields();
-      break;
-    case 'tencent_yun':
-      tencentYunFormRef.value?.resetFields();
-      break;
-    case 'huawei_yun':
-      huaweiYunFormRef.value?.resetFields();
-      break;
-  }
+  senderForm.value?.clearForm();
 }
 const getSenderInfoByCategory = (code: string) => {
   getSenderInfoByCategoryAPi({
@@ -452,26 +322,7 @@ const getSenderInfoByCategory = (code: string) => {
       state.form.code = res.item.code
       state.form.defaultSender = res.item.defaultSender === 1 ? 1 : 0
       state.form.config = res.item.config
-      switch (res.item.vendor) {
-        case 'smtp':
-          state.smtp = JSON.parse(res.item.config)
-          break;
-        case 'microsoft':
-          state.microsoft = JSON.parse(res.item.config)
-          break;
-        case 'tencent':
-          state.tencent = JSON.parse(res.item.config)
-          break;
-        case 'ali_yun':
-          state.aliYun = JSON.parse(res.item.config)
-          break;
-        case 'tencent_yun':
-          state.tencentYun = JSON.parse(res.item.config)
-          break;
-        case 'huawei_yun':
-          state.huaweiYun = JSON.parse(res.item.config)
-          break;
-      }
+      senderForm.value?.loadJson(res.item.vendor, res.item.config);
       state.showDialog = true
     }
   })
