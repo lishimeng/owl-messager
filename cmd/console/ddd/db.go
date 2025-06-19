@@ -7,6 +7,7 @@ func Tables() (t []interface{}) {
 		new(model.MessageInfo),
 		new(model.MessageTask),
 		new(model.MessageRunningTask),
+		new(model.Tenant),
 		new(model.OpenClient),
 		new(model.SmsMessageInfo),
 		new(model.ApnsMessageInfo),

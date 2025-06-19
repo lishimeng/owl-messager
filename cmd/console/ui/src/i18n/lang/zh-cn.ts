@@ -3,6 +3,7 @@ export default {
     router: {
         home: '首页',
         mail: '发送人',
+        client: '客户端',
         template: '消息模版',
         system: '系统设置',
         systemMenu: '菜单管理',
