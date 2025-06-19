@@ -3,6 +3,7 @@ package ddd
 import (
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/apnsApi"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/clientApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/mailApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/messageApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/sender"
@@ -26,6 +27,7 @@ func router(root server.Router) {
 	mail(root.Path("/mail"))
 
 	sender.Route(root.Path("/sender"))
+	clientApi.Route(root.Path("/client"))
 }
 
 // vendor /api/vendor/

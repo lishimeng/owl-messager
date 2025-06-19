@@ -7,7 +7,8 @@ type OpenClient struct {
 	AppId  string `orm:"column(app_id);unique"`
 	Secret string `orm:"column(secret)"`
 	Domain string `orm:"column(domain)"`
-	app.TableChangeInfo
+	Name   string `orm:"column(name)"`
+	app.TableInfo
 }
 
 func (t OpenClient) GetID() string {

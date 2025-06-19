@@ -1,0 +1,52 @@
+package clientApi
+
+import (
+	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/persistence"
+	"github.com/lishimeng/app-starter/server"
+	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/owl-messager/internal/db/repo"
+)
+
+type respCreate struct {
+	respSecret
+	AppId string `json:"appId,omitempty"`
+}
+
+func createClient(ctx server.Context) {
+	var req reqClient
+	var resp respCreate
+
+	err := ctx.C.ReadJSON(&req)
+	if err != nil {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "json参数解析失败"
+		ctx.Json(resp)
+		return
+	}
+
+	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
+		tenant, e := repo.GetTenantById(ctx, req.Org)
+		if e != nil {
+			return
+		}
+		client, e := repo.AddClient(ctx, tenant.Code, req.Org, req.Name)
+		if e != nil {
+			return
+		}
+		resp.AppId = client.AppId
+		resp.Secret = client.Secret
+		return
+	})
+
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		resp.Message = "创建失败"
+		ctx.Json(resp)
+		return
+	}
+
+	resp.Code = tool.RespCodeSuccess
+	resp.Message = "success"
+	ctx.Json(resp)
+}
