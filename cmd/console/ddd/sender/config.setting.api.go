@@ -44,12 +44,20 @@ func SetMailSenderInfo(ctx server.Context) {
 		ctx.Json(resp)
 	}
 
-	_, err = repo.CreateMessageSender(1, req.Category, req.Vendor, req.DefaultSender, code, req.Config)
+	_, err = repo.CreateMessageSender(1, req.Category, req.Vendor, 0, code, req.Config)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "创建失败"
 		ctx.Json(resp)
 		return
+	}
+	if req.DefaultSender == 1 {
+		err = _setDefault(code, req.Category.String(), 1, req.Vendor.String())
+		if err != nil {
+			resp.Code = tool.RespCodeError
+			ctx.Json(resp)
+			return
+		}
 	}
 	resp.Code = tool.RespCodeSuccess
 	ctx.Json(resp)
@@ -64,11 +72,19 @@ func UpMailSenderInfo(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
-	_, err = repo.UpdateMessageSender(req.Code, req.DefaultSender, req.Config)
+	_, err = repo.UpdateMessageSender(req.Code, req.Config)
 	if err != nil {
 		resp.Code = tool.RespCodeNotFound
 		ctx.Json(resp)
 		return
+	}
+	if req.DefaultSender == 1 {
+		err = _setDefault(req.Code, req.Category.String(), 1, req.Vendor.String())
+		if err != nil {
+			resp.Code = tool.RespCodeError
+			ctx.Json(resp)
+			return
+		}
 	}
 	resp.Code = tool.RespCodeSuccess
 	ctx.Json(resp)
@@ -134,6 +150,7 @@ func ListByPage(ctx server.Context) {
 		}
 		return tx.Context.QueryTable(new(model.MessageSenderInfo)).SetCond(cond)
 	}
+	pager.OrderByExp = append(pager.OrderByExp, "message_provider")
 	pager.OrderByExp = append(pager.OrderByExp, "createTime")
 	err := app.QueryPage(&pager)
 	if err != nil {
