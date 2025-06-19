@@ -64,7 +64,7 @@ func GetMessageSenderByCode(code string) (s model.MessageSenderInfo, err error) 
 	return
 }
 
-func UpdateMessageSender(code string, defaultSender int, config msg.SenderConfig) (s model.MessageSenderInfo, err error) {
+func UpdateMessageSender(code string, config msg.SenderConfig) (s model.MessageSenderInfo, err error) {
 
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		e = ctx.Context.QueryTable(new(model.MessageSenderInfo)).Filter("Code", code).One(&s)
@@ -79,10 +79,6 @@ func UpdateMessageSender(code string, defaultSender int, config msg.SenderConfig
 				return err
 			}
 			cols = append(cols, "Config")
-		}
-		if defaultSender >= 0 {
-			s.Default = defaultSender
-			cols = append(cols, "Default")
 		}
 		_, err = ctx.Context.Update(&s, cols...)
 

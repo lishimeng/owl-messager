@@ -18,18 +18,9 @@
         <el-table-column prop="code" label="code" width="380"/>
         <el-table-column prop="defaultSender" label="默认发送人" width="120">
           <template v-slot="scope">
-<!--            <el-switch-->
-<!--                :active-value="1"-->
-<!--                :inactive-value="0"-->
-<!--                v-model="scope.row.defaultSender"-->
-<!--                disabled-->
-<!--            />-->
-              <span v-if="scope.row.defaultSender===1">
-                是
-              </span>
-              <span v-else>
-                否
-              </span>
+            <span v-if="scope.row.defaultSender">
+              是
+            </span>
           </template>
         </el-table-column>
         <el-table-column prop="vendor" label="Vendor" width="120"/>
@@ -43,13 +34,16 @@
             {{ formatDate(new Date(scope.row.updateTime), 'YYYY-mm-dd HH:MM:SS') }}
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="200">
+        <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
             <el-button size="small" type="text" @click="showEdit(scope.row)">
               编辑
             </el-button>
-            <el-button size="small" type="text" :disabled="!scope.row.defaultSender" @click="showTest(scope.row)">
-              测试
+            <el-button size="small" type="text" v-if="scope.row.defaultSender" @click="showTest(scope.row)">
+              测试发送
+            </el-button>
+            <el-button size="small" type="text" v-else @click="setDefaultSender(scope.row)">
+              设为默认
             </el-button>
             <el-popconfirm
                 title="是否删除?"
@@ -146,7 +140,7 @@ import {onMounted, reactive, ref} from 'vue';
 import {
   createMailSenderConfigApi, delSenderApi,
   getMailSendersApi,
-  getSenderInfoByCategoryAPi, senderTestApi,
+  getSenderInfoByCategoryAPi, senderTestApi, setDefaultSenderApi,
   updateMailSenderConfigApi
 } from "/@/api/mail";
 import {ElMessage} from "element-plus";
@@ -265,6 +259,18 @@ const sendTest = () => {
   }).catch(err => {
     console.log(err)
     ElMessage.error(`发送失败`)
+  })
+}
+const setDefaultSender = (row: object) => {
+  setDefaultSenderApi({
+    code: row.code,
+    category: state.category,
+    provider: row.vendor,
+    org: 1,
+  }).then(res => {
+    if (res && res.code == 200) {
+      getMailSenders();
+    }
   })
 }
 const deleteSender = (row: object) => {
