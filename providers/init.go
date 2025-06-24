@@ -55,7 +55,12 @@ func registerSmsProviderBuilders() {
 	})
 }
 
+func registerFastMsgProviderBuilders() {
+	provider.register
+}
+
 func init() {
 	registerMailProviders()
 	registerSmsProviderBuilders()
+	registerFastMsgProviderBuilders()
 }
