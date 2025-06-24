@@ -12,6 +12,7 @@ const (
 	Tencent   MessageProvider = "tencent_yun"
 	UpYun     MessageProvider = "up_yun"
 	Apns      MessageProvider = "apns"
+	FastMsg   MessageProvider = "fast_msg"
 )
 
 func (mp MessageProvider) String() string {
@@ -63,4 +64,11 @@ type TencentConfig struct {
 	Secret string `json:"secret,omitempty"`
 	Region string `json:"region,omitempty"`
 	Sender string `json:"sender,omitempty"`
+}
+
+type FastMsgConfig struct {
+	Host     string `json:"host,omitempty"` // http(s)://ip(domain):port
+	Token    string `json:"token,omitempty"`
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty"`
 }
