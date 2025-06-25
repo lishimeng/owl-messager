@@ -63,4 +63,6 @@ var vendorSupport = map[string]interface{}{
 	msg.Smtp.String() + msg.MailMessage.String():      msg.SmtpConfig{},
 	msg.Microsoft.String() + msg.MailMessage.String(): msg.GraphConfig{},
 	msg.Tencent.String() + msg.MailMessage.String():   msg.TencentConfig{},
+
+	msg.FastMsg.String() + msg.ImMessage.String(): msg.FastMsgConfig{},
 }

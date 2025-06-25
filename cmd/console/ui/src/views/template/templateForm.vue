@@ -21,26 +21,34 @@
       <el-form-item label="描述" prop="description">
         <el-input v-model="state.formData.description" clearable></el-input>
       </el-form-item>
-      <el-form-item v-if="props.category=='sms'" label="第三方模板ID" prop="templateId">
+      <el-form-item v-if="state.category=='sms'" label="第三方模板ID" prop="templateId">
         <el-input v-model="state.formData.templateId" clearable></el-input>
       </el-form-item>
-      <el-form-item v-if="props.category=='sms'" label="第三方模板签名" prop="signature">
+      <el-form-item v-if="state.category=='sms'" label="第三方模板签名" prop="signature">
         <el-input type="textarea" v-model="state.formData.signature" clearable></el-input>
       </el-form-item>
-      <el-form-item v-if="props.category=='sms'" label="指定发送平台" prop="sender">
+      <el-form-item v-if="state.category=='sms'" label="指定发送平台" prop="sender">
         <el-input type="number" v-model="state.formData.sender" clearable></el-input>
       </el-form-item>
-      <el-form-item label="模板内容">
+      <el-form-item label="模板内容" v-if="htmlTemplate">
         <wngEditor mode="default" height="300px" v-model:getHtml="state.getHtml"
                    v-model:getText="state.getText"></wngEditor>
       </el-form-item>
-      <el-form-item>
+      <el-form-item v-if="htmlTemplate">
         <el-input
             style="width: 100%"
             type="textarea"
             :autosize="{ minRows: 2, maxRows: 6 }"
             v-model="state.formData.body"
             readonly
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="模板内容" v-else>
+        <el-input
+            style="width: 100%"
+            type="textarea"
+            :autosize="{ minRows: 3, maxRows: 20 }"
+            v-model="state.formData.body"
         ></el-input>
       </el-form-item>
     </el-form>
@@ -78,7 +86,12 @@ const smsVendors = [
   "huawei_yun",
 ];
 
+const imVendors = [
+  "fastmsg",
+]
+
 onMounted(() => {
+  state.category = props.category;
   if (props.templateCode !== undefined) {
     // 编辑：加载配置
     getTemplateInfoAPi({
@@ -88,13 +101,15 @@ onMounted(() => {
       if (res.code && res.code == 200) {
         console.log(res);
         state.formData = res.item
-        state.getHtml = res.item.body.replace("<html>", "")
-            .replace("</html>", "")
-            .replace("<head>", "")
-            .replace("</head>", "")
-            .replace("<body>", "")
-            .replace("</body>", "")
-            .replace("<meta charset=\"utf-8\">", "")
+        if (htmlTemplate.value) {
+          state.getHtml = res.item.body.replace("<html>", "")
+              .replace("</html>", "")
+              .replace("<head>", "")
+              .replace("</head>", "")
+              .replace("<body>", "")
+              .replace("</body>", "")
+              .replace("<meta charset=\"utf-8\">", "")
+        }
       }
     }).catch(err => {
       ElMessage.error("无法加载模板信息")
@@ -115,37 +130,40 @@ const state = reactive({
     sender: 0,
     category: "",
   },
-
+  category: "",
   getHtml: "",
   getText: "",
 });
 
 watch(() => state.getHtml, (newVal, oldVal) => {
-  // console.log('监听：', newVal)
-  state.formData.body = "<html>" +
-      "<head>" +
-      "<meta charset=\"utf-8\">" +
-      "</head>" +
-      "<body>" + newVal +
-      "</body>" +
-      "</html>"
+  if (htmlTemplate.value) {
+    state.formData.body = "<html>" +
+        "<head>" +
+        "<meta charset=\"utf-8\">" +
+        "</head>" +
+        "<body>" + newVal +
+        "</body>" +
+        "</html>"
+  }
   // console.log(state.formData.body)
 });
 
 const onSubmit = async () => {
   // todo: 表单验证
-  state.formData.category = props.category;
+  state.formData.category = state.category;
   // console.log(state.getText,state.getHtml);
-  if (state.getText) {
-    state.formData.body = "<html>" +
-        "<head>" +
-        "<meta charset=\"utf-8\">" +
-        "</head>" +
-        "<body>" + state.getHtml +
-        "</body>" +
-        "</html>";
-  } else {
-    state.formData.body = state.getText;
+  if (htmlTemplate.value) {
+    if (state.getText) {
+      state.formData.body = "<html>" +
+          "<head>" +
+          "<meta charset=\"utf-8\">" +
+          "</head>" +
+          "<body>" + state.getHtml +
+          "</body>" +
+          "</html>";
+    } else {
+      state.formData.body = state.getText;
+    }
   }
   // if (state.formData.sender) {
   //   state.formData.sender = parseInt(state.formData.sender)
@@ -162,9 +180,7 @@ const onSubmit = async () => {
 
     if (res.code === 200) {
       ElMessage.success("提交成功！");
-      mailFormFormRef.value.resetFields();
-      state.getHtml = "";
-      state.getText = "";
+      resetForm(state.category);
       // state
       return true;
     } else {
@@ -179,20 +195,36 @@ const onSubmit = async () => {
   }
 };
 
+const resetForm = (category: string) => {
+  console.log("resetForm")
+  state.category = category;
+  state.getHtml = "";
+  state.getText = "";
+  mailFormFormRef.value.resetFields();
+  state.formData.body = "";
+}
+
 const vendors = computed(() => {
-  switch (props.category) {
+  switch (state.category) {
     case "sms":
       return smsVendors;
     case "mail":
       return mailVendors;
+    case "im":
+      return imVendors;
     default:
       return [];
   }
 })
 
+const htmlTemplate = computed(() => {
+  return state.category !== 'im'
+})
+
 
 defineExpose({
-  onSubmit
+  onSubmit,
+  resetForm
 })
 </script>
 

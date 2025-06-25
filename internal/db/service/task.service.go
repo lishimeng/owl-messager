@@ -116,6 +116,12 @@ func GetMessageInstanceId(message model.MessageInfo) (id int, err error) {
 		if err == nil {
 			id = sms.Id
 		}
+	case msg.ImMessage:
+		var im model.ImMessageInfo
+		im, err = repo.GetImByMessageId(message.Id)
+		if err == nil {
+			id = im.Id
+		}
 	default:
 		log.Info("known message category:%d[message id:%d]", message.Category, message.Id)
 		err = fmt.Errorf("known message category:%d[message id:%d]", message.Category, message.Id)

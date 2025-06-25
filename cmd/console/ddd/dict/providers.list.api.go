@@ -44,6 +44,15 @@ func providerList(ctx server.Context) {
 		})
 	}
 
+	// Im providers
+	imList := provider.GetImProviders()
+	for _, im := range imList {
+		resp.Items = append(resp.Items, ProviderInfo{
+			Name:     im.String(),
+			Category: string(msg.ImMessage),
+		})
+	}
+
 	resp.Code = tool.RespCodeSuccess
 	ctx.Json(resp)
 }

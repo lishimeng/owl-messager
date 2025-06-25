@@ -10,6 +10,7 @@ const (
 	MailMessage MessageCategory = "mail"
 	SmsMessage  MessageCategory = "sms"
 	ApnsMessage MessageCategory = "apns"
+	ImMessage   MessageCategory = "im"
 )
 
 var MessageCategories map[MessageCategory]byte
@@ -19,6 +20,7 @@ func init() {
 	MessageCategories[MailMessage] = 1
 	MessageCategories[SmsMessage] = 1
 	MessageCategories[ApnsMessage] = 1
+	MessageCategories[ImMessage] = 1
 }
 
 func IsValidCategory(category MessageCategory) (valid bool) {

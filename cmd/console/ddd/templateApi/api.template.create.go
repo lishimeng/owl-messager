@@ -26,6 +26,8 @@ func CreateTemplate(ctx server.Context) {
 		code = "tl_mail_" + code
 	case msg.SmsMessage:
 		code = "tl_sms_" + code
+	case msg.ImMessage:
+		code = "tl_im_" + code
 	default:
 		resp.Code = tool.RespCodeNotFound
 		resp.Message = "失败：未知通讯方式"

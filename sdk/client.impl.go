@@ -61,6 +61,17 @@ func (m *messageClient) SendApns(request ApnsRequest) (response Response, err er
 	}
 	return
 }
+func (m *messageClient) SendIm(request ImRequest) (response Response, err error) {
+	if debugEnable {
+		log.Debug("sendIm to: %s", request.Receiver)
+	}
+	response, err = m.send(string(msg.ImMessage), request)
+	if err != nil {
+		log.Debug(err)
+		return
+	}
+	return
+}
 
 func (m *messageClient) Templates(request TemplateRequest) (resp TemplateResponse, err error) {
 	if debugEnable {

@@ -9,6 +9,7 @@ type Client interface {
 	SendMail(req MailRequest) (resp Response, err error)
 	SendSms(req SmsRequest) (resp Response, err error)
 	SendApns(req ApnsRequest) (resp Response, err error)
+	SendIm(req ImRequest) (resp Response, err error)
 	Templates(req TemplateRequest) (resp TemplateResponse, err error)
 }
 
