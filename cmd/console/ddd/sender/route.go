@@ -20,4 +20,5 @@ func Route(root server.Router) {
 	root.Get("/mail/list/page", ListByPage)                  //获取列表
 	root.Get("/mail/info/category", GetSenderInfoByCategory) //获取配置
 	root.Post("/test/mail", testMailSender)                  //测试请求，需要转发到owl-messager
+	root.Post("/test/im", testImSender)                      //测试请求，需要转发到owl-messager
 }

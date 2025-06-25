@@ -15,6 +15,7 @@ var (
 	Providers     map[MessageCategory]map[MessageProvider]byte
 	MailProviders map[MessageProvider]byte
 	SmsProviders  map[MessageProvider]byte
+	ImProviders   map[MessageProvider]byte
 )
 
 func init() {
@@ -32,7 +33,11 @@ func init() {
 	SmsProviders[UpYun] = VendorEnable
 	SmsProviders[QiNiu] = VendorEnable
 
+	ImProviders = make(map[MessageProvider]byte)
+	ImProviders[FastMsg] = VendorEnable
+
 	Providers = make(map[MessageCategory]map[MessageProvider]byte)
 	Providers[MailMessage] = MailProviders
 	Providers[SmsMessage] = SmsProviders
+	Providers[ImMessage] = ImProviders
 }

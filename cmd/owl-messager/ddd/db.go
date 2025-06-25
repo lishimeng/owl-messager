@@ -12,6 +12,7 @@ func Tables() (t []interface{}) {
 		new(model.MailMessageInfo),
 		new(model.SmsMessageInfo),
 		new(model.ApnsMessageInfo),
+		new(model.ImMessageInfo),
 		new(model.MessageTemplate),
 		new(model.MessageSenderInfo),
 	)

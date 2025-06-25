@@ -30,3 +30,7 @@ type Response struct {
 type SmsProvider interface {
 	Send(req Request) (resp Response, err error)
 }
+
+type ImProvider interface {
+	Send(req Request) (err error)
+}

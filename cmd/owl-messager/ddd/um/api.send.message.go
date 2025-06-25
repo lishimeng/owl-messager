@@ -104,6 +104,8 @@ func sendMessage(ctx server.Context) {
 		message, resp, err = createSms(tenant.Id, req, params)
 	case msg.ApnsMessage:
 		message, resp, err = createApns(tenant.Id, req, params)
+	case msg.ImMessage:
+		message, resp, err = createIm(tenant.Id, req, params)
 	default:
 		err = fmt.Errorf("unkown message category")
 		resp.Code = -1
@@ -155,6 +157,15 @@ func createSms(org int, req Req, params string) (m model.MessageInfo, resp Resp,
 	if err != nil {
 		resp.Code = -1
 		resp.Message = "create sms message failed"
+	}
+	return
+}
+
+func createIm(org int, req Req, params string) (m model.MessageInfo, resp Resp, err error) {
+	m, err = serviceAddIm(org, req.Template, params, req.Receiver)
+	if err != nil {
+		resp.Code = -1
+		resp.Message = "create im message failed"
 	}
 	return
 }

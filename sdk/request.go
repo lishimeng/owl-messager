@@ -30,6 +30,13 @@ type ApnsRequest struct {
 	Receiver      string      `json:"receiver"`           // 接收者，多个时用逗号分隔
 }
 
+// ImRequest Im服务请求参数
+type ImRequest struct {
+	Template      string      `json:"template"` // 模板
+	TemplateParam interface{} `json:"params"`   // 参数
+	Receiver      string      `json:"receiver"` // 接收者，多个时用逗号分隔
+}
+
 // TemplateRequest 模板请求参数
 type TemplateRequest struct {
 	PageNo   int

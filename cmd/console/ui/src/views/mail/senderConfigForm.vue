@@ -140,6 +140,26 @@
         </el-form-item>
       </el-form>
     </div>
+    <!--        fastmsg -->
+    <div v-show="props.vendor=='fastmsg'">
+      <el-form style="margin-top: 20px"
+               :model="state.fastmsg"
+               ref="fastmsgFormRef"
+               label-width="120px">
+        <el-form-item label="host" prop="host">
+          <el-input v-model="state.fastmsg.host" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="token" prop="token">
+          <el-input v-model="state.fastmsg.token" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="username" prop="username">
+          <el-input v-model="state.fastmsg.username" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="password" prop="password">
+          <el-input v-model="state.fastmsg.password" clearable></el-input>
+        </el-form-item>
+      </el-form>
+    </div>
   </div>
 </template>
 
@@ -152,6 +172,7 @@ const tencentFormRef = ref();
 const aliYunFormRef = ref();
 const tencentYunFormRef = ref();
 const huaweiYunFormRef = ref();
+const fastmsgFormRef = ref();
 
 const props = defineProps({
   vendor: {
@@ -213,6 +234,12 @@ const state = reactive({
     sender: "",
     signName: ""
   },
+  fastmsg: {
+    host: "",
+    token: "",
+    username: "",
+    password: "",
+  },
 });
 
 const exportJson = () => {
@@ -229,6 +256,8 @@ const exportJson = () => {
       return JSON.stringify(state.tencentYun);
     case 'huawei_yun':
       return JSON.stringify(state.huaweiYun);
+    case 'fastmsg':
+      return JSON.stringify(state.fastmsg);
   }
 };
 
@@ -252,6 +281,9 @@ const loadJson = (vendor: string, config: string) => {
     case 'huawei_yun':
       state.huaweiYun = JSON.parse(config)
       break;
+    case 'fastmsg':
+      state.fastmsg = JSON.parse(config)
+      break;
   }
 }
 
@@ -262,6 +294,7 @@ const clearForm = () => {
   aliYunFormRef.value?.resetFields();
   tencentYunFormRef.value?.resetFields();
   huaweiYunFormRef.value?.resetFields();
+  fastmsgFormRef.value?.resetFields();
 };
 
 defineExpose({

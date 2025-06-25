@@ -12,7 +12,7 @@ const (
 	Tencent   MessageProvider = "tencent_yun"
 	UpYun     MessageProvider = "up_yun"
 	Apns      MessageProvider = "apns"
-	FastMsg   MessageProvider = "fast_msg"
+	FastMsg   MessageProvider = "fastmsg"
 )
 
 func (mp MessageProvider) String() string {

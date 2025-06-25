@@ -166,7 +166,8 @@ const state = reactive({
   category: "mail",
   categoryList: [
     "mail",
-    "sms"
+    "sms",
+    "im"
   ],
   vendors: [],
   mailVendors: [
@@ -178,6 +179,9 @@ const state = reactive({
     "ali_yun",
     "tencent_yun",
     "huawei_yun",
+  ],
+  imVendors: [
+    "fastmsg",
   ],
   form: {
     code: "",
@@ -224,6 +228,10 @@ const showTest = async (row: object) => {
     case 'sms':
       state.testTitle = "SMS发送测试"
       state.testReceiver = "收信手机"
+      break
+    case 'im':
+      state.testTitle = "即时通讯发送测试"
+      state.testReceiver = "收信人"
       break
   }
   state.testForm.vendor = row.vendor
@@ -340,6 +348,9 @@ const getMailSenders = () => {
       break
     case 'sms':
       state.vendors = state.smsVendors
+      break
+    case 'im':
+      state.vendors = state.imVendors
       break
   }
   state.queryValue.category = state.category

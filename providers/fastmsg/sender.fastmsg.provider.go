@@ -1,10 +1,12 @@
-package ding
+package fastmsg
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/baidubce/bce-sdk-go/util/log"
+	"github.com/lishimeng/owl-messager/internal/messager"
+	"github.com/lishimeng/owl-messager/internal/provider/template"
 	"github.com/lishimeng/owl-messager/internal/util"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 	"path"
@@ -21,7 +23,7 @@ type fastMsgSdkImpl struct {
 	sessionId string
 }
 
-func New(config msg.FastMsgConfig) (sdk SDK, err error) {
+func New(config msg.FastMsgConfig) (sdk messager.ImProvider, err error) {
 
 	var oto fastMsgSdkImpl
 	oto.config = &config
@@ -36,7 +38,7 @@ func New(config msg.FastMsgConfig) (sdk SDK, err error) {
 }
 
 func (sdk *fastMsgSdkImpl) Auth() (err error) {
-	var resource = path.Join(sdk.config.Host, "chatserver/api/user/auth")
+	var resource = joinPath(sdk.config.Host, "chatserver/api/user/auth")
 	var req = make(map[string]string)
 	if sdk.config == nil {
 		err = errors.New("nil FastMsgConfig")
@@ -64,13 +66,13 @@ func (sdk *fastMsgSdkImpl) SendRobotMessage(receiver string, content string) (er
 	if err != nil {
 		return
 	}
-	var resource = path.Join(sdk.config.Host, "chatserver/api/message/new")
+	var resource = joinPath(sdk.config.Host, "chatserver/api/message/new")
 	var resp = make(map[string]string)
 	var params = make(map[string]any)
 	// TODO session的使用
 	params["username"] = receiver
 	params["content"] = content // TODO urlencoding时是否需要转换, 以支持空格/UTF-8字符
-	params["msgtype"] = 0
+	params["msgtype"] = "0"     // 需要是 map[string]string
 	err = request(resource, params, "application/x-www-form-urlencoded", &resp)
 	if err != nil {
 		return
@@ -85,6 +87,15 @@ func (sdk *fastMsgSdkImpl) SendRobotMessage(receiver string, content string) (er
 		log.Info("fast_msg: %s", msgId)
 	}
 	return
+}
+
+func (sdk *fastMsgSdkImpl) Send(req messager.Request) (err error) {
+	receiver := req.Receivers
+	content, err := template.Rend(req.Params, req.Template.Body)
+	if err != nil {
+		return
+	}
+	return sdk.SendRobotMessage(receiver, content)
 }
 
 func request(url string, params any, contentType string, respPtr any) (err error) {
@@ -130,4 +141,14 @@ func json2Map(p any) (m map[string]string, err error) {
 	m = make(map[string]string)
 	err = json.Unmarshal(bs, &m)
 	return
+}
+
+func joinPath(host string, p string) string {
+	index := strings.Index(host, "://")
+	if index == -1 {
+		return path.Join(host, p)
+	}
+	protocol := host[:index+3]
+	rest := host[index+3:]
+	return protocol + path.Join(rest, p)
 }
