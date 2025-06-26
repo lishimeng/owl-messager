@@ -7,7 +7,7 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/util"
 	"github.com/lishimeng/owl-messager/pkg/msg"
-	"path"
+	"net/url"
 	"strings"
 )
 
@@ -36,12 +36,17 @@ func New(config msg.FastMsgConfig) (sdk SDK, err error) {
 }
 
 func (sdk *fastMsgSdkImpl) Auth() (err error) {
-	var resource = path.Join(sdk.config.Host, "chatserver/api/user/auth")
-	var req = make(map[string]string)
+	const action = "chatserver/api/user/auth"
 	if sdk.config == nil {
 		err = errors.New("nil FastMsgConfig")
 		return
 	}
+	resource, err := url.JoinPath(sdk.config.Host, action)
+	if err != nil {
+		return
+	}
+	var req = make(map[string]string)
+
 	req["token"] = sdk.config.Token
 	req["username"] = sdk.config.Username
 	req["password"] = sdk.config.Password
@@ -59,18 +64,22 @@ func (sdk *fastMsgSdkImpl) Auth() (err error) {
 }
 
 func (sdk *fastMsgSdkImpl) SendRobotMessage(receiver string, content string) (err error) {
+	const action = "chatserver/api/message/new"
 	err = sdk.Auth() // 每次登录
 
 	if err != nil {
 		return
 	}
-	var resource = path.Join(sdk.config.Host, "chatserver/api/message/new")
+	resource, err := url.JoinPath(sdk.config.Host, action)
+	if err != nil {
+		return
+	}
 	var resp = make(map[string]string)
 	var params = make(map[string]any)
 	// TODO session的使用
 	params["username"] = receiver
 	params["content"] = content // TODO urlencoding时是否需要转换, 以支持空格/UTF-8字符
-	params["msgtype"] = 0
+	params["msgtype"] = "0"     // 需要是 map[string]string
 	err = request(resource, params, "application/x-www-form-urlencoded", &resp)
 	if err != nil {
 		return

@@ -33,3 +33,31 @@ func testMailSender(ctx server.Context) {
 
 	ctx.Json(resp)
 }
+
+func testImSender(ctx server.Context) {
+	var resp sdk.Response
+	var req sdk.ImRequest
+	resp.Code = tool.RespCodeSuccess
+	err := ctx.C.ReadJSON(&req)
+	if err != nil {
+		resp.Code = tool.RespCodeNotFound
+		ctx.Json(resp)
+		return
+	}
+
+	// 请求代理
+	resp, err = sdk.New(
+		sdk.WithAuth("test", "secret_code"),
+		sdk.WithHost("http://127.0.0.1:91")).
+		SendIm(req)
+
+	if err != nil {
+		resp.Code = tool.RespCodeError
+	}
+
+	if resp.Code == -1 {
+		resp.Code = tool.RespCodeError
+	}
+
+	ctx.Json(resp)
+}

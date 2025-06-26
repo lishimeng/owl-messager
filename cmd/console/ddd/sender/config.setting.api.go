@@ -38,10 +38,13 @@ func SetMailSenderInfo(ctx server.Context) {
 		code = "sender_mail_" + code
 	case msg.SmsMessage:
 		code = "sender_sms_" + code
+	case msg.ImMessage:
+		code = "sender_im_" + code
 	default:
 		resp.Code = tool.RespCodeNotFound
 		resp.Message = "失败：未知通讯方式"
 		ctx.Json(resp)
+		return
 	}
 
 	_, err = repo.CreateMessageSender(1, req.Category, req.Vendor, 0, code, req.Config)

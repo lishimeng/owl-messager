@@ -5,6 +5,7 @@ import (
 	"github.com/lishimeng/owl-messager/internal/messager"
 	"github.com/lishimeng/owl-messager/internal/provider"
 	"github.com/lishimeng/owl-messager/pkg/msg"
+	"github.com/lishimeng/owl-messager/providers/fastmsg"
 	"github.com/lishimeng/owl-messager/providers/mail"
 	"github.com/lishimeng/owl-messager/providers/sms"
 )
@@ -56,7 +57,15 @@ func registerSmsProviderBuilders() {
 }
 
 func registerFastMsgProviderBuilders() {
-	provider.register
+	provider.RegisterImProvider(msg.FastMsg, func(config string) (p messager.ImProvider, err error) {
+		var fastmsgConf msg.FastMsgConfig
+		err = json.Unmarshal([]byte(config), &fastmsgConf)
+		if err != nil {
+			return
+		}
+		p, err = fastmsg.New(fastmsgConf)
+		return
+	})
 }
 
 func init() {

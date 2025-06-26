@@ -108,7 +108,8 @@ const state = reactive({
   category: 'mail',
   categoryList: [
     "mail",
-    "sms"
+    "sms",
+    "im"
   ],
   dataList: [],
   queryValue: {
@@ -159,7 +160,6 @@ const onEditSubmit = async () => {
 const getTemplateList = () => {
   state.queryValue.category = state.category
   getTemplateListAPi(state.queryValue).then(res => {
-    console.log(res)
     if (res.items && res.items.length > 0) {
       state.dataList = res.items
       state.queryValue.totalNum = res.totalPage
@@ -183,7 +183,7 @@ const onCurrentChange = (val: any) => {
 }
 const chooseCategory = () => {
   getTemplateList();
-
+  createRef.value?.resetForm(state.category);
 }
 const openCreate = () => {
   state.showCreateDrawer = true

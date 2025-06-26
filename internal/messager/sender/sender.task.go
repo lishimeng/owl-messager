@@ -16,6 +16,7 @@ type taskExecutor struct {
 	mailSenders Mail
 	smsSenders  Sms
 	apnsSender  Apns
+	imSender    Im
 
 	ctx context.Context
 }
@@ -34,6 +35,7 @@ func New(ctx context.Context) (t TaskExecutor, err error) {
 	if err != nil {
 		return
 	}
+	im, err := NewImSender(ctx)
 	if err != nil {
 		return
 	}
@@ -41,6 +43,7 @@ func New(ctx context.Context) (t TaskExecutor, err error) {
 		mailSenders: mail,
 		smsSenders:  sms,
 		apnsSender:  apns,
+		imSender:    im,
 		ctx:         ctx,
 	}
 	return
@@ -76,6 +79,15 @@ func (c *taskExecutor) Execute(task model.MessageTask) (err error) {
 			return
 		}
 		err = c.smsSenders.Send(m)
+	case msg.ImMessage:
+		log.Debug("im task")
+		var m model.ImMessageInfo
+		m, err = repo.GetImByMessageId(mi.Id)
+		if err != nil {
+			_ = log.Error("no im refer to message:%d", mi.Id)
+			return
+		}
+		err = c.imSender.Send(m)
 	default:
 		log.Info("unknown category:%d[task:%d]\n", category, task.Id)
 	}
