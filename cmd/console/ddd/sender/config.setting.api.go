@@ -1,6 +1,5 @@
 package sender
 
-import "C"
 import (
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
