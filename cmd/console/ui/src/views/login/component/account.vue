@@ -14,6 +14,9 @@
 				autocomplete="off"
 				show-password
 			>
+        <template #prefix>
+          <el-icon class="el-input__icon"><ele-Lock /></el-icon>
+        </template>
 			</el-input>
 		</el-form-item>
 		<el-form-item class="login-animation3">
@@ -132,7 +135,7 @@ const signInSuccess = (isNoPower: boolean | undefined) => {
 	margin-top: 20px;
 	@for $i from 1 through 4 {
 		.login-animation#{$i} {
-			opacity: 0;
+			opacity: 1;
 			animation-name: error-num;
 			animation-duration: 0.5s;
 			animation-fill-mode: forwards;

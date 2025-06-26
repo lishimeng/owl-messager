@@ -1,13 +1,13 @@
 <template>
 	<div class="login-container flex">
 		<div class="login-left">
-			<div class="login-left-logo">
-				<img :src="logoMini" />
-				<div class="login-left-logo-text">
-					<span>{{ getThemeConfig.globalViceTitle }}</span>
-					<span class="login-left-logo-text-msg">{{ getThemeConfig.globalViceTitleMsg }}</span>
-				</div>
-			</div>
+<!--			<div class="login-left-logo">-->
+<!--				<img :src="logoMini" />-->
+<!--				<div class="login-left-logo-text">-->
+<!--					<span>{{ getThemeConfig.globalViceTitle }}</span>-->
+<!--					<span class="login-left-logo-text-msg">{{ getThemeConfig.globalViceTitleMsg }}</span>-->
+<!--				</div>-->
+<!--			</div>-->
 			<div class="login-left-img">
 				<img :src="loginMain" />
 			</div>
@@ -15,27 +15,27 @@
 		</div>
 		<div class="login-right flex">
 			<div class="login-right-warp flex-margin">
-				<span class="login-right-warp-one"></span>
-				<span class="login-right-warp-two"></span>
+<!--				<span class="login-right-warp-one"></span>-->
+<!--				<span class="login-right-warp-two"></span>-->
 				<div class="login-right-warp-mian">
-					<div class="login-right-warp-main-title">{{ getThemeConfig.globalTitle }} 欢迎您！</div>
-					<div class="login-right-warp-main-form">
-						<div v-if="!state.isScan">
-							<el-tabs v-model="state.tabsActiveName">
+<!--					<div class="login-right-warp-main-title">{{ getThemeConfig.globalTitle }} 欢迎您！</div>-->
+					<el-row type="flex" align="middle" class="login-right-warp-main-form">
+						<el-col :span="24" v-if="!state.isScan">
+							<el-tabs v-model="state.tabsActiveName" class="mt35">
 								<el-tab-pane :label="$t('message.label.one1')" name="account">
 									<Account />
 								</el-tab-pane>
-								<el-tab-pane :label="$t('message.label.two2')" name="mobile">
-									<Mobile />
-								</el-tab-pane>
+<!--								<el-tab-pane :label="$t('message.label.two2')" name="mobile">-->
+<!--									<Mobile />-->
+<!--								</el-tab-pane>-->
 							</el-tabs>
-						</div>
-						<Scan v-if="state.isScan" />
-						<div class="login-content-main-sacn" @click="state.isScan = !state.isScan">
-							<i class="iconfont" :class="state.isScan ? 'icon-diannao1' : 'icon-barcode-qr'"></i>
-							<div class="login-content-main-sacn-delta"></div>
-						</div>
-					</div>
+            </el-col>
+<!--						<Scan v-if="state.isScan" />-->
+<!--						<div class="login-content-main-sacn" @click="state.isScan = !state.isScan">-->
+<!--							<i class="iconfont" :class="state.isScan ? 'icon-diannao1' : 'icon-barcode-qr'"></i>-->
+<!--							<div class="login-content-main-sacn-delta"></div>-->
+<!--						</div>-->
+					</el-row>
 				</div>
 			</div>
 		</div>
@@ -134,7 +134,7 @@ onMounted(() => {
 			border: 1px solid var(--el-color-primary-light-3);
 			border-radius: 3px;
 			width: 500px;
-			height: 500px;
+			height: 400px;
 			position: relative;
 			overflow: hidden;
 			background-color: var(--el-color-white);
@@ -211,6 +211,7 @@ onMounted(() => {
 				.login-right-warp-main-form {
 					flex: 1;
 					padding: 0 50px 50px;
+          height: 100%;
 					.login-content-main-sacn {
 						position: absolute;
 						top: 0;
