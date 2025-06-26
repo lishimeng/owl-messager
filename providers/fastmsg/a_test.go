@@ -1,4 +1,4 @@
-package ding
+package fastmsg
 
 import (
 	"net/url"

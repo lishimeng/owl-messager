@@ -1,10 +1,12 @@
-package ding
+package fastmsg
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl-messager/internal/messager"
+	"github.com/lishimeng/owl-messager/internal/provider/template"
 	"github.com/lishimeng/owl-messager/internal/util"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 	"net/url"
@@ -19,9 +21,10 @@ type SDK interface {
 type fastMsgSdkImpl struct {
 	config    *msg.FastMsgConfig
 	sessionId string
+	SDK
 }
 
-func New(config msg.FastMsgConfig) (sdk SDK, err error) {
+func New(config msg.FastMsgConfig) (sdk messager.ImProvider, err error) {
 
 	var oto fastMsgSdkImpl
 	oto.config = &config
@@ -139,4 +142,13 @@ func json2Map(p any) (m map[string]string, err error) {
 	m = make(map[string]string)
 	err = json.Unmarshal(bs, &m)
 	return
+}
+
+func (sdk *fastMsgSdkImpl) Send(req messager.Request) (err error) {
+	receiver := req.Receivers
+	content, err := template.Rend(req.Params, req.Template.Body)
+	if err != nil {
+		return
+	}
+	return sdk.SendRobotMessage(receiver, content)
 }
