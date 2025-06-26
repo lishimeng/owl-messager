@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/baidubce/bce-sdk-go/util/log"
+	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/util"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 	"path"

@@ -27,6 +27,7 @@ func New() (r Rest) {
 
 func (r *RestHandler) Form(url string, data map[string]string, headers map[string]string) (code int, body string, err error) {
 	req := r.proxy.NewRequest()
+	req = req.SetDebug(true)
 	resp, err := req.SetFormData(data).SetHeaders(headers).Post(url)
 	if err != nil {
 		return
