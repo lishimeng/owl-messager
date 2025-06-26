@@ -2,7 +2,7 @@
   <div class="home-container layout-pd" style="margin-top: 10px">
     <el-form :inline="true">
       <el-form-item label="通讯方式">
-        <el-select v-model="state.category" @change="chooseCategory" placeholder="请选择通讯方式">
+        <el-select v-model="state.category" @change="chooseCategory" placeholder="请选择通讯方式" style="width: 120px">
           <el-option v-for="(item,index) in state.categoryList" :key="index" :label="item" :value="item">
           </el-option>
         </el-select>
@@ -27,16 +27,16 @@
             {{ formatDate(new Date(scope.row.updateTime), 'YYYY-mm-dd HH:MM:SS') }}
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" width="140" fixed="right">
           <template #default="scope">
-            <el-button icon="ele-Edit" type="primary" @click="openEdit(scope.row.code)">
+            <el-button size="small" type="text" @click="openEdit(scope.row.code)">
               编辑
             </el-button>
             <el-popconfirm
                 title="是否删除?"
                 @confirm="deleteDeviceRow(scope.row.code)">
               <template #reference>
-                <el-button icon="ele-Delete" type="danger">删除</el-button>
+                <el-button size="small" type="text">删除</el-button>
               </template>
             </el-popconfirm>
           </template>
