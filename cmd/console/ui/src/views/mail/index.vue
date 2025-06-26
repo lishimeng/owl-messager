@@ -2,7 +2,7 @@
   <div class="home-container layout-pd" style="margin-top: 10px">
     <el-form :inline="true">
       <el-form-item label="通讯方式">
-        <el-select v-model="state.category" @change="getMailSenders" placeholder="请选择通讯方式">
+        <el-select v-model="state.category" @change="getMailSenders" placeholder="请选择通讯方式" style="width: 120px">
           <el-option v-for="(item,index) in state.categoryList" :key="index" :label="item" :value="item">
           </el-option>
         </el-select>
@@ -24,12 +24,12 @@
           </template>
         </el-table-column>
         <el-table-column prop="vendor" label="Vendor" width="120"/>
-        <el-table-column prop="createTime" label="创建时间">
+        <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip>
           <template #default="scope">
             {{ formatDate(new Date(scope.row.createTime), 'YYYY-mm-dd HH:MM:SS') }}
           </template>
         </el-table-column>
-        <el-table-column prop="updateTime" label="更新时间">
+        <el-table-column prop="updateTime" label="更新时间" show-overflow-tooltip>
           <template #default="scope">
             {{ formatDate(new Date(scope.row.updateTime), 'YYYY-mm-dd HH:MM:SS') }}
           </template>

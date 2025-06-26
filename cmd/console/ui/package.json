@@ -24,7 +24,7 @@
     "echarts": "^5.4.2",
     "echarts-gl": "^2.0.9",
     "echarts-wordcloud": "^2.1.0",
-    "element-plus": "^2.3.1",
+    "element-plus": "^2.6.1",
     "font-awesome": "^4.7.0",
     "js-cookie": "^3.0.1",
     "js-table2excel": "^1.0.3",

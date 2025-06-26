@@ -12,9 +12,9 @@ import {useThemeConfig} from '/src/stores/themeConfig';
  * 2、/src/i18n/pages 下的 ts 为各界面的国际化内容
  */
 // element plus 自带国际化
-import enLocale from 'element-plus/lib/locale/lang/en';
-import zhcnLocale from 'element-plus/lib/locale/lang/zh-cn';
-import zhtwLocale from 'element-plus/lib/locale/lang/zh-tw';
+import enLocale from 'element-plus/dist/locale/en';
+import zhcnLocale from 'element-plus/dist/locale/zh-cn';
+import zhtwLocale from 'element-plus/dist/locale/zh-tw';
 
 // 定义变量内容
 const messages = {};
