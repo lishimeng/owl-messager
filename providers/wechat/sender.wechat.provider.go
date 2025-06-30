@@ -1,11 +1,10 @@
 package wechat
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-resty/resty/v2"
 	"github.com/lishimeng/go-log"
+	"resty.dev/v3"
 	"time"
 )
 
@@ -51,16 +50,14 @@ func (p *Provider) getAccessToken() (t ClientCredentialToken, err error) {
 	host := fmt.Sprintf(tokenHost, p.AppId, p.AppSecret)
 	log.Info("get wx access token: %s", host)
 	// TODO
-	resp, err := p.rest.R().Get(host)
+	resp, err := p.rest.R().
+		SetResult(&t).
+		Get(host)
 	if err != nil {
 		return
 	}
 	if resp.StatusCode() != 200 {
 		err = errors.New(resp.Status())
-		return
-	}
-	err = json.Unmarshal(resp.Body(), &t)
-	if err != nil {
 		return
 	}
 	t.Timestamp = time.Now().Unix()

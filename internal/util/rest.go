@@ -2,8 +2,8 @@ package util
 
 import (
 	"crypto/tls"
-	"encoding/json"
-	"github.com/go-resty/resty/v2"
+	"io/ioutil"
+	"resty.dev/v3"
 )
 
 type Rest interface {
@@ -33,8 +33,12 @@ func (r *RestHandler) Form(url string, data map[string]string, headers map[strin
 		return
 	}
 	code = resp.StatusCode()
-	txt := resp.Body()
-	body = string(txt)
+	defer resp.Body.Close()
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+	body = string(bodyBytes)
 	return
 }
 
@@ -45,8 +49,12 @@ func (r *RestHandler) FormUrlEncoded(url string, data map[string]string, headers
 		return
 	}
 	code = resp.StatusCode()
-	txt := resp.Body()
-	body = string(txt)
+	defer resp.Body.Close()
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+	body = string(bodyBytes)
 	return
 }
 
@@ -58,21 +66,25 @@ func (r *RestHandler) Get(uri string) (code int, body string, err error) {
 	}
 
 	code = resp.StatusCode()
-	bodyBs := resp.Body()
-	body = string(bodyBs)
+	defer resp.Body.Close()
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+	body = string(bodyBytes)
 	return
 }
 
 func (r *RestHandler) GetJson(uri string, body interface{}) (code int, err error) {
 
-	resp, err := r.proxy.R().Get(uri)
+	resp, err := r.proxy.R().
+		SetResult(body).
+		Get(uri)
 	if err != nil {
 		return
 	}
 
 	code = resp.StatusCode()
-	txt := resp.Body()
-	err = json.Unmarshal(txt, body)
 	return
 }
 
@@ -82,7 +94,12 @@ func (r *RestHandler) Post(uri string) (code int, body string, err error) {
 		return
 	}
 	code = resp.StatusCode()
-	body = string(resp.Body())
+	defer resp.Body.Close()
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+	body = string(bodyBytes)
 	return
 }
 
