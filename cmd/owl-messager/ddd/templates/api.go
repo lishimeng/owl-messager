@@ -17,7 +17,7 @@ import (
 
 type resp struct {
 	app.PagerResponse
-	Data []pkg.TemplateInfo
+	Data []pkg.TemplateInfo `json:"items,omitempty"`
 }
 
 func templates(ctx server.Context) {
@@ -88,5 +88,9 @@ func getTemplates(category msg.MessageCategory, org int, pageNo, pageSize int) (
 	}
 	pager.OrderByExp = append(pager.OrderByExp, "createTime")
 	err = app.QueryPage(&pager)
+	if err != nil {
+		return
+	}
+	tpls = pager.Data
 	return
 }
