@@ -77,7 +77,7 @@ func (sdk *FastMsgSdkImpl) Auth() (err error) {
 }
 
 func (sdk *FastMsgSdkImpl) Send(req messager.Request) (err error) {
-	content, err := template.Rend(req.Params, req.Template.Body)
+	content, err := template.RendText(req.Params, req.Template.Body)
 	if err != nil {
 		return
 	}
