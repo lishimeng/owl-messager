@@ -4,6 +4,7 @@ import (
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/apnsApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/clientApi"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/historyApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/mailApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/messageApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/sender"
@@ -11,6 +12,7 @@ import (
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/smsApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/taskApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/templateApi"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/themeApi"
 )
 
 func Route(app server.Router) {
@@ -25,6 +27,8 @@ func router(root server.Router) {
 	template(root.Path("/template"))
 	vendor(root.Path("/vendor"))
 	mail(root.Path("/mail"))
+	theme(root.Path("/theme"))
+	history(root.Path("/history"))
 
 	sender.Route(root.Path("/sender"))
 	clientApi.Route(root.Path("/client"))
@@ -104,4 +108,14 @@ func mail(p server.Router) {
 
 	p.Get("/message/sms/{id}", smsApi.GetByMessage)
 	p.Get("/message/apns/{id}", apnsApi.GetByMessage)
+}
+
+func theme(p server.Router) {
+	p.Get("/", themeApi.GetThemeConfig)
+}
+
+func history(p server.Router) {
+	p.Get("/", historyApi.GetHistoryList)
+	p.Get("/one", historyApi.GetHistoryOne)
+	p.Get("/count", historyApi.GetHistoryCount)
 }

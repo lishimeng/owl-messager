@@ -261,7 +261,7 @@ const sendTest = () => {
     template: state.testForm.tpl,
   }).then(res => {
     if (res && res.code == 200) {
-      ElMessage.success(`请检查收件邮箱`);
+      ElMessage.primary(`请检查发送历史与收件邮箱`);
       getMailSenders();
     }
   }).catch(err => {

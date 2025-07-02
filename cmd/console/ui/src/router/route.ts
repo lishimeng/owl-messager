@@ -107,6 +107,21 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
                     icon: 'ele-Position',
                 },
             },
+            {
+                path: '/history',
+                name: 'History',
+                component: () => import('/src/views/history/index.vue'),
+                meta: {
+                    title: 'message.router.history',
+                    isLink: '',
+                    isHide: false,
+                    isKeepAlive: true,
+                    isAffix: false,
+                    isIframe: false,
+                    roles: ['admin', 'common'],
+                    icon: 'ele-Clock',
+                },
+            },
             // {
             //     path: '/sender',
             //     name: 'sender',
