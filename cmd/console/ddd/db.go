@@ -9,10 +9,13 @@ func Tables() (t []interface{}) {
 		new(model.MessageRunningTask),
 		new(model.Tenant),
 		new(model.OpenClient),
+		new(model.MailMessageInfo),
 		new(model.SmsMessageInfo),
 		new(model.ApnsMessageInfo),
+		new(model.ImMessageInfo),
 		new(model.MessageTemplate),
 		new(model.MessageSenderInfo),
+		new(model.Config),
 	)
 	return
 }

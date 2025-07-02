@@ -20,6 +20,7 @@ import other from '/@/utils/other';
 import { Local, Session } from '/@/utils/storage';
 import mittBus from '/@/utils/mitt';
 import setIntroduction from '/@/utils/setIconfont';
+import {getThemeConfigApi} from "/@/api/theme";
 
 // 引入组件
 const LockScreen = defineAsyncComponent(() => import('/@/layout/lockScreen/index.vue'));
@@ -72,9 +73,20 @@ onMounted(() => {
 		mittBus.on('openSetingsDrawer', () => {
 			setingsRef.value.openDrawer();
 		});
+    // 从后端加载配置
+    getThemeConfigApi({}).then((res) => {
+      if (res && res.code === 200) {
+        storesThemeConfig.setThemeConfig(res);
+      } else {
+        if (Local.get('themeConfig')) {
+          storesThemeConfig.setThemeConfig({ themeConfig: Local.get('themeConfig') });
+        }
+      }
+    }).catch((err) => {
+      console.log("getThemeConfigAPi: error");
+    })
 		// 获取缓存中的布局配置
 		if (Local.get('themeConfig')) {
-			storesThemeConfig.setThemeConfig({ themeConfig: Local.get('themeConfig') });
 			document.documentElement.style.cssText = Local.get('themeConfigStyle');
 		}
 		// 获取缓存中的全屏配置
