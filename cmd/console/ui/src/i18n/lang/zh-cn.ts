@@ -194,4 +194,9 @@ export default {
         btnTwo: '马上更新',
         btnTwoLoading: '更新中',
     },
+    category: {
+        mail: '电子邮件（mail）',
+        im: '即时通讯（im）',
+        sms: '手机短信（sms）',
+    }
 };

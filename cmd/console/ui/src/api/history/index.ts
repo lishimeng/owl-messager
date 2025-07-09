@@ -5,3 +5,5 @@ const baseUrl = "/api"
 export const getHistoryListApi = (p: object) => get(baseUrl + "/history", p);
 export const getHistoryOneApi = (p: object) => get(baseUrl + "/history/one", p);
 export const getHistoryCountApi = (p: object) => get(baseUrl + "/history/count", p);
+export const getProviderStatApi = (p: object) => get(baseUrl + "/statistics/providers", p);
+export const getDailyStatApi = (p: object) => get(baseUrl + "/statistics/daily", p);

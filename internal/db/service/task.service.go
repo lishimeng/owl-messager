@@ -68,6 +68,11 @@ func OnTaskHandleSuccess(task model.MessageTask) (err error) {
 		}
 		// delete running success
 		e = repo.DeleteRunningTaskByTaskId(ctx, task.Id)
+		if e != nil {
+			return
+		}
+		// 统计
+		e = repo.UpdateStatistics(ctx, task)
 		return
 	})
 

@@ -15,6 +15,8 @@ func Tables() (t []interface{}) {
 		new(model.ImMessageInfo),
 		new(model.MessageTemplate),
 		new(model.MessageSenderInfo),
+		new(model.ProviderStats),
+		new(model.DailySummary),
 	)
 	return
 }
