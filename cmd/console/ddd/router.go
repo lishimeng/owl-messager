@@ -10,6 +10,7 @@ import (
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/sender"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/senderApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/smsApi"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/statisticsApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/taskApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/templateApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/themeApi"
@@ -29,6 +30,7 @@ func router(root server.Router) {
 	mail(root.Path("/mail"))
 	theme(root.Path("/theme"))
 	history(root.Path("/history"))
+	statistics(root.Path("/statistics"))
 
 	sender.Route(root.Path("/sender"))
 	clientApi.Route(root.Path("/client"))
@@ -118,4 +120,9 @@ func history(p server.Router) {
 	p.Get("/", historyApi.GetHistoryList)
 	p.Get("/one", historyApi.GetHistoryOne)
 	p.Get("/count", historyApi.GetHistoryCount)
+}
+
+func statistics(p server.Router) {
+	p.Get("/providers", statisticsApi.GetProvidersStat)
+	p.Get("/daily", statisticsApi.GetDailyStat)
 }
