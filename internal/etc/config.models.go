@@ -49,4 +49,7 @@ type db struct {
 // console独有的配置
 type console struct {
 	TokenProvider string `toml:"tokenProvider"`
+	Host          string `toml:"host"`
+	AppKey        string `toml:"appKey"`
+	Secret        string `toml:"secret"`
 }
