@@ -88,7 +88,7 @@ func CreateMessageTemplate(
 	return
 }
 
-func UpdateMessageTemplate(status int, code, name, body, description string, provider string) (m model.MessageTemplate, err error) {
+func UpdateMessageTemplate(status int, code, name, body, params, description string, provider string) (m model.MessageTemplate, err error) {
 
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		e = ctx.Context.QueryTable(new(model.MessageTemplate)).Filter("Code", code).One(&m)
@@ -107,6 +107,10 @@ func UpdateMessageTemplate(status int, code, name, body, description string, pro
 		if len(body) > 0 {
 			m.Body = body
 			cols = append(cols, "Body")
+		}
+		if len(params) > 0 {
+			m.Params = params
+			cols = append(cols, "Params")
 		}
 		if len(description) > 0 {
 			m.Description = description

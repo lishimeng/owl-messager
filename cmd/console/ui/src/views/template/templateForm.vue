@@ -21,36 +21,44 @@
       <el-form-item label="描述" prop="description">
         <el-input v-model="state.formData.description" clearable></el-input>
       </el-form-item>
-      <el-form-item v-if="state.category=='sms'" label="第三方模板ID" prop="templateId">
-        <el-input v-model="state.formData.templateId" clearable></el-input>
+      <el-form-item v-if="useCloudTemplate" label="第三方模板code" prop="cloudTemplate">
+        <el-input v-model="state.formData.cloudTemplate" clearable></el-input>
       </el-form-item>
-      <el-form-item v-if="state.category=='sms'" label="第三方模板签名" prop="signature">
-        <el-input type="textarea" v-model="state.formData.signature" clearable></el-input>
-      </el-form-item>
-      <el-form-item v-if="state.category=='sms'" label="指定发送平台" prop="sender">
-        <el-input type="number" v-model="state.formData.sender" clearable></el-input>
-      </el-form-item>
-      <el-form-item label="模板内容" v-if="htmlTemplate">
-        <wngEditor mode="default" height="300px" v-model:getHtml="state.getHtml"
-                   v-model:getText="state.getText"></wngEditor>
-      </el-form-item>
-      <el-form-item v-if="htmlTemplate">
-        <el-input
-            style="width: 100%"
-            type="textarea"
-            :autosize="{ minRows: 2, maxRows: 6 }"
-            v-model="state.formData.body"
-            readonly
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="模板内容" v-else>
-        <el-input
-            style="width: 100%"
-            type="textarea"
-            :autosize="{ minRows: 3, maxRows: 20 }"
-            v-model="state.formData.body"
-        ></el-input>
-      </el-form-item>
+			<el-form-item label="模板参数">
+				<el-input
+					style="width: 100%"
+					v-model="state.formData.params"
+				></el-input>
+			</el-form-item>
+<!--      <el-form-item v-if="state.category=='sms'" label="第三方模板签名" prop="signature">-->
+<!--        <el-input type="textarea" v-model="state.formData.signature" clearable></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item v-if="state.category=='sms'" label="指定发送平台" prop="sender">-->
+<!--        <el-input type="number" v-model="state.formData.sender" clearable></el-input>-->
+<!--      </el-form-item>-->
+			<div v-if="!useCloudTemplate">
+				<el-form-item label="模板内容" v-if="htmlTemplate">
+					<wngEditor mode="default" height="300px" v-model:getHtml="state.getHtml"
+										v-model:getText="state.getText"></wngEditor>
+				</el-form-item>
+				<el-form-item v-if="htmlTemplate">
+					<el-input
+							style="width: 100%"
+							type="textarea"
+							:autosize="{ minRows: 2, maxRows: 6 }"
+							v-model="state.formData.body"
+							readonly
+					></el-input>
+				</el-form-item>
+				<el-form-item label="模板内容" v-else>
+					<el-input
+							style="width: 100%"
+							type="textarea"
+							:autosize="{ minRows: 3, maxRows: 20 }"
+							v-model="state.formData.body"
+					></el-input>
+				</el-form-item>
+			</div>
     </el-form>
 
   </div>
@@ -101,7 +109,7 @@ onMounted(() => {
       if (res.code && res.code == 200) {
         console.log(res);
         state.formData = res.item
-        if (htmlTemplate.value) {
+        if (htmlTemplate.value && !useCloudTemplate.value) {
           state.getHtml = res.item.body.replace("<html>", "")
               .replace("</html>", "")
               .replace("<head>", "")
@@ -124,7 +132,7 @@ const state = reactive({
     description: "",
     body: "",
     provider: "",
-    templateId: "",
+		cloudTemplate: "",
     params: "",
     signature: "",
     sender: 0,
@@ -219,6 +227,10 @@ const vendors = computed(() => {
 
 const htmlTemplate = computed(() => {
   return state.category !== 'im'
+})
+
+const useCloudTemplate = computed(() => {
+	return state.category === 'sms'
 })
 
 

@@ -16,7 +16,13 @@ func UpdateTemplate(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
-	_, err = repo.UpdateMessageTemplate(req.Status, req.Code, req.Name, req.Body, req.Description, req.Provider)
+	params, err := paramsToMap(req.Params)
+	if err != nil {
+		resp.Code = tool.RespCodeNotFound
+		ctx.Json(resp)
+		return
+	}
+	_, err = repo.UpdateMessageTemplate(req.Status, req.Code, req.Name, req.Body, params, req.Description, req.Provider)
 	if err != nil {
 		resp.Code = tool.RespCodeNotFound
 		ctx.Json(resp)

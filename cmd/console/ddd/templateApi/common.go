@@ -1,6 +1,10 @@
 package templateApi
 
-import "github.com/lishimeng/app-starter"
+import (
+	"encoding/json"
+	"github.com/lishimeng/app-starter"
+	"strings"
+)
 
 type TemplateResp struct {
 	Id            int    `json:"id,omitempty"`
@@ -29,7 +33,42 @@ type TemplateReq struct {
 	Code          string `json:"code,omitempty"`
 }
 
+type Param struct {
+	Attr []string `json:"attr,omitempty"`
+}
+
+type Params map[string]Param
+
 type respTemplate struct {
 	app.Response
 	Item TemplateResp `json:"item"`
+}
+
+func paramsToMap(params string) (string, error) {
+	m := make(Params)
+	param := strings.Split(params, ",")
+	for _, part := range param {
+		key := strings.TrimSpace(part)
+		if key == "" {
+			continue
+		}
+		m[key] = Param{Attr: []string{key}}
+	}
+	bs, err := json.Marshal(m)
+	if err != nil {
+		return "", err
+	}
+	return string(bs), nil
+}
+
+func mapToParams(paramsMap string) (p string, err error) {
+	var m Params
+	err = json.Unmarshal([]byte(paramsMap), &m)
+	if err != nil {
+		return
+	}
+	for key, _ := range m {
+		p = p + key + ", "
+	}
+	return
 }
