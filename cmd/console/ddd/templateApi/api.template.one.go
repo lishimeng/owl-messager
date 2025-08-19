@@ -25,12 +25,22 @@ func GetTemplateInfo(ctx server.Context) {
 		return
 	}
 
+	params, err := mapToParams(tpl.Params)
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		resp.Message = "参数异常"
+		ctx.Json(resp)
+		return
+	}
+
 	resp.Item = TemplateResp{
-		Code:        tpl.Code,
-		Name:        tpl.Name,
-		Body:        tpl.Body,
-		Description: tpl.Description,
-		Provider:    string(tpl.Provider),
+		Code:          tpl.Code,
+		Name:          tpl.Name,
+		Body:          tpl.Body,
+		Params:        params,
+		CloudTemplate: tpl.CloudTemplate,
+		Description:   tpl.Description,
+		Provider:      string(tpl.Provider),
 	}
 	resp.Code = tool.RespCodeSuccess
 	resp.Message = "成功"

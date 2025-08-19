@@ -34,9 +34,15 @@ func CreateTemplate(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
-
+	// 处理param
+	params, err := paramsToMap(req.Params)
+	if err != nil {
+		resp.Code = tool.RespCodeNotFound
+		ctx.Json(resp)
+		return
+	}
 	_, err = repo.CreateMessageTemplate(
-		code, req.Name, req.Body, req.CloudTemplate, req.Params, req.Description,
+		code, req.Name, req.Body, req.CloudTemplate, params, req.Description,
 		msg.MessageCategory(req.Category), msg.MessageProvider(req.Provider),
 	)
 	if err != nil {
