@@ -42,12 +42,13 @@ type HuaweiSmsConfig struct {
 }
 
 type SmtpConfig struct {
-	Host        string `json:"host,omitempty"`
-	Port        int    `json:"port,omitempty"`
-	SenderEmail string `json:"senderEmail,omitempty"` // 发件邮箱
-	SenderAlias string `json:"senderAlias,omitempty"` // 发件人名字
-	AuthUser    string `json:"authUser,omitempty"`    // 发件账号(有些邮件服务器为邮箱地址)
-	AuthPass    string `json:"authPass,omitempty"`    // 密码
+	Host               string `json:"host,omitempty"`
+	Port               int    `json:"port,omitempty"`
+	SenderEmail        string `json:"senderEmail,omitempty"`        // 发件邮箱
+	SenderAlias        string `json:"senderAlias,omitempty"`        // 发件人名字
+	AuthUser           string `json:"authUser,omitempty"`           // 发件账号(有些邮件服务器为邮箱地址)
+	AuthPass           string `json:"authPass,omitempty"`           // 密码
+	InsecureSkipVerify bool   `json:"insecureSkipVerify,omitempty"` // 跳过 TLS 证书校验，默认 false
 }
 
 type GraphConfig struct {

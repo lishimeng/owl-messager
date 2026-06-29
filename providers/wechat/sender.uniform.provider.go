@@ -41,6 +41,6 @@ func (p *Provider) Send(req Req) (err error) {
 		err = errors.New(rsp.Status())
 		return
 	}
-	err = json.Unmarshal(rsp.Body(), &resp)
+	err = json.Unmarshal(rsp.Bytes(), &resp)
 	return
 }

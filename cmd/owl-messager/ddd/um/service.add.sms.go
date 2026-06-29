@@ -11,7 +11,7 @@ import (
 
 func serviceAddSms(org int, templateCode, tplParams, receiver string) (m model.MessageInfo, err error) {
 	var tpl model.MessageTemplate
-	tpl, err = repo.GetMessageTemplateByCode(templateCode) // TODO org
+	tpl, err = repo.GetMessageTemplateByCode(templateCode, org)
 	if err != nil {
 		log.Debug(errors.Wrapf(err, "template not found:%s", templateCode))
 		return

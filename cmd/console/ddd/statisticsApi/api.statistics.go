@@ -4,6 +4,7 @@ import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/consoleorg"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"time"
 )
@@ -35,8 +36,9 @@ func GetProvidersStat(ctx server.Context) {
 	var resp respProvidersStat
 	var stat []model.ProviderStats
 
+	orgID := consoleorg.ID(ctx)
 	_, err := app.GetOrm().Context.QueryTable(new(model.ProviderStats)).
-		Filter("Org", 1).
+		Filter("Org", orgID).
 		All(&stat)
 
 	if err != nil {
@@ -76,9 +78,10 @@ func GetDailyStat(ctx server.Context) {
 	}
 	startDate = startDate.Local()
 
+	orgID := consoleorg.ID(ctx)
 	var earliest model.DailySummary
 	err = app.GetOrm().Context.QueryTable(new(model.DailySummary)).
-		Filter("Org", 1).
+		Filter("Org", orgID).
 		OrderBy("Date").
 		One(&earliest)
 	if err != nil {
@@ -101,7 +104,7 @@ func GetDailyStat(ctx server.Context) {
 	result := make([]dailyStat, batch)
 	var records []model.DailySummary
 	_, err = app.GetOrm().Context.QueryTable(new(model.DailySummary)).
-		Filter("Org", 1).
+		Filter("Org", orgID).
 		Filter("Date__gt", endDate).
 		Filter("Date__lte", startDate).
 		OrderBy("-Date").

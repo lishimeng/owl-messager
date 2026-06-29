@@ -1,6 +1,8 @@
 package sms
 
-// 又拍云SMS
+import "errors"
+
+// 又拍云 SMS — 尚未实现，不在 providers/init.go 注册。
 
 const (
 	apiHost = "https://sms-api.upyun.com/api/messages"
@@ -35,23 +37,19 @@ type templateHandler struct {
 }
 
 func (t *templateHandler) Get(id string) (r TemplateResp, err error) {
-	// TODO
-	return
+	return r, errors.New("upyun sms: not implemented")
 }
 
 func (t *templateHandler) Add(params map[string]interface{}) (r TemplateResp, err error) {
-	// TODO
-	return
+	return r, errors.New("upyun sms: not implemented")
 }
 
 func (t *templateHandler) Del(id string) (r TemplateResp, err error) {
-	// TODO
-	return
+	return r, errors.New("upyun sms: not implemented")
 }
 
 func (t *templateHandler) Edit(params map[string]interface{}) (r TemplateResp, err error) {
-	// TODO
-	return
+	return r, errors.New("upyun sms: not implemented")
 }
 
 func (s *sender) SetAppId(appId string) {
@@ -59,5 +57,5 @@ func (s *sender) SetAppId(appId string) {
 }
 
 func (s *sender) Send() {
-	// TODO SingleSend
+	panic("upyun sms: not implemented")
 }

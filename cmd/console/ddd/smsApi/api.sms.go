@@ -15,7 +15,7 @@ type SmsInfoResp struct {
 	TemplateId int    `json:"templateId,omitempty"`
 	SenderId   int    `json:"senderId,omitempty"`
 	Params     string `json:"params,omitempty"`
-	Status     int    `json:"status,omitempty"`
+	Status     int    `json:"itemStatus,omitempty"`
 	CreateTime string `json:"createTime,omitempty"`
 	UpdateTime string `json:"updateTime,omitempty"`
 }

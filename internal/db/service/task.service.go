@@ -128,8 +128,8 @@ func GetMessageInstanceId(message model.MessageInfo) (id int, err error) {
 			id = im.Id
 		}
 	default:
-		log.Info("known message category:%d[message id:%d]", message.Category, message.Id)
-		err = fmt.Errorf("known message category:%d[message id:%d]", message.Category, message.Id)
+		log.Info("unknown message category:%s[message id:%d]", message.Category, message.Id)
+		err = fmt.Errorf("unknown message category:%s[message id:%d]", message.Category, message.Id)
 	}
 	return
 }

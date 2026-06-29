@@ -16,7 +16,7 @@ type TaskInfoResp struct {
 	Id                int    `json:"id,omitempty"`
 	MessageId         int    `json:"messageId,omitempty"`         // message
 	MessageInstanceId int    `json:"messageInstanceId,omitempty"` // sms id/mail id
-	Status            int    `json:"status,omitempty,omitempty"`
+	Status            int    `json:"itemStatus,omitempty"`
 	CreateTime        string `json:"createTime,omitempty,omitempty"`
 	UpdateTime        string `json:"updateTime,omitempty,omitempty"`
 }

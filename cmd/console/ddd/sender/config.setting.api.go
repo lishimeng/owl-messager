@@ -6,6 +6,7 @@ import (
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/consoleorg"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/pkg/msg"
@@ -46,7 +47,7 @@ func SetMailSenderInfo(ctx server.Context) {
 		return
 	}
 
-	_, err = repo.CreateMessageSender(1, req.Category, req.Vendor, 0, code, req.Config)
+	_, err = repo.CreateMessageSender(consoleorg.ID(ctx), req.Category, req.Vendor, 0, code, req.Config)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "创建失败"
@@ -54,7 +55,7 @@ func SetMailSenderInfo(ctx server.Context) {
 		return
 	}
 	if req.DefaultSender == 1 {
-		err = _setDefault(code, req.Category.String(), 1, req.Vendor.String())
+		err = _setDefault(code, req.Category.String(), consoleorg.ID(ctx), req.Vendor.String())
 		if err != nil {
 			resp.Code = tool.RespCodeError
 			ctx.Json(resp)
@@ -81,7 +82,7 @@ func UpMailSenderInfo(ctx server.Context) {
 		return
 	}
 	if req.DefaultSender == 1 {
-		err = _setDefault(req.Code, req.Category.String(), 1, req.Vendor.String())
+		err = _setDefault(req.Code, req.Category.String(), consoleorg.ID(ctx), req.Vendor.String())
 		if err != nil {
 			resp.Code = tool.RespCodeError
 			ctx.Json(resp)
@@ -146,7 +147,7 @@ func ListByPage(ctx server.Context) {
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) any {
 		cond := orm.NewCondition()
-		cond = cond.And("org", 1)
+		cond = cond.And("org", consoleorg.ID(ctx))
 		if len(category) > 0 {
 			cond = cond.And("message_category", category)
 		}

@@ -2,7 +2,7 @@ package ding
 
 import (
 	"fmt"
-	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
+	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	robot "github.com/alibabacloud-go/dingtalk/robot_1_0"
 )
 

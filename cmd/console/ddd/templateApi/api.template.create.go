@@ -4,6 +4,7 @@ import (
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/consoleorg"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 	"github.com/lishimeng/x/util"
@@ -42,6 +43,7 @@ func CreateTemplate(ctx server.Context) {
 		return
 	}
 	_, err = repo.CreateMessageTemplate(
+		consoleorg.ID(ctx),
 		code, req.Name, req.Body, req.CloudTemplate, params, req.Description,
 		msg.MessageCategory(req.Category), msg.MessageProvider(req.Provider),
 	)

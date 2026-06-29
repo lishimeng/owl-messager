@@ -3,6 +3,7 @@ package templateApi
 import (
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/consoleorg"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 )
 
@@ -17,7 +18,7 @@ func GetTemplateInfo(ctx server.Context) {
 		return
 	}
 
-	tpl, err := repo.GetMessageTemplateByCode(code)
+	tpl, err := repo.GetMessageTemplateByCode(code, consoleorg.ID(ctx))
 	if err != nil {
 		resp.Code = tool.RespCodeNotFound
 		resp.Message = "未查到记录"

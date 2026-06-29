@@ -4,6 +4,7 @@ import (
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/apnsApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/clientApi"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/dict"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/historyApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/mailApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/messageApi"
@@ -34,6 +35,7 @@ func router(root server.Router) {
 
 	sender.Route(root.Path("/sender"))
 	clientApi.Route(root.Path("/client"))
+	dict.Router(root.Path("/dict"))
 }
 
 // vendor /api/vendor/
@@ -69,8 +71,8 @@ func task(p server.Router) {
 
 func mailSender(p server.Router) {
 	p.Post("/", senderApi.AddMailSender)
-	//p.Put("/{id}", senderApi.UpdateMailSender)
-	//p.Delete("/{id}", senderApi.DeleteMailSender) // TODO
+	p.Put("/{id}", senderApi.UpdateMailSender)
+	p.Delete("/{id}", senderApi.DeleteMailSender)
 
 	p.Get("/", senderApi.GetMailSenderList)
 	p.Get("/{id}", senderApi.GetMailSenderInfo)
@@ -87,9 +89,9 @@ func smsSender(p server.Router) {
 
 func mailTemplate(p server.Router) {
 	p.Post("/", templateApi.AddMailTemplate)
-	//p.Put("/{id}", templateApi.UpdateMailTemplate) // TODO
-	//p.Put("/{id}/status", templateApi.ChangeMailTemplateStatus)
-	//p.Delete("/{id}", templateApi.DeleteMailTemplate)
+	p.Put("/{id}", templateApi.UpdateMailTemplate)
+	p.Put("/{id}/status", templateApi.ChangeMailTemplateStatus)
+	p.Delete("/{id}", templateApi.DeleteMailTemplate)
 
 	p.Get("/", templateApi.GetMailTemplateList)
 	p.Get("/{id}", templateApi.GetMailTemplateInfo)

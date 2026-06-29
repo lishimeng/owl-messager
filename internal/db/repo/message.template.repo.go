@@ -46,10 +46,10 @@ func GetMessageTemplateById(id int) (tpl model.MessageTemplate, err error) {
 	return
 }
 
-func GetMessageTemplateByCode(code string) (tpl model.MessageTemplate, err error) {
+func GetMessageTemplateByCode(code string, org int) (tpl model.MessageTemplate, err error) {
 	err = app.GetOrm().Context.QueryTable(new(model.MessageTemplate)).
 		Filter("Code", code).
-		//Filter("Org", org).
+		Filter("Org", org).
 		Filter("Status", model.SenderEnable).
 		One(&tpl)
 	if err != nil {
@@ -60,6 +60,7 @@ func GetMessageTemplateByCode(code string) (tpl model.MessageTemplate, err error
 }
 
 func CreateMessageTemplate(
+	org int,
 	code,
 	name,
 	body,
@@ -78,7 +79,7 @@ func CreateMessageTemplate(
 		Body:          body,
 		CloudTemplate: cloudTemplate,
 	}
-	m.Org = 1 // TODO
+	m.Org = org
 	if len(description) > 0 {
 		m.Description = description
 	}

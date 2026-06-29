@@ -20,7 +20,7 @@ type RestHandler struct {
 func New() (r Rest) {
 
 	h := RestHandler{proxy: resty.New()}
-	h.proxy.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	h.proxy.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: false})
 	r = &h
 	return
 }

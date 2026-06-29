@@ -35,7 +35,7 @@ func genCredential(ctx server.Context) {
 	}
 
 	if len(req.AppId) == 0 {
-		log.Debug("appId: %s, secret:%s", req.AppId, req.Secret)
+		log.Debug("appId missing in credential request")
 		resp.Code = common.CodeAppNotFound
 		resp.Message = common.MsgAppNotFound
 		ctx.Json(resp)

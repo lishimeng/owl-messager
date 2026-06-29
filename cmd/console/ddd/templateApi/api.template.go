@@ -7,6 +7,7 @@ import (
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/consoleorg"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"time"
 )
@@ -42,7 +43,7 @@ func GetTemplateListByPage(ctx server.Context) {
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) any {
 		cond := orm.NewCondition()
-		cond = cond.And("org", 1)
+		cond = cond.And("org", consoleorg.ID(ctx))
 		if len(category) > 0 {
 			cond = cond.And("message_category", category)
 		}

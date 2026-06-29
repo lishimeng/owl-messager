@@ -7,6 +7,7 @@ import (
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/consoleorg"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/pkg/msg"
@@ -17,7 +18,7 @@ type Info struct {
 	Id           int    `json:"id,omitempty"`
 	TemplateCode string `json:"templateCode,omitempty"`
 	TemplateBody string `json:"templateBody,omitempty"`
-	Status       int    `json:"status,omitempty"`
+	Status       int    `json:"itemStatus,omitempty"`
 	CreateTime   string `json:"createTime,omitempty"`
 	UpdateTime   string `json:"updateTime,omitempty"`
 }
@@ -39,18 +40,19 @@ func GetMailVendors(ctx server.Context) {
 
 	resp.Code = tool.RespCodeSuccess
 	resp.Message = "Mail Vendors"
-	for key, _ := range msg.MailProviders {
+	for key := range msg.MailProviders {
 		resp.Data = append(resp.Data, key)
 	}
 	ctx.Json(resp)
 }
 
 func GetMailTemplateList(ctx server.Context) {
-	log.Debug("get mail template list")
 	var resp respInfo
-	//var status = ctx.URLParamIntDefault("status", repo.ConditionIgnore)
 	var pageSize = ctx.C.URLParamIntDefault("pageSize", repo.DefaultPageSize)
 	var pageNo = ctx.C.URLParamIntDefault("pageNo", repo.DefaultPageNo)
+	var provider = ctx.C.URLParamDefault("provider", "")
+	orgID := consoleorg.ID(ctx)
+
 	var pager app.SimplePager[model.MessageTemplate, Info]
 	pager.PageSize = pageSize
 	pager.PageNum = pageNo
@@ -64,16 +66,17 @@ func GetMailTemplateList(ctx server.Context) {
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) any {
 		cond := orm.NewCondition()
-		cond = cond.And("org", 1)
+		cond = cond.And("org", orgID)
 		cond = cond.And("message_category", msg.MailMessage)
-		cond = cond.And("message_provider", msg.Ali)
+		if len(provider) > 0 {
+			cond = cond.And("message_provider", provider)
+		}
 		return tx.Context.QueryTable(new(model.MessageTemplate)).SetCond(cond)
 	}
 	pager.OrderByExp = append(pager.OrderByExp, "createTime")
 	err := app.QueryPage(&pager)
 	if err != nil {
-		log.Debug("get templates failed")
-		log.Debug(err)
+		log.Debug("get templates failed: %v", err)
 		resp.Code = -1
 		resp.Message = "get templates failed"
 		ctx.Json(resp)
@@ -87,38 +90,33 @@ func GetMailTemplateList(ctx server.Context) {
 }
 
 func GetMailTemplateInfo(ctx server.Context) {
-	//log.Debug("get mail template") TODO
-	//var resp InfoWrapper
-	//id, err := ctx.Params().GetInt("id")
-	//if err != nil {
-	//	log.Debug("id must be a int value")
-	//	resp.Response.Code = tool.RespCodeNotFound
-	//	resp.Message = tool.RespMsgIdNum
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//log.Debug("id:%d", id)
-	//tpl, err := repo.GetMailTemplateById(id)
-	//if err != nil {
-	//	log.Debug("get mail template failed")
-	//	log.Debug(err)
-	//	resp.Response.Code = tool.RespCodeNotFound
-	//	resp.Message = tool.RespMsgNotFount
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//
-	//var tmpInfo = Info{
-	//	Id:           tpl.Id,
-	//	TemplateCode: tpl.Code,
-	//	TemplateBody: tpl.Body,
-	//	Status:       tpl.Status,
-	//	CreateTime:   tool.FormatTime(tpl.CreateTime),
-	//	UpdateTime:   tool.FormatTime(tpl.UpdateTime),
-	//}
-	//resp.Info = tmpInfo
-	//resp.Code = tool.RespCodeSuccess
-	//tool.ResponseJSON(ctx, resp)
+	var resp InfoWrapper
+	id, err := ctx.C.Params().GetInt("id")
+	if err != nil || id <= 0 {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "id must be a int value"
+		ctx.Json(resp)
+		return
+	}
+
+	tpl, err := repo.GetMessageTemplateById(id)
+	if err != nil || tpl.Org != consoleorg.ID(ctx) || tpl.Category != msg.MailMessage {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "not found"
+		ctx.Json(resp)
+		return
+	}
+
+	resp.Info = Info{
+		Id:           tpl.Id,
+		TemplateCode: tpl.Code,
+		TemplateBody: tpl.Body,
+		Status:       tpl.Status,
+		CreateTime:   util.FormatTime(tpl.CreateTime),
+		UpdateTime:   util.FormatTime(tpl.UpdateTime),
+	}
+	resp.Code = tool.RespCodeSuccess
+	ctx.Json(resp)
 }
 
 type MailTemplateReq struct {
@@ -128,162 +126,150 @@ type MailTemplateReq struct {
 	Body        string `json:"body,omitempty"`
 	Description string `json:"description,omitempty"`
 	Category    string `json:"category,omitempty"`
+	Provider    string `json:"provider,omitempty"`
+	Status      int    `json:"status,omitempty"`
 }
 
-// AddMailTemplate
-/**
-@Summary add a new template for send email
-
-@Accept  json
-
-@Produce  json
-
-@Router /api/mail_template [post]
-
-@Example
-
-http://localhost/api/mail_template
-
-{"body":"fasfasgasd", "category":2,"name":"电量低超提醒"}
-*/
 func AddMailTemplate(ctx server.Context) {
-	log.Debug("add mail template")
 	var req MailTemplateReq
 	var resp InfoWrapper
-	err := ctx.C.ReadJSON(&req)
-	if err != nil {
+	if err := ctx.C.ReadJSON(&req); err != nil {
 		resp.Code = -1
+		resp.Message = "req error"
 		ctx.Json(resp)
 		return
 	}
-
-	// check params
 	if len(req.Name) == 0 {
-		log.Debug("param name nil")
 		resp.Code = -1
 		resp.Message = "name nil"
 		ctx.Json(resp)
 		return
 	}
 	if len(req.Body) == 0 {
-		log.Debug("param body nil")
+		resp.Code = -1
+		resp.Message = "body nil"
+		ctx.Json(resp)
+		return
+	}
+	if !msg.IsValidCategory(msg.MessageCategory(req.Category)) {
+		req.Category = msg.MailMessage.String()
+	}
+	provider := msg.MessageProvider(req.Provider)
+	if len(provider) == 0 {
+		provider = msg.Smtp
+	}
+
+	code := "tl_mail_" + util.UUIDString()
+	m, err := repo.CreateMessageTemplate(
+		consoleorg.ID(ctx),
+		code, req.Name, req.Body, "", "{}", req.Description,
+		msg.MailMessage, provider,
+	)
+	if err != nil {
+		resp.Code = -1
+		resp.Message = "create template failed"
+		ctx.Json(resp)
+		return
+	}
+
+	resp.Info = Info{
+		Id:           m.Id,
+		TemplateCode: m.Code,
+		TemplateBody: m.Body,
+		Status:       m.Status,
+		CreateTime:   util.FormatTime(m.CreateTime),
+		UpdateTime:   util.FormatTime(m.UpdateTime),
+	}
+	resp.Code = tool.RespCodeSuccess
+	ctx.Json(resp)
+}
+
+func UpdateMailTemplate(ctx server.Context) {
+	var req MailTemplateReq
+	var resp InfoWrapper
+	if err := ctx.C.ReadJSON(&req); err != nil {
+		resp.Code = -1
+		resp.Message = "req error"
+		ctx.Json(resp)
+		return
+	}
+	if id, err := ctx.C.Params().GetInt("id"); err == nil && id > 0 {
+		req.Id = id
+	}
+	if req.Id <= 0 && len(req.Code) == 0 {
+		resp.Code = -1
+		resp.Message = "id nil"
+		ctx.Json(resp)
+		return
+	}
+	if len(req.Body) == 0 {
 		resp.Code = -1
 		resp.Message = "body nil"
 		ctx.Json(resp)
 		return
 	}
 
-	if !msg.IsValidCategory(msg.MessageCategory(req.Category)) {
-		log.Debug("param category nil, use default")
-		req.Category = msg.MailMessage.String()
+	code := req.Code
+	if code == "" {
+		tpl, err := repo.GetMessageTemplateById(req.Id)
+		if err != nil || tpl.Org != consoleorg.ID(ctx) {
+			resp.Code = tool.RespCodeNotFound
+			resp.Message = "not found"
+			ctx.Json(resp)
+			return
+		}
+		code = tpl.Code
 	}
 
-	//code := tool.UUIDString()
+	m, err := repo.UpdateMessageTemplate(req.Status, code, req.Name, req.Body, "{}", req.Description, req.Provider)
+	if err != nil {
+		resp.Code = -1
+		resp.Message = "update template failed"
+		ctx.Json(resp)
+		return
+	}
 
-	//m, err := repo.CreateMailTemplate(code, req.Name, req.Body, req.Description, req.Category)
-	//if err != nil {
-	//	log.Info("can't create template")
-	//	log.Info(err)
-	//	resp.Code = -1
-	//	resp.Message = "create template failed"
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-
-	//log.Debug("create template success, id:%d", m.Id)
-	//resp.Id = m.Id
-	//
-	//var tmpInfo = Info{
-	//	Id:           m.Id,
-	//	TemplateCode: m.Code,
-	//	TemplateBody: m.Body,
-	//	Status:       m.Status,
-	//	CreateTime:   tool.FormatTime(m.CreateTime),
-	//	UpdateTime:   tool.FormatTime(m.UpdateTime),
-	//}
-	//resp.Info = tmpInfo
-	//resp.Code = tool.RespCodeSuccess
+	resp.Info = Info{
+		Id:           m.Id,
+		TemplateCode: m.Code,
+		TemplateBody: m.Body,
+		Status:       m.Status,
+		CreateTime:   util.FormatTime(m.CreateTime),
+		UpdateTime:   util.FormatTime(m.UpdateTime),
+	}
+	resp.Code = tool.RespCodeSuccess
 	ctx.Json(resp)
 }
 
-func UpdateMailTemplate(ctx server.Context) {
-	//log.Debug("update mail template") TODO
-	//var req MailTemplateReq
-	//var resp InfoWrapper
-	//err := ctx.ReadJSON(&req)
-	//if err != nil {
-	//	log.Debug("req err")
-	//	log.Debug(err)
-	//	resp.Code = -1
-	//	resp.Message = "req err"
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//
-	//// check params
-	//if req.Id == 0 {
-	//	log.Debug("param id nil")
-	//	resp.Code = -1
-	//	resp.Message = "id nil"
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//if len(req.Body) == 0 {
-	//	log.Debug("param body nil")
-	//	resp.Code = -1
-	//	resp.Message = "body nil"
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//
-	//m, err := service.UpdateMailTemplate(req.Id, req.Status, req.Body, req.Description)
-	//if err != nil {
-	//	log.Info("can't update template")
-	//	log.Info(err)
-	//	resp.Code = -1
-	//	resp.Message = "create update failed"
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//
-	//log.Debug("update template success, id:%d", m.Id)
-	//resp.Id = m.Id
-	//
-	//var tmpInfo = Info{
-	//	Id:           m.Id,
-	//	TemplateCode: m.Code,
-	//	TemplateBody: m.Body,
-	//	Status:       m.Status,
-	//	CreateTime:   tool.FormatTime(m.CreateTime),
-	//	UpdateTime:   tool.FormatTime(m.UpdateTime),
-	//}
-	//resp.Info = tmpInfo
-	//resp.Code = tool.RespCodeSuccess
-	//tool.ResponseJSON(ctx, resp)
-}
-
 func DeleteMailTemplate(ctx server.Context) {
+	var resp app.Response
+	id, err := ctx.C.Params().GetInt("id")
+	if err != nil || id <= 0 {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "id must be a int value"
+		ctx.Json(resp)
+		return
+	}
 
-	//log.Debug("delete mail template")
-	//var resp app.Response
-	//id, err := ctx.Params().GetInt("id")
-	//if err != nil {
-	//	log.Debug("id must be a int value")
-	//	resp.Code = tool.RespCodeNotFound
-	//	resp.Message = tool.RespMsgIdNum
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//err = repo.DeleteMailTemplate(id)
-	//if err != nil {
-	//	log.Info("delete mail template failed")
-	//	resp.Code = -1
-	//	resp.Message = "delete template failed"
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//resp.Code = tool.RespCodeSuccess
-	//tool.ResponseJSON(ctx, resp) TODO
+	tpl, err := repo.GetMessageTemplateById(id)
+	if err != nil || tpl.Org != consoleorg.ID(ctx) || tpl.Category != msg.MailMessage {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "not found"
+		ctx.Json(resp)
+		return
+	}
+
+	_, err = app.GetOrm().Context.QueryTable(new(model.MessageTemplate)).
+		Filter("Id", id).
+		Delete()
+	if err != nil {
+		resp.Code = -1
+		resp.Message = "delete template failed"
+		ctx.Json(resp)
+		return
+	}
+	resp.Code = tool.RespCodeSuccess
+	ctx.Json(resp)
 }
 
 type MailStatusReq struct {
@@ -292,53 +278,35 @@ type MailStatusReq struct {
 }
 
 func ChangeMailTemplateStatus(ctx server.Context) {
+	var req MailStatusReq
+	var resp app.Response
+	if err := ctx.C.ReadJSON(&req); err != nil {
+		resp.Code = tool.RespCodeError
+		ctx.Json(resp)
+		return
+	}
+	if req.Id <= 0 {
+		resp.Code = tool.RespCodeError
+		resp.Message = "id nil"
+		ctx.Json(resp)
+		return
+	}
 
-	//var req SmsStatusReq
-	//var resp app.Response
-	//var err error
-	//
-	//err = ctx.ReadJSON(&req)
-	//if err != nil {
-	//	resp.Code = tool.RespCodeError
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//
-	//if req.Id <= 0 {
-	//	log.Debug("param id nil")
-	//	resp.Code = tool.RespCodeError
-	//	resp.Message = "id nil"
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//
-	//if !util.StatusIn(req.Status, model.MailTemplateStatus) {
-	//	log.Debug("param unknown status: %d", req.Status)
-	//	resp.Code = tool.RespCodeError
-	//	resp.Message = fmt.Sprintf("unknown status:%d", req.Status)
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//
-	//tpl, err := repo.GetMailTemplateById(req.Id)
-	//if err != nil {
-	//	log.Debug("template not found")
-	//	resp.Code = tool.RespCodeNotFound
-	//	resp.Message = "template not found"
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//
-	//tpl.Status = req.Status
-	//
-	//_, err = repo.UpdateMailTemplateInfo(tpl, "status")
-	//if err != nil {
-	//	log.Debug(err)
-	//	resp.Code = tool.RespCodeError
-	//	resp.Message = err.Error()
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//resp.Code = tool.RespCodeSuccess
-	//tool.ResponseJSON(ctx, resp) TODO
+	tpl, err := repo.GetMessageTemplateById(req.Id)
+	if err != nil || tpl.Org != consoleorg.ID(ctx) {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "template not found"
+		ctx.Json(resp)
+		return
+	}
+
+	_, err = repo.UpdateMessageTemplate(req.Status, tpl.Code, "", "", "", "", "")
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		resp.Message = err.Error()
+		ctx.Json(resp)
+		return
+	}
+	resp.Code = tool.RespCodeSuccess
+	ctx.Json(resp)
 }

@@ -1,9 +1,12 @@
 package smtp
 
 import (
+	"bytes"
 	"crypto/tls"
-	"github.com/go-gomail/gomail"
-	"github.com/lishimeng/go-log"
+	"fmt"
+	"net/smtp"
+	"strings"
+
 	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
@@ -11,25 +14,108 @@ type MailSmtpProvider struct {
 	Config msg.SmtpConfig
 }
 
+func encodeFrom(email, alias string) string {
+	if alias == "" {
+		return email
+	}
+	return fmt.Sprintf("%s <%s>", alias, email)
+}
+
+func buildMessage(from, subject, htmlBody string, to []string) []byte {
+	var buf bytes.Buffer
+	buf.WriteString("From: " + from + "\r\n")
+	buf.WriteString("To: " + strings.Join(to, ", ") + "\r\n")
+	buf.WriteString("Subject: " + subject + "\r\n")
+	buf.WriteString("MIME-Version: 1.0\r\n")
+	buf.WriteString("Content-Type: text/html; charset=UTF-8\r\n")
+	buf.WriteString("\r\n")
+	buf.WriteString(htmlBody)
+	return buf.Bytes()
+}
+
 func (s MailSmtpProvider) Send(subject string, body string, receivers ...string) (err error) {
-	log.Debug("mail body:%s", body)
+	if len(receivers) == 0 {
+		return fmt.Errorf("smtp: no receivers")
+	}
+	fromHeader := encodeFrom(s.Config.SenderEmail, s.Config.SenderAlias)
+	message := buildMessage(fromHeader, subject, body, receivers)
 
-	m := gomail.NewMessage()
-	// 收件人
-	m.SetHeader("To", receivers...)
+	addr := fmt.Sprintf("%s:%d", s.Config.Host, s.Config.Port)
+	auth := smtp.PlainAuth("", s.Config.AuthUser, s.Config.AuthPass, s.Config.Host)
+	tlsConfig := &tls.Config{
+		ServerName:         s.Config.Host,
+		InsecureSkipVerify: s.Config.InsecureSkipVerify,
+	}
 
-	// 第三个参数为发件人别名，如"李大锤"，可以为空(此时则为邮箱名称)
-	m.SetAddressHeader("From", s.Config.SenderEmail, s.Config.SenderAlias)
+	if s.Config.Port == 465 {
+		return sendSMTPS(addr, s.Config.Host, auth, hasAuth(s.Config), s.Config.SenderEmail, receivers, message, tlsConfig)
+	}
+	return sendSTARTTLS(addr, s.Config.Host, auth, hasAuth(s.Config), s.Config.SenderEmail, receivers, message, tlsConfig)
+}
 
-	// -----------------------------------
-	// 主题
-	m.SetHeader("Subject", subject)
-	// 正文
-	m.SetBody("text/html", body)
+func hasAuth(c msg.SmtpConfig) bool {
+	return c.AuthUser != "" || c.AuthPass != ""
+}
 
-	d := gomail.NewDialer(s.Config.Host, s.Config.Port, s.Config.AuthUser, s.Config.AuthPass)
-	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
-	// 发送
-	err = d.DialAndSend(m)
-	return
+func sendSMTPS(addr, host string, auth smtp.Auth, useAuth bool, from string, to []string, message []byte, tlsConfig *tls.Config) error {
+	conn, err := tls.Dial("tcp", addr, tlsConfig)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	client, err := smtp.NewClient(conn, host)
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+
+	return submit(client, auth, useAuth, from, to, message)
+}
+
+func sendSTARTTLS(addr, host string, auth smtp.Auth, useAuth bool, from string, to []string, message []byte, tlsConfig *tls.Config) error {
+	client, err := smtp.Dial(addr)
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+
+	if ok, _ := client.Extension("STARTTLS"); ok {
+		if err = client.StartTLS(tlsConfig); err != nil {
+			return err
+		}
+	}
+
+	return submit(client, auth, useAuth, from, to, message)
+}
+
+func submit(client *smtp.Client, auth smtp.Auth, useAuth bool, from string, to []string, message []byte) error {
+	if useAuth {
+		if ok, _ := client.Extension("AUTH"); ok {
+			if err := client.Auth(auth); err != nil {
+				return err
+			}
+		}
+	}
+
+	if err := client.Mail(from); err != nil {
+		return err
+	}
+	for _, rcpt := range to {
+		if err := client.Rcpt(strings.TrimSpace(rcpt)); err != nil {
+			return err
+		}
+	}
+
+	w, err := client.Data()
+	if err != nil {
+		return err
+	}
+	if _, err = w.Write(message); err != nil {
+		return err
+	}
+	if err = w.Close(); err != nil {
+		return err
+	}
+	return client.Quit()
 }

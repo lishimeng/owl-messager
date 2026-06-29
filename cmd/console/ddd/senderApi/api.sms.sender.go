@@ -12,7 +12,7 @@ type SmsSenderInfo struct {
 	Id         int    `json:"id,omitempty"`
 	SenderCode string `json:"senderCode,omitempty"`
 	Vendor     string `json:"vendor,omitempty"`
-	Status     int    `json:"status,omitempty,omitempty"`
+	Status     int    `json:"itemStatus,omitempty"`
 	CreateTime string `json:"createTime,omitempty,omitempty"`
 	UpdateTime string `json:"updateTime,omitempty,omitempty"`
 }

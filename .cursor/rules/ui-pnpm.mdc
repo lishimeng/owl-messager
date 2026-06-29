@@ -1,0 +1,48 @@
+---
+description: Console UI 仅使用 pnpm，并提交 pnpm-lock.yaml
+globs: cmd/console/ui/**
+alwaysApply: false
+---
+
+# UI 包管理：仅 pnpm
+
+本仓库所有前端/UI（当前为 `cmd/console/ui`）**只允许使用 pnpm**，不得使用 npm、yarn 或 bun。
+
+## 必须遵守
+
+- 安装依赖：`pnpm install`
+- 开发：`pnpm dev`
+- 构建：`pnpm run build`
+- 添加依赖：`pnpm add <pkg>` / `pnpm add -D <pkg>`
+- **必须提交** `cmd/console/ui/pnpm-lock.yaml`；依赖变更时同步更新 lockfile
+- **不要提交** `package-lock.json` 或 `yarn.lock`
+
+## 构建与发布静态资源
+
+- 在 `cmd/console/ui` 下用 pnpm 构建：`pnpm install` → `pnpm run build`
+- 构建产物在 `cmd/console/ui/dist/`；**手动复制**到 `cmd/console/static/` 后再编译 `owl-console`（`go:embed`）
+- Docker 镜像构建见 `cmd/console/Dockerfile`（UI 阶段 pnpm build，并复制 `dist` 到 static）
+
+## 禁止
+
+```bash
+# ❌ 不要在 UI 目录使用
+npm install
+npm run build
+yarn install
+yarn build
+```
+
+```bash
+# ✅ 正确
+cd cmd/console/ui
+pnpm install
+pnpm run build
+```
+
+## Agent 注意事项
+
+- 修改 `package.json` 后运行 `pnpm install` 并确保 `pnpm-lock.yaml` 纳入变更
+- 不要生成或保留 `package-lock.json`
+- 不要添加 `scripts/` 下的 UI 构建脚本；本地复制 static 由开发者手动完成
+- 文档、Dockerfile 中涉及 UI 的命令一律写 `pnpm`

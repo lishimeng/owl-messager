@@ -1,11 +1,10 @@
 package dict
 
-import "C"
 import (
-	"github.com/baidubce/bce-sdk-go/util/log"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/provider"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 )
@@ -24,9 +23,7 @@ type ProviderInfo struct {
 func providerList(ctx server.Context) {
 	log.Info("get all providers...")
 	var resp Providers
-	// 返回支持的provider列表
 
-	// Mail providers
 	mailList := provider.GetMailProviders()
 	for _, mail := range mailList {
 		resp.Items = append(resp.Items, ProviderInfo{
@@ -35,16 +32,14 @@ func providerList(ctx server.Context) {
 		})
 	}
 
-	// Sms providers
 	smsList := provider.GetSmsProviders()
-	for _, mail := range smsList {
+	for _, sms := range smsList {
 		resp.Items = append(resp.Items, ProviderInfo{
-			Name:     mail.String(),
+			Name:     sms.String(),
 			Category: string(msg.SmsMessage),
 		})
 	}
 
-	// Im providers
 	imList := provider.GetImProviders()
 	for _, im := range imList {
 		resp.Items = append(resp.Items, ProviderInfo{
@@ -58,7 +53,6 @@ func providerList(ctx server.Context) {
 }
 
 func providerCategoryList(ctx server.Context) {
-	// 返回支持的provider列表
-	var category = ctx.C.Params().Get("category")
+	category := ctx.C.Params().Get("category")
 	log.Info(category)
 }

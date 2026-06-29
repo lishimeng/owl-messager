@@ -17,7 +17,7 @@ type Req struct {
 
 type RespMessageInfo struct {
 	Id           int    `json:"id,omitempty"`
-	Status       int    `json:"status,omitempty"`
+	Status       int    `json:"itemStatus,omitempty"`
 	CreateTime   string `json:"createTime,omitempty"`
 	UpdateTime   string `json:"updateTime,omitempty"`
 	Category     string `json:"category,omitempty"`

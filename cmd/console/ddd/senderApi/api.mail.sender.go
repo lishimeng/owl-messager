@@ -1,10 +1,17 @@
 package senderApi
 
 import (
+	"encoding/json"
+	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/consoleorg"
+	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/repo"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 	"github.com/lishimeng/x/util"
 )
 
@@ -12,9 +19,9 @@ type Info struct {
 	Id         int    `json:"id,omitempty"`
 	SenderCode string `json:"senderCode,omitempty"`
 	Config     string `json:"config,omitempty"`
-	Status     int    `json:"status,omitempty,omitempty"`
-	CreateTime string `json:"createTime,omitempty,omitempty"`
-	UpdateTime string `json:"updateTime,omitempty,omitempty"`
+	Status     int    `json:"itemStatus,omitempty"`
+	CreateTime string `json:"createTime,omitempty"`
+	UpdateTime string `json:"updateTime,omitempty"`
 }
 
 type InfoWrapper struct {
@@ -22,117 +29,202 @@ type InfoWrapper struct {
 	Info
 }
 
+type respList struct {
+	app.PagerResponse
+	app.BasePager
+	Items []Info `json:"items"`
+}
+
 func GetMailSenderList(ctx server.Context) {
-	//var resp app.PagerResponse
-	//var status = ctx.URLParamIntDefault("status", repo.ConditionIgnore)
-	//var pageSize = ctx.URLParamIntDefault("pageSize", repo.DefaultPageSize)
-	//var pageNo = ctx.URLParamIntDefault("pageNo", repo.DefaultPageNo)
-	//page := app.Pager{
-	//	PageSize: pageSize,
-	//	PageNum:  pageNo,
-	//}
-	//page, senders, err := repo.GetMailSenderList(status, page)
-	//if err != nil {
-	//	log.Debug("get senders failed")
-	//	log.Debug(err)
-	//	resp.Code = -1
-	//	resp.Message = "get senders failed"
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//
-	//if len(senders) > 0 {
-	//	for _, ms := range senders {
-	//		var tmpInfo = Info{
-	//			Id:         ms.Id,
-	//			SenderCode: ms.Code,
-	//			Config:     string(ms.Config),
-	//			Status:     ms.Status,
-	//			CreateTime: tool.FormatTime(ms.CreateTime),
-	//			UpdateTime: tool.FormatTime(ms.UpdateTime),
-	//		}
-	//
-	//		page.Data = append(page.Data, tmpInfo)
-	//	}
-	//}
-	//
-	//resp.Pager = page
-	//resp.Code = tool.RespCodeSuccess
-	//ctx.Json(resp) TODO
+	var resp respList
+	orgID := consoleorg.ID(ctx)
+	pageSize := ctx.C.URLParamIntDefault("pageSize", repo.DefaultPageSize)
+	pageNo := ctx.C.URLParamIntDefault("pageNo", repo.DefaultPageNo)
+
+	var pager app.SimplePager[model.MessageSenderInfo, Info]
+	pager.PageSize = pageSize
+	pager.PageNum = pageNo
+	pager.Transform = func(src model.MessageSenderInfo, dst *Info) {
+		dst.Id = src.Id
+		dst.SenderCode = src.Code
+		dst.Config = string(src.Config)
+		dst.Status = src.Status
+		dst.CreateTime = util.FormatTime(src.CreateTime)
+		dst.UpdateTime = util.FormatTime(src.UpdateTime)
+	}
+	pager.QueryBuilder = func(tx persistence.TxContext) any {
+		cond := orm.NewCondition()
+		cond = cond.And("org", orgID)
+		cond = cond.And("message_category", msg.MailMessage)
+		return tx.Context.QueryTable(new(model.MessageSenderInfo)).SetCond(cond)
+	}
+	pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	if err := app.QueryPage(&pager); err != nil {
+		log.Debug("get senders failed: %v", err)
+		resp.Code = -1
+		resp.Message = "get senders failed"
+		ctx.Json(resp)
+		return
+	}
+	resp.Items = pager.Data
+	resp.BasePager = pager.BasePager
+	resp.BasePager.More = pager.TotalPage * pager.PageSize
+	resp.Code = tool.RespCodeSuccess
+	ctx.Json(resp)
 }
 
-// GetMailSenderInfo
-/**
-@Router /api/mail_sender/{id} [get]
-*/
 func GetMailSenderInfo(ctx server.Context) {
-	//log.Debug("get mail sender")
-	//var resp InfoWrapper
-	//id, err := ctx.Params().GetInt("id")
-	//if err != nil {
-	//	log.Debug("id must be a int value")
-	//	resp.Response.Code = tool.RespCodeNotFound
-	//	resp.Message = tool.RespMsgIdNum
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//log.Debug("id:%d", id)
-	//ms, err := repo.GetMailSenderById(id)
-	//if err != nil {
-	//	log.Debug("get mail sender account failed")
-	//	log.Debug(err)
-	//	resp.Response.Code = tool.RespCodeNotFound
-	//	resp.Message = tool.RespMsgNotFount
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//
-	//var tmpInfo = Info{
-	//	Id:         ms.Id,
-	//	SenderCode: ms.Code,
-	//	Config:     string(ms.Config),
-	//	Status:     ms.Status,
-	//	CreateTime: tool.FormatTime(ms.CreateTime),
-	//	UpdateTime: tool.FormatTime(ms.UpdateTime),
-	//}
-	//resp.Info = tmpInfo
-	//resp.Code = tool.RespCodeSuccess
-	//ctx.Json(resp) TODO
+	var resp InfoWrapper
+	id, err := ctx.C.Params().GetInt("id")
+	if err != nil || id <= 0 {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "id must be a int value"
+		ctx.Json(resp)
+		return
+	}
+
+	var ms model.MessageSenderInfo
+	err = app.GetOrm().Context.QueryTable(new(model.MessageSenderInfo)).
+		Filter("Id", id).
+		Filter("Org", consoleorg.ID(ctx)).
+		Filter("Category", msg.MailMessage).
+		One(&ms)
+	if err != nil {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "not found"
+		ctx.Json(resp)
+		return
+	}
+
+	resp.Info = Info{
+		Id:         ms.Id,
+		SenderCode: ms.Code,
+		Config:     string(ms.Config),
+		Status:     ms.Status,
+		CreateTime: util.FormatTime(ms.CreateTime),
+		UpdateTime: util.FormatTime(ms.UpdateTime),
+	}
+	resp.Code = tool.RespCodeSuccess
+	ctx.Json(resp)
 }
 
-func AddMailSender(_ server.Context) {
-	code := util.UUIDString()
-	code = "sender_" + code
+type addMailSenderReq struct {
+	Vendor  msg.MessageProvider `json:"vendor,omitempty"`
+	Config  json.RawMessage     `json:"config,omitempty"`
+	Default int                 `json:"default,omitempty"`
+}
+
+func AddMailSender(ctx server.Context) {
+	var req addMailSenderReq
+	var resp InfoWrapper
+	if err := ctx.C.ReadJSON(&req); err != nil {
+		resp.Code = -1
+		resp.Message = "req error"
+		ctx.Json(resp)
+		return
+	}
+	if len(req.Vendor) == 0 {
+		resp.Code = -1
+		resp.Message = "vendor nil"
+		ctx.Json(resp)
+		return
+	}
+
+	code := "sender_mail_" + util.UUIDString()
+	orgID := consoleorg.ID(ctx)
+	isDefault := 0
+	if req.Default == 1 {
+		isDefault = 1
+	}
+
+	var cfg msg.SenderConfig
+	if len(req.Config) > 0 {
+		cfg = msg.SenderConfig(req.Config)
+	}
+	ms, err := repo.CreateMessageSender(orgID, msg.MailMessage, req.Vendor, isDefault, code, cfg)
+	if err != nil {
+		resp.Code = -1
+		resp.Message = "create sender failed"
+		ctx.Json(resp)
+		return
+	}
+
+	resp.Info = Info{
+		Id:         ms.Id,
+		SenderCode: ms.Code,
+		Config:     string(ms.Config),
+		Status:     ms.Status,
+		CreateTime: util.FormatTime(ms.CreateTime),
+		UpdateTime: util.FormatTime(ms.UpdateTime),
+	}
+	resp.Code = tool.RespCodeSuccess
+	ctx.Json(resp)
 }
 
 func UpdateMailSender(ctx server.Context) {
-	log.Debug("update mail sender")
+	var req addMailSenderReq
 	var resp app.Response
+	id, err := ctx.C.Params().GetInt("id")
+	if err != nil || id <= 0 {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "id must be a int value"
+		ctx.Json(resp)
+		return
+	}
+	if err := ctx.C.ReadJSON(&req); err != nil {
+		resp.Code = -1
+		resp.Message = "req error"
+		ctx.Json(resp)
+		return
+	}
+
+	var ms model.MessageSenderInfo
+	err = app.GetOrm().Context.QueryTable(new(model.MessageSenderInfo)).
+		Filter("Id", id).
+		Filter("Org", consoleorg.ID(ctx)).
+		Filter("Category", msg.MailMessage).
+		One(&ms)
+	if err != nil {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "not found"
+		ctx.Json(resp)
+		return
+	}
+
+	if len(req.Config) > 0 {
+		_, err = repo.UpdateMessageSender(ms.Code, msg.SenderConfig(req.Config))
+		if err != nil {
+			resp.Code = -1
+			resp.Message = "update sender failed"
+			ctx.Json(resp)
+			return
+		}
+	}
 	resp.Code = tool.RespCodeSuccess
 	ctx.Json(resp)
 }
 
 func DeleteMailSender(ctx server.Context) {
-	//log.Debug("delete mail sender")
-	//var resp app.Response
-	//id, err := ctx.Params().GetInt("id")
-	//if err != nil {
-	//	log.Debug("id must be a int value")
-	//	resp.Code = tool.RespCodeNotFound
-	//	resp.Message = tool.RespMsgIdNum
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//err = repo.DeleteMailSender(id)
-	//if err != nil {
-	//	log.Info("delete mail sender failed")
-	//	log.Debug(err)
-	//	resp.Code = -1
-	//	resp.Message = "delete sender failed"
-	//	tool.ResponseJSON(ctx, resp)
-	//	return
-	//}
-	//
-	//resp.Code = tool.RespCodeSuccess
-	//tool.ResponseJSON(ctx, resp) TODO
+	var resp app.Response
+	id, err := ctx.C.Params().GetInt("id")
+	if err != nil || id <= 0 {
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = "id must be a int value"
+		ctx.Json(resp)
+		return
+	}
+
+	_, err = app.GetOrm().Context.QueryTable(new(model.MessageSenderInfo)).
+		Filter("Id", id).
+		Filter("Org", consoleorg.ID(ctx)).
+		Filter("Category", msg.MailMessage).
+		Delete()
+	if err != nil {
+		resp.Code = -1
+		resp.Message = "delete sender failed"
+		ctx.Json(resp)
+		return
+	}
+	resp.Code = tool.RespCodeSuccess
+	ctx.Json(resp)
 }

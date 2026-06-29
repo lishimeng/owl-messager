@@ -5,7 +5,7 @@ ARG VERSION
 ARG APP_PATH
 WORKDIR /ui_build
 ADD ${APP_PATH}/ui .
-RUN npm i pnpm -g && pnpm install && pnpm run build
+RUN corepack enable && pnpm install --frozen-lockfile && pnpm run build
 FROM golang:1.23 as build
 ARG NAME
 ARG VERSION

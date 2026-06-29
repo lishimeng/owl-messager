@@ -30,7 +30,8 @@ func init() {
 	SmsProviders[Ali] = VendorEnable
 	SmsProviders[Tencent] = VendorEnable
 	SmsProviders[Huawei] = VendorEnable
-	SmsProviders[UpYun] = VendorEnable
+	// UpYun: provider not registered yet; keep disabled until implemented.
+	// SmsProviders[UpYun] = VendorEnable
 	SmsProviders[QiNiu] = VendorEnable
 
 	ImProviders = make(map[MessageProvider]byte)
