@@ -6,8 +6,6 @@ import (
 )
 
 func getTenant(code string) (t model.Tenant, err error) {
-	err = app.GetOrm().Context.
-		QueryTable(new(model.Tenant)).
-		Filter("Code", code).One(&t)
+	err = app.GetOrm().Model(&model.Tenant{}).Equal("code", code).First(&t)
 	return
 }

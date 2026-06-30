@@ -2,6 +2,7 @@ package historyApi
 
 import (
 	"encoding/json"
+
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
@@ -39,9 +40,7 @@ func GetHistoryOne(ctx server.Context) {
 	switch msg.MessageCategory(category) {
 	case msg.MailMessage:
 		var info model.MailMessageInfo
-		err = app.GetOrm().Context.QueryTable(new(model.MailMessageInfo)).
-			Filter("message_id", id).
-			One(&info)
+		err = app.GetOrm().Model(&model.MailMessageInfo{}).Equal("message_id", id).First(&info)
 		if err != nil {
 			resp.Message = "not found"
 			resp.Status = tool.RespCodeNotFound
@@ -53,9 +52,7 @@ func GetHistoryOne(ctx server.Context) {
 		templateId = info.Template
 	case msg.SmsMessage:
 		var info model.SmsMessageInfo
-		err = app.GetOrm().Context.QueryTable(new(model.SmsMessageInfo)).
-			Filter("message_id", id).
-			One(&info)
+		err = app.GetOrm().Model(&model.SmsMessageInfo{}).Equal("message_id", id).First(&info)
 		if err != nil {
 			resp.Message = "not found"
 			resp.Status = tool.RespCodeNotFound
@@ -67,9 +64,7 @@ func GetHistoryOne(ctx server.Context) {
 		templateId = info.Template
 	case msg.ImMessage:
 		var info model.ImMessageInfo
-		err = app.GetOrm().Context.QueryTable(new(model.ImMessageInfo)).
-			Filter("message_id", id).
-			One(&info)
+		err = app.GetOrm().Model(&model.ImMessageInfo{}).Equal("message_id", id).First(&info)
 		if err != nil {
 			resp.Message = "not found"
 			resp.Status = tool.RespCodeNotFound
@@ -85,11 +80,8 @@ func GetHistoryOne(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
-	// 手动二次查询template，不使用RelatedSel或JOIN
 	var tpl model.MessageTemplate
-	err = app.GetOrm().Context.QueryTable(new(model.MessageTemplate)).
-		Filter("id", templateId).
-		One(&tpl)
+	err = app.GetOrm().Model(&model.MessageTemplate{}).Equal("id", templateId).First(&tpl)
 	if err != nil {
 		resp.Message = "template not found"
 		resp.Status = tool.RespCodeNotFound

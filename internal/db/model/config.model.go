@@ -4,7 +4,7 @@ import "github.com/lishimeng/app-starter"
 
 type Config struct {
 	app.Pk
-	Code    string `orm:"column(code)"`
-	Content string `orm:"column(content)"`
+	Code    string `gorm:"column:code"`
+	Content string `gorm:"column:content"`
 	app.TableChangeInfo
 }

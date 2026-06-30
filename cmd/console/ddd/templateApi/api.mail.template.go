@@ -1,7 +1,6 @@
 package templateApi
 
 import (
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
@@ -64,16 +63,14 @@ func GetMailTemplateList(ctx server.Context) {
 		dst.CreateTime = util.FormatTime(src.CreateTime)
 		dst.UpdateTime = util.FormatTime(src.UpdateTime)
 	}
-	pager.QueryBuilder = func(tx persistence.TxContext) any {
-		cond := orm.NewCondition()
-		cond = cond.And("org", orgID)
-		cond = cond.And("message_category", msg.MailMessage)
+	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
+		q := tx.Model(&model.MessageTemplate{}).Equal("org", orgID).Equal("message_category", msg.MailMessage)
 		if len(provider) > 0 {
-			cond = cond.And("message_provider", provider)
+			q = q.Equal("message_provider", provider)
 		}
-		return tx.Context.QueryTable(new(model.MessageTemplate)).SetCond(cond)
+		return q
 	}
-	pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	pager.OrderExp = append(pager.OrderExp, "ctime")
 	err := app.QueryPage(&pager)
 	if err != nil {
 		log.Debug("get templates failed: %v", err)
@@ -259,9 +256,9 @@ func DeleteMailTemplate(ctx server.Context) {
 		return
 	}
 
-	_, err = app.GetOrm().Context.QueryTable(new(model.MessageTemplate)).
-		Filter("Id", id).
-		Delete()
+	err = app.Transaction(func(tx persistence.TxContext) error {
+		return tx.Delete(&model.MessageTemplate{}, id)
+	})
 	if err != nil {
 		resp.Code = -1
 		resp.Message = "delete template failed"

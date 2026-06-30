@@ -1,92 +1,70 @@
 package repo
 
 import (
-	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"time"
 )
 
-// 创建投送task
-// 从未投送的message中取出一个
 func AddMessageTask(ctx persistence.TxContext, messageId int, messageInstanceId int) (task model.MessageTask, err error) {
 	task = model.MessageTask{
 		MessageId:         messageId,
 		MessageInstanceId: messageInstanceId,
 	}
 	task.Status = model.MessageTaskInit
-	_, err = ctx.Context.Insert(&task)
+	err = ctx.Create(&task)
 	return
 }
 
 func GetMessageTask(id int) (t model.MessageTask, err error) {
-	t.Id = id
-	err = app.GetOrm().Context.Read(&t)
+	err = orm().Model(&model.MessageTask{}).Equal("id", id).First(&t)
 	return
 }
 
 func GetTaskByMessage(messageId int) (t model.MessageTask, err error) {
-
-	err = app.GetOrm().Context.QueryTable(new(model.MessageTask)).
-		Filter("MessageId", messageId).
-		OrderBy("-CreateTime").
+	err = orm().Model(&model.MessageTask{}).
+		Equal("message_id", messageId).
+		Order("-ctime").
 		Limit(1).
-		One(&t)
+		First(&t)
 	return
 }
 
-func TaskSendFail(messageId int) {
+func TaskSendFail(messageId int) {}
 
-}
-
-// 取消超时的task
-func CancelExpiredTask(taskId int) {
-	// 从running删除
-	// task表设置状态(超时)
-	// message表设置状态(超时)
-	// TODO 是否用数据库函数执行
-}
+func CancelExpiredTask(taskId int) {}
 
 func UpdateTaskStatus(ctx persistence.TxContext, taskId int, status int) (task model.MessageTask, err error) {
 	task.Id = taskId
 	task.Status = status
 	task.UpdateTime = time.Now()
-	_, err = ctx.Context.Update(&task, "Status")
+	err = updateSelect(ctx, &task, "Status", "UpdateTime")
 	return
 }
 
-// 超时的列表
-// size:取出数据量
 func GetExpiredTasks(size int, timeLatest time.Time) (tasks []model.MessageRunningTask, err error) {
-	_, err = app.GetOrm().Context.
-		QueryTable(new(model.MessageRunningTask)).
-		Filter("CreateTime__lt", timeLatest).
+	err = orm().Model(&model.MessageRunningTask{}).
+		Where("ctime < ?", timeLatest).
 		Limit(size).
-		All(&tasks)
+		Find(&tasks)
 	return
 }
 
 func AddRunningTask(ctx persistence.TxContext, task model.MessageTask) (runningTask model.MessageRunningTask, err error) {
-	runningTask = model.MessageRunningTask{
-		TaskId: task.Id,
-	}
-	_, err = ctx.Context.Insert(&runningTask)
+	runningTask = model.MessageRunningTask{TaskId: task.Id}
+	err = ctx.Create(&runningTask)
 	return
 }
 
 func DeleteRunningTaskByTaskId(ctx persistence.TxContext, taskId int) (err error) {
 	var runningTask model.MessageRunningTask
-	err = ctx.Context.QueryTable(new(model.MessageRunningTask)).Filter("TaskId", taskId).One(&runningTask)
+	err = ctx.Model(&model.MessageRunningTask{}).Equal("task_id", taskId).First(&runningTask)
 	if err != nil {
 		return
 	}
-	_, err = ctx.Context.Delete(&runningTask)
-	return
+	return ctx.Delete(&runningTask)
 }
 
 func DeleteRunningTask(ctx persistence.TxContext, id int) (err error) {
-	var runningTask model.MessageRunningTask
-	runningTask.Id = id
-	_, err = ctx.Context.Delete(&runningTask)
-	return
+	return ctx.Delete(&model.MessageRunningTask{}, id)
 }

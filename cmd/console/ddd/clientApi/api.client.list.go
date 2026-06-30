@@ -1,7 +1,6 @@
 package clientApi
 
 import (
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
@@ -47,14 +46,14 @@ func getClientByPage(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
-	pager.QueryBuilder = func(tx persistence.TxContext) any {
-		cond := orm.NewCondition()
+	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
+		q := tx.Model(&model.OpenClient{})
 		if org > repo.ConditionIgnore {
-			cond = cond.And("Domain", tenant)
+			q = q.Equal("domain", tenant)
 		}
-		return tx.Context.QueryTable(new(model.OpenClient)).SetCond(cond)
+		return q
 	}
-	pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	pager.OrderExp = append(pager.OrderExp, "ctime")
 	err = app.QueryPage(&pager)
 	if err != nil {
 		resp.Code = tool.RespCodeNotFound

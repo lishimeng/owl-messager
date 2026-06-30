@@ -25,12 +25,11 @@ func getAppInfo(appId string) (ai AppInfo, err error) {
 }
 
 func _getClientByAppId(appId string, ctx persistence.TxContext) (c model.OpenClient, err error) {
-	err = ctx.Context.QueryTable(new(model.OpenClient)).Filter("AppId", appId).One(&c)
+	err = ctx.Model(&model.OpenClient{}).Equal("app_id", appId).First(&c)
 	return
 }
 
 func _getTenantById(id int, ctx persistence.TxContext) (t model.Tenant, err error) {
-	t.Id = id
-	err = ctx.Context.Read(&t)
+	err = ctx.Model(&model.Tenant{}).Equal("id", id).First(&t)
 	return
 }

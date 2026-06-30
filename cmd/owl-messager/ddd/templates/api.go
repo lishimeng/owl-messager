@@ -1,8 +1,9 @@
 package templates
 
 import (
-	"github.com/beego/beego/v2/client/orm"
-	"github.com/lishimeng/app-starter"
+	"strings"
+
+	app "github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/midware/auth"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
@@ -12,7 +13,6 @@ import (
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/pkg"
 	"github.com/lishimeng/owl-messager/pkg/msg"
-	"strings"
 )
 
 type resp struct {
@@ -78,15 +78,14 @@ func getTemplates(category msg.MessageCategory, org int, pageNo, pageSize int) (
 		dst.Provider = src.Provider.String()
 		dst.Code = src.Code
 	}
-	pager.QueryBuilder = func(tx persistence.TxContext) any {
-		cond := orm.NewCondition()
-		cond = cond.And("org", org)
+	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
+		q := tx.Model(&model.MessageTemplate{}).Equal("org", org)
 		if len(category) > 0 {
-			cond = cond.And("message_category", category)
+			q = q.Equal("message_category", category)
 		}
-		return tx.Context.QueryTable(new(model.MessageTemplate)).SetCond(cond)
+		return q
 	}
-	pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	pager.OrderExp = append(pager.OrderExp, "ctime")
 	err = app.QueryPage(&pager)
 	if err != nil {
 		return

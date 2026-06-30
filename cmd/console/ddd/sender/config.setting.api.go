@@ -1,7 +1,6 @@
 package sender
 
 import (
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
@@ -145,16 +144,14 @@ func ListByPage(ctx server.Context) {
 		dst.CreateTime = src.CreateTime.UTC().Format(time.RFC3339)
 		dst.UpdateTime = src.UpdateTime.UTC().Format(time.RFC3339)
 	}
-	pager.QueryBuilder = func(tx persistence.TxContext) any {
-		cond := orm.NewCondition()
-		cond = cond.And("org", consoleorg.ID(ctx))
+	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
+		q := tx.Model(&model.MessageSenderInfo{}).Equal("org", consoleorg.ID(ctx))
 		if len(category) > 0 {
-			cond = cond.And("message_category", category)
+			q = q.Equal("message_category", category)
 		}
-		return tx.Context.QueryTable(new(model.MessageSenderInfo)).SetCond(cond)
+		return q
 	}
-	pager.OrderByExp = append(pager.OrderByExp, "message_provider")
-	pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	pager.OrderExp = append(pager.OrderExp, "message_provider", "ctime")
 	err := app.QueryPage(&pager)
 	if err != nil {
 		resp.Code = tool.RespCodeNotFound
@@ -232,9 +229,17 @@ func DeleteSender(ctx server.Context) {
 		return
 	}
 
-	_, err = app.GetOrm().Context.QueryTable(new(model.MessageSenderInfo)).
-		Filter("Code", code).
-		Delete()
+	var sender model.MessageSenderInfo
+	err = app.GetOrm().Model(&model.MessageSenderInfo{}).Equal("code", code).First(&sender)
+	if err != nil {
+		respJson.Message = "删除失败"
+		respJson.Code = tool.RespCodeNotFound
+		ctx.Json(respJson)
+		return
+	}
+	err = app.Transaction(func(tx persistence.TxContext) error {
+		return tx.Delete(&sender)
+	})
 	if err != nil {
 		respJson.Message = "删除失败"
 		respJson.Code = tool.RespCodeNotFound

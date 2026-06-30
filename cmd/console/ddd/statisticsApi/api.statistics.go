@@ -37,10 +37,9 @@ func GetProvidersStat(ctx server.Context) {
 	var stat []model.ProviderStats
 
 	orgID := consoleorg.ID(ctx)
-	_, err := app.GetOrm().Context.QueryTable(new(model.ProviderStats)).
-		Filter("Org", orgID).
-		All(&stat)
-
+	err := app.GetOrm().Model(&model.ProviderStats{}).
+		Equal("org", orgID).
+		Find(&stat)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = err.Error()
@@ -68,7 +67,6 @@ func GetDailyStat(ctx server.Context) {
 	batch := ctx.C.URLParamIntDefault("batch", 30)
 	minBatch := ctx.C.URLParamIntDefault("min", 0)
 
-	//startDate, err := time.ParseInLocation("2006-01-02", startString, time.Local)
 	startDate, err := time.Parse("2006-01-02", startString)
 	if err != nil {
 		resp.Code = tool.RespCodeError
@@ -80,10 +78,10 @@ func GetDailyStat(ctx server.Context) {
 
 	orgID := consoleorg.ID(ctx)
 	var earliest model.DailySummary
-	err = app.GetOrm().Context.QueryTable(new(model.DailySummary)).
-		Filter("Org", orgID).
-		OrderBy("Date").
-		One(&earliest)
+	err = app.GetOrm().Model(&model.DailySummary{}).
+		Equal("org", orgID).
+		Order("date").
+		First(&earliest)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = err.Error()
@@ -103,12 +101,18 @@ func GetDailyStat(ctx server.Context) {
 
 	result := make([]dailyStat, batch)
 	var records []model.DailySummary
-	_, err = app.GetOrm().Context.QueryTable(new(model.DailySummary)).
-		Filter("Org", orgID).
-		Filter("Date__gt", endDate).
-		Filter("Date__lte", startDate).
-		OrderBy("-Date").
-		All(&records)
+	err = app.GetOrm().Model(&model.DailySummary{}).
+		Equal("org", orgID).
+		Where("date > ?", endDate).
+		Where("date <= ?", startDate).
+		Order("-date").
+		Find(&records)
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		resp.Message = err.Error()
+		ctx.Json(resp)
+		return
+	}
 
 	for i, j := 0, 0; i < batch; startDate = startDate.AddDate(0, 0, -1) {
 		result[i].Date = startDate.Format("2006-01-02")

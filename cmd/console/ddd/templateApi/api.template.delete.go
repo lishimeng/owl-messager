@@ -2,6 +2,7 @@ package templateApi
 
 import (
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
@@ -29,9 +30,18 @@ func DeleteTemplate(ctx server.Context) {
 		return
 	}
 
-	_, err = app.GetOrm().Context.QueryTable(new(model.MessageTemplate)).
-		Filter("Code", code).
-		Delete()
+	var tpl model.MessageTemplate
+	err = app.GetOrm().Model(&model.MessageTemplate{}).Equal("code", code).First(&tpl)
+	if err != nil {
+		log.Info("delTemplate err", err)
+		respJson.Message = "删除失败"
+		respJson.Code = tool.RespCodeNotFound
+		ctx.Json(respJson)
+		return
+	}
+	err = app.Transaction(func(tx persistence.TxContext) error {
+		return tx.Delete(&tpl)
+	})
 	if err != nil {
 		log.Info("delTemplate err", err)
 		respJson.Message = "删除失败"

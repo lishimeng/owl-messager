@@ -2,20 +2,20 @@ package repo
 
 import (
 	"errors"
-	"github.com/lishimeng/app-starter"
+	"time"
+
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/pkg/msg"
-	"time"
 )
 
 func updateDailyStat(ctx persistence.TxContext, org int, category msg.MessageCategory) (err error) {
 	var daily model.DailySummary
 	newDate := false
-	err = ctx.Context.QueryTable(new(model.DailySummary)).
-		Filter("Org", org).
-		Filter("Date", time.Now()).
-		One(&daily)
+	err = ctx.Model(&model.DailySummary{}).
+		Equal("org", org).
+		Where("date = ?", time.Now().Format("2006-01-02")).
+		First(&daily)
 	if err != nil {
 		daily = model.DailySummary{Date: time.Now()}
 		daily.Org = org
@@ -35,20 +35,20 @@ func updateDailyStat(ctx persistence.TxContext, org int, category msg.MessageCat
 		return
 	}
 	if !newDate {
-		_, err = ctx.Context.Update(&daily)
+		err = ctx.Save(&daily)
 	} else {
-		_, err = ctx.Context.Insert(&daily)
+		err = ctx.Create(&daily)
 	}
 	return
 }
 
 func updateProviderStat(ctx persistence.TxContext, org int, category msg.MessageCategory, provider msg.MessageProvider) (err error) {
 	var stat model.ProviderStats
-	err = ctx.Context.QueryTable(new(model.ProviderStats)).
-		Filter("Org", org).
-		Filter("Category", category).
-		Filter("Provider", provider).
-		One(&stat)
+	err = ctx.Model(&model.ProviderStats{}).
+		Equal("org", org).
+		Equal("category", category).
+		Equal("provider", provider).
+		First(&stat)
 	if err != nil {
 		stat = model.ProviderStats{
 			Category: category,
@@ -56,20 +56,18 @@ func updateProviderStat(ctx persistence.TxContext, org int, category msg.Message
 			Value:    1,
 		}
 		stat.Org = org
-		_, err = ctx.Context.Insert(&stat)
+		err = ctx.Create(&stat)
 		return
 	}
 	stat.Value = stat.Value + 1
-	_, err = ctx.Context.Update(&stat)
+	err = ctx.Save(&stat)
 	return
 }
 
 func UpdateStatistics(ctx persistence.TxContext, task model.MessageTask) (err error) {
 	var info model.MessageInfo
 	var templateId int
-	err = ctx.Context.QueryTable(new(model.MessageInfo)).
-		Filter("Id", task.MessageId).
-		One(&info)
+	err = ctx.Model(&model.MessageInfo{}).Equal("id", task.MessageId).First(&info)
 	if err != nil {
 		return
 	}
@@ -81,41 +79,38 @@ func UpdateStatistics(ctx persistence.TxContext, task model.MessageTask) (err er
 	}
 	switch category {
 	case msg.MailMessage:
-		var info model.MailMessageInfo
-		err = ctx.Context.QueryTable(new(model.MailMessageInfo)).
-			Filter("message_id", task.MessageInstanceId).
-			One(&info)
+		var mailInfo model.MailMessageInfo
+		err = ctx.Model(&model.MailMessageInfo{}).
+			Equal("id", task.MessageInstanceId).
+			First(&mailInfo)
 		if err != nil {
 			return
 		}
-		templateId = info.Template
+		templateId = mailInfo.Template
 	case msg.SmsMessage:
-		var info model.SmsMessageInfo
-		err = app.GetOrm().Context.QueryTable(new(model.SmsMessageInfo)).
-			Filter("message_id", task.MessageInstanceId).
-			One(&info)
+		var smsInfo model.SmsMessageInfo
+		err = orm().Model(&model.SmsMessageInfo{}).
+			Equal("id", task.MessageInstanceId).
+			First(&smsInfo)
 		if err != nil {
 			return
 		}
-		templateId = info.Template
+		templateId = smsInfo.Template
 	case msg.ImMessage:
-		var info model.ImMessageInfo
-		err = app.GetOrm().Context.QueryTable(new(model.ImMessageInfo)).
-			Filter("message_id", task.MessageInstanceId).
-			One(&info)
+		var imInfo model.ImMessageInfo
+		err = orm().Model(&model.ImMessageInfo{}).
+			Equal("id", task.MessageInstanceId).
+			First(&imInfo)
 		if err != nil {
 			return
 		}
-		templateId = info.Template
+		templateId = imInfo.Template
 	default:
 		err = errors.New("unknown category")
 		return
 	}
-	// 查询template才能知道provider
 	var tpl model.MessageTemplate
-	err = app.GetOrm().Context.QueryTable(new(model.MessageTemplate)).
-		Filter("id", templateId).
-		One(&tpl)
+	err = orm().Model(&model.MessageTemplate{}).Equal("id", templateId).First(&tpl)
 	if err != nil {
 		return
 	}

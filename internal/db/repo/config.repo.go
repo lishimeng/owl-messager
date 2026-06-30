@@ -3,7 +3,7 @@ package repo
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/lishimeng/app-starter"
+
 	"github.com/lishimeng/owl-messager/internal/db/model"
 )
 
@@ -16,24 +16,20 @@ func SaveConfig(code string, content interface{}) error {
 
 	cfg, err := GetOneConfig(code)
 	if err == nil {
-		// 查询得到结果，已经存在此条目，改为update
 		cfg.Content = encoded
-		_, err = app.GetOrm().Context.Update(&cfg)
+		err = orm().Model(&cfg).Select("Content").Updates(&cfg)
 	} else {
-		// 不存在
 		cfg = model.Config{
 			Content: encoded,
 			Code:    code,
 		}
 		cfg.Status = 10
-		_, err = app.GetOrm().Context.Insert(&cfg)
+		err = create(&cfg)
 	}
 	return err
 }
 
 func GetOneConfig(code string) (config model.Config, err error) {
-	err = app.GetOrm().Context.QueryTable(new(model.Config)).
-		Filter("code", code).
-		One(&config)
+	err = orm().Model(&model.Config{}).Equal("code", code).First(&config)
 	return
 }

@@ -1,7 +1,6 @@
 package templateApi
 
 import (
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
@@ -41,18 +40,17 @@ func GetTemplateListByPage(ctx server.Context) {
 		dst.CreateTime = src.CreateTime.UTC().Format(time.RFC3339)
 		dst.UpdateTime = src.UpdateTime.UTC().Format(time.RFC3339)
 	}
-	pager.QueryBuilder = func(tx persistence.TxContext) any {
-		cond := orm.NewCondition()
-		cond = cond.And("org", consoleorg.ID(ctx))
+	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
+		q := tx.Model(&model.MessageTemplate{}).Equal("org", consoleorg.ID(ctx))
 		if len(category) > 0 {
-			cond = cond.And("message_category", category)
+			q = q.Equal("message_category", category)
 		}
 		if len(provider) > 0 {
-			cond = cond.And("message_provider", provider)
+			q = q.Equal("message_provider", provider)
 		}
-		return tx.Context.QueryTable(new(model.MessageTemplate)).SetCond(cond)
+		return q
 	}
-	pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	pager.OrderExp = append(pager.OrderExp, "ctime")
 	err := app.QueryPage(&pager)
 	if err != nil {
 		log.Info("GetTemplateListByPage failed: %s ", err)

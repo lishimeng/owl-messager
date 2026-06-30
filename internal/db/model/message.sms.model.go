@@ -1,9 +1,8 @@
 package model
 
-// SmsMessageInfo 短信
 type SmsMessageInfo struct {
 	MessageHeader
-	Template  int    `orm:"column(template_id)"` // sms template
-	Params    string `orm:"column(params);null"` // json params(map)
-	Receivers string `orm:"column(receiver)"`    // receiver list. comma split
+	Template  int    `gorm:"column:template_id"`
+	Params    string `gorm:"column:params"`
+	Receivers string `gorm:"column:receiver"`
 }

@@ -1,17 +1,16 @@
 package repo
 
 import (
-	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
 func GetTemplateByCode(code string, category msg.MessageCategory) (s model.MessageTemplate, err error) {
-	err = app.GetOrm().Context.QueryTable(new(model.MessageTemplate)).
-		Filter("Code", code).
-		Filter("Category", category).
-		One(&s)
+	err = orm().Model(&model.MessageTemplate{}).
+		Equal("code", code).
+		Equal("message_category", category).
+		First(&s)
 	return
 }
 
@@ -20,42 +19,31 @@ func GetMessageTemplates(
 	category msg.MessageCategory,
 	provider msg.MessageProvider,
 ) (templates []model.MessageTemplate, err error) {
-	_, err = app.GetOrm().Context.QueryTable(new(model.MessageTemplate)).
-		Filter("Org", org).
-		Filter("Category", category).
-		Filter("Provider", provider).
-		Filter("Status", model.SenderEnable).
-		OrderBy("-Default").
-		Limit(10).All(&templates)
-	if err != nil {
-		return
-	}
+	err = orm().Model(&model.MessageTemplate{}).
+		Equal("org", org).
+		Equal("message_category", category).
+		Equal("message_provider", provider).
+		Equal("status", model.SenderEnable).
+		Order("-Default").
+		Limit(10).
+		Find(&templates)
 	return
 }
 
 func GetMessageTemplateById(id int) (tpl model.MessageTemplate, err error) {
-	err = app.GetOrm().Context.QueryTable(new(model.MessageTemplate)).
-		Filter("Id", id).
-		//Filter("Org", org).
-		Filter("Status", model.SenderEnable).
-		One(&tpl)
-	if err != nil {
-		return
-	}
-
+	err = orm().Model(&model.MessageTemplate{}).
+		Equal("id", id).
+		Equal("status", model.SenderEnable).
+		First(&tpl)
 	return
 }
 
 func GetMessageTemplateByCode(code string, org int) (tpl model.MessageTemplate, err error) {
-	err = app.GetOrm().Context.QueryTable(new(model.MessageTemplate)).
-		Filter("Code", code).
-		Filter("Org", org).
-		Filter("Status", model.SenderEnable).
-		One(&tpl)
-	if err != nil {
-		return
-	}
-
+	err = orm().Model(&model.MessageTemplate{}).
+		Equal("code", code).
+		Equal("org", org).
+		Equal("status", model.SenderEnable).
+		First(&tpl)
 	return
 }
 
@@ -84,15 +72,13 @@ func CreateMessageTemplate(
 		m.Description = description
 	}
 	m.Status = model.TemplateEnable
-	_, err = app.GetOrm().Context.Insert(&m)
-
+	err = create(&m)
 	return
 }
 
 func UpdateMessageTemplate(status int, code, name, body, params, description string, provider string) (m model.MessageTemplate, err error) {
-
-	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
-		e = ctx.Context.QueryTable(new(model.MessageTemplate)).Filter("Code", code).One(&m)
+	err = orm().Transaction(func(ctx persistence.TxContext) (e error) {
+		e = ctx.Model(&model.MessageTemplate{}).Equal("code", code).First(&m)
 		if e != nil {
 			return
 		}
@@ -121,9 +107,7 @@ func UpdateMessageTemplate(status int, code, name, body, params, description str
 			m.Provider = msg.MessageProvider(provider)
 			cols = append(cols, "Provider")
 		}
-
-		_, err = ctx.Context.Update(&m, cols...)
-
+		e = updateSelect(ctx, &m, cols...)
 		return
 	})
 	return

@@ -3,17 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/lishimeng/app-starter"
-	"github.com/lishimeng/app-starter/persistence"
+	"github.com/lishimeng/app-starter/persistence/driver/postgres"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd"
 	"github.com/lishimeng/owl-messager/cmd/console/static"
 	"github.com/lishimeng/owl-messager/internal/etc"
-	"net/http"
-	"time"
 )
-import _ "github.com/lib/pq"
 import _ "github.com/lishimeng/owl-messager/providers"
 
 func main() {
@@ -42,7 +42,7 @@ func _main() (err error) {
 		if err != nil {
 			return err
 		}
-		dbConfig := persistence.PostgresConfig{
+		dbConfig := postgres.Config{
 			UserName:  etc.Config.Db.User,
 			Password:  etc.Config.Db.Password,
 			Host:      etc.Config.Db.Host,

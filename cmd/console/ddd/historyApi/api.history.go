@@ -1,7 +1,6 @@
 package historyApi
 
 import (
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
@@ -46,15 +45,14 @@ func GetHistoryList(ctx server.Context) {
 		dst.Category = src.Category.String()
 		dst.CreateTime = src.CreateTime.UTC().Format(time.RFC3339)
 	}
-	pager.QueryBuilder = func(tx persistence.TxContext) any {
-		cond := orm.NewCondition()
-		cond = cond.And("org", consoleorg.ID(ctx))
+	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
+		q := tx.Model(&model.MessageInfo{}).Equal("org", consoleorg.ID(ctx))
 		if len(category) > 0 {
-			cond = cond.And("category", category)
+			q = q.Equal("category", category)
 		}
-		return tx.Context.QueryTable(new(model.MessageInfo)).SetCond(cond)
+		return q
 	}
-	pager.OrderByExp = append(pager.OrderByExp, "-createTime")
+	pager.OrderExp = append(pager.OrderExp, "-ctime")
 	err := app.QueryPage(&pager)
 	if err != nil {
 		resp.Code = tool.RespCodeNotFound

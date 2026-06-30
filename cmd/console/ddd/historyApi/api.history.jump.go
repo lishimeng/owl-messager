@@ -24,13 +24,11 @@ func GetHistoryCount(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
-	q := app.GetOrm().Context.QueryTable(new(model.MessageInfo))
+	q := app.GetOrm().Model(&model.MessageInfo{})
 	if category != "" {
-		q = q.Filter("category", category)
+		q = q.Equal("category", category)
 	}
-	count, err := q.
-		Filter("ctime__gt", timeLatest.Add(time.Hour*24)).
-		Count()
+	count, err := q.Where("ctime > ?", timeLatest.Add(time.Hour*24)).Count()
 	if err != nil {
 		resp.Code = tool.RespCodeNotFound
 		resp.Message = err.Error()

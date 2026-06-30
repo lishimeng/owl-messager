@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/model"
@@ -11,17 +10,16 @@ import (
 
 func GetMessageById(id int) (m model.MessageInfo, err error) {
 	log.Debug("get message from db: %d", id)
-	m.Id = id
-	err = app.GetOrm().Context.Read(&m)
+	err = orm().Model(&model.MessageInfo{}).Equal("id", id).First(&m)
 	return
 }
 
-// 查询需要发送的消息
 func GetMessageToSend(size int) (messages []model.MessageInfo, err error) {
-	_, err = app.GetOrm().Context.
-		QueryTable(new(model.MessageInfo)).
-		Filter("Status", model.MessageInit).
-		OrderBy("UpdateTime").Limit(size).All(&messages)
+	err = orm().Model(&model.MessageInfo{}).
+		Equal("status", model.MessageInit).
+		Order("mtime").
+		Limit(size).
+		Find(&messages)
 	return
 }
 
@@ -29,7 +27,7 @@ func UpdateMessageStatus(ctx persistence.TxContext, id int, status int) (m model
 	m.Id = id
 	m.Status = status
 	m.UpdateTime = time.Now()
-	_, err = ctx.Context.Update(&m, "Status")
+	err = updateSelect(ctx, &m, "Status", "UpdateTime")
 	return
 }
 
@@ -37,7 +35,7 @@ func UpdateMessagePriority(id int, priority int) (m model.MessageInfo, err error
 	m.Id = id
 	m.Priority = priority
 	m.UpdateTime = time.Now()
-	_, err = app.GetOrm().Context.Update(&m, "Priority")
+	err = orm().Model(&m).Select("Priority", []interface{}{"UpdateTime"}...).Updates(&m)
 	return
 }
 
@@ -48,7 +46,6 @@ func CreateMessage(ctx persistence.TxContext, org int, subject string, category 
 	m.Priority = model.MessagePriorityNormal
 	m.Category = category
 	m.Status = model.MessageInit
-
-	_, err = ctx.Context.Insert(&m)
+	err = ctx.Create(&m)
 	return
 }

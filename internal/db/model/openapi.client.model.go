@@ -4,10 +4,10 @@ import "github.com/lishimeng/app-starter"
 
 type OpenClient struct {
 	app.TenantPk
-	AppId  string `orm:"column(app_id);unique"`
-	Secret string `orm:"column(secret)"`
-	Domain string `orm:"column(domain)"`
-	Name   string `orm:"column(name)"`
+	AppId  string `gorm:"column:app_id;uniqueIndex"`
+	Secret string `gorm:"column:secret"`
+	Domain string `gorm:"column:domain"`
+	Name   string `gorm:"column:name"`
 	app.TableInfo
 }
 

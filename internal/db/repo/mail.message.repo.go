@@ -1,14 +1,13 @@
 package repo
 
 import (
-	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"time"
 )
 
 func GetMailByMessageId(msgId int) (m model.MailMessageInfo, err error) {
-	err = app.GetOrm().Context.QueryTable(new(model.MailMessageInfo)).Filter("MessageId", msgId).One(&m)
+	err = orm().Model(&model.MailMessageInfo{}).Equal("message_id", msgId).First(&m)
 	return
 }
 
@@ -17,18 +16,15 @@ func CreateMailMessage(ctx persistence.TxContext, message model.MessageInfo,
 	templateParams string,
 	subject, receiver string) (m model.MailMessageInfo, err error) {
 
-	m.Org = message.Org // 复制message的tenant
+	m.Org = message.Org
 	m.MessageId = message.Id
 	m.Template = template.Id
 	m.Params = templateParams
-
 	m.Subject = subject
 	m.Receivers = receiver
-
 	m.Status = model.MessageInit
 	m.CreateTime = time.Now()
 	m.UpdateTime = time.Now()
-
-	_, err = ctx.Context.Insert(&m)
+	err = ctx.Create(&m)
 	return
 }

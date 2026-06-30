@@ -1,18 +1,19 @@
 
-FROM golang:1.23 as build
+FROM golang:1.26.4 as build
 ARG NAME
 ARG VERSION
 ARG COMMIT
 ARG BUILD_TIME
 ARG APP_PATH
 ARG BASE="github.com/lishimeng/app-starter/version"
-ENV GOPROXY=https://goproxy.cn,direct
+ARG GOPROXY=https://goproxy.cn,direct
+ENV GOPROXY=${GOPROXY}
 ARG LDFLAGS=" \
-    -X ${BASE}.AppName=${NAME} \
-    -X ${BASE}.Version=${VERSION} \
-    -X ${BASE}.Commit=${COMMIT} \
-    -X ${BASE}.Build=${BUILD_TIME} \
-    "
+-X ${BASE}.AppName=${NAME} \
+-X ${BASE}.Version=${VERSION} \
+-X ${BASE}.Commit=${COMMIT} \
+-X ${BASE}.Build=${BUILD_TIME} \
+"
 WORKDIR /release
 ADD . .
 

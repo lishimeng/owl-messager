@@ -2,23 +2,22 @@ package repo
 
 import (
 	"errors"
-	"github.com/lishimeng/app-starter"
+
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
-// GetDefMessageSender 获取默认的消息发送者
 func GetDefMessageSender(org int, category msg.MessageCategory, provider msg.MessageProvider) (s model.MessageSenderInfo, err error) {
-
 	var senders []model.MessageSenderInfo
-	_, err = app.GetOrm().Context.QueryTable(new(model.MessageSenderInfo)).
-		Filter("Org", org).
-		Filter("Category", category).
-		Filter("Provider", provider).
-		Filter("Status", model.SenderEnable).
-		OrderBy("-Default").
-		Limit(10).All(&senders)
+	err = orm().Model(&model.MessageSenderInfo{}).
+		Equal("org", org).
+		Equal("message_category", category).
+		Equal("message_provider", provider).
+		Equal("status", model.SenderEnable).
+		Order("-Default").
+		Limit(10).
+		Find(&senders)
 	if err != nil {
 		return
 	}
@@ -52,36 +51,29 @@ func CreateMessageSender(
 	}
 	m.Org = org
 	m.Status = model.SenderEnable
-	_, err = app.GetOrm().Context.Insert(&m)
+	err = create(&m)
 	return m, err
 }
 
 func GetMessageSenderByCode(code string) (s model.MessageSenderInfo, err error) {
-	err = app.GetOrm().Context.QueryTable(new(model.MessageSenderInfo)).
-		Filter("Code", code).
-		//Filter("Org", org).
-		One(&s)
+	err = orm().Model(&model.MessageSenderInfo{}).Equal("code", code).First(&s)
 	return
 }
 
 func UpdateMessageSender(code string, config msg.SenderConfig) (s model.MessageSenderInfo, err error) {
-
-	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
-		e = ctx.Context.QueryTable(new(model.MessageSenderInfo)).Filter("Code", code).One(&s)
+	err = orm().Transaction(func(ctx persistence.TxContext) (e error) {
+		e = ctx.Model(&model.MessageSenderInfo{}).Equal("code", code).First(&s)
 		if e != nil {
 			return
 		}
-		var cols []string
 		if len(config) > 0 {
 			s.Config = config
-			err = s.Config.Encode()
-			if err != nil {
-				return err
+			e = s.Config.Encode()
+			if e != nil {
+				return
 			}
-			cols = append(cols, "Config")
+			e = updateSelect(ctx, &s, "Config")
 		}
-		_, err = ctx.Context.Update(&s, cols...)
-
 		return
 	})
 	return

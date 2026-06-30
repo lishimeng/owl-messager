@@ -1,7 +1,6 @@
 package messageApi
 
 import (
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
@@ -60,17 +59,17 @@ func GetMessageList(ctx server.Context) {
 		dst.CreateTime = util.FormatTime(src.CreateTime)
 		dst.UpdateTime = util.FormatTime(src.UpdateTime)
 	}
-	pager.QueryBuilder = func(tx persistence.TxContext) any {
-		cond := orm.NewCondition()
+	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
+		q := tx.Model(&model.MessageInfo{})
 		if status > repo.ConditionIgnore {
-			cond = cond.And("status", status)
+			q = q.Equal("status", status)
 		}
 		if category > repo.ConditionIgnore {
-			cond = cond.And("category", category)
+			q = q.Equal("category", category)
 		}
-		return tx.Context.QueryTable(new(model.MessageInfo)).SetCond(cond)
+		return q
 	}
-	pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	pager.OrderExp = append(pager.OrderExp, "ctime")
 	err := app.QueryPage(&pager)
 
 	if err != nil {

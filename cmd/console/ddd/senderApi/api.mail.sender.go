@@ -2,7 +2,7 @@ package senderApi
 
 import (
 	"encoding/json"
-	"github.com/beego/beego/v2/client/orm"
+
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
@@ -52,13 +52,12 @@ func GetMailSenderList(ctx server.Context) {
 		dst.CreateTime = util.FormatTime(src.CreateTime)
 		dst.UpdateTime = util.FormatTime(src.UpdateTime)
 	}
-	pager.QueryBuilder = func(tx persistence.TxContext) any {
-		cond := orm.NewCondition()
-		cond = cond.And("org", orgID)
-		cond = cond.And("message_category", msg.MailMessage)
-		return tx.Context.QueryTable(new(model.MessageSenderInfo)).SetCond(cond)
+	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
+		return tx.Model(&model.MessageSenderInfo{}).
+			Equal("org", orgID).
+			Equal("message_category", msg.MailMessage)
 	}
-	pager.OrderByExp = append(pager.OrderByExp, "createTime")
+	pager.OrderExp = append(pager.OrderExp, "ctime")
 	if err := app.QueryPage(&pager); err != nil {
 		log.Debug("get senders failed: %v", err)
 		resp.Code = -1
@@ -84,11 +83,11 @@ func GetMailSenderInfo(ctx server.Context) {
 	}
 
 	var ms model.MessageSenderInfo
-	err = app.GetOrm().Context.QueryTable(new(model.MessageSenderInfo)).
-		Filter("Id", id).
-		Filter("Org", consoleorg.ID(ctx)).
-		Filter("Category", msg.MailMessage).
-		One(&ms)
+	err = app.GetOrm().Model(&model.MessageSenderInfo{}).
+		Equal("id", id).
+		Equal("org", consoleorg.ID(ctx)).
+		Equal("message_category", msg.MailMessage).
+		First(&ms)
 	if err != nil {
 		resp.Code = tool.RespCodeNotFound
 		resp.Message = "not found"
@@ -179,11 +178,11 @@ func UpdateMailSender(ctx server.Context) {
 	}
 
 	var ms model.MessageSenderInfo
-	err = app.GetOrm().Context.QueryTable(new(model.MessageSenderInfo)).
-		Filter("Id", id).
-		Filter("Org", consoleorg.ID(ctx)).
-		Filter("Category", msg.MailMessage).
-		One(&ms)
+	err = app.GetOrm().Model(&model.MessageSenderInfo{}).
+		Equal("id", id).
+		Equal("org", consoleorg.ID(ctx)).
+		Equal("message_category", msg.MailMessage).
+		First(&ms)
 	if err != nil {
 		resp.Code = tool.RespCodeNotFound
 		resp.Message = "not found"
@@ -214,11 +213,9 @@ func DeleteMailSender(ctx server.Context) {
 		return
 	}
 
-	_, err = app.GetOrm().Context.QueryTable(new(model.MessageSenderInfo)).
-		Filter("Id", id).
-		Filter("Org", consoleorg.ID(ctx)).
-		Filter("Category", msg.MailMessage).
-		Delete()
+	err = app.Transaction(func(tx persistence.TxContext) error {
+		return tx.Delete(&model.MessageSenderInfo{}, id)
+	})
 	if err != nil {
 		resp.Code = -1
 		resp.Message = "delete sender failed"

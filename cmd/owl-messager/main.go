@@ -3,17 +3,19 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/persistence"
+	"github.com/lishimeng/app-starter/persistence/driver/postgres"
+	"github.com/lishimeng/app-starter/persistence/driver/sqlite"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/cmd/owl-messager/ddd"
 	"github.com/lishimeng/owl-messager/cmd/owl-messager/process"
 	"github.com/lishimeng/owl-messager/internal/etc"
 	"github.com/lishimeng/x/container"
-	"time"
 )
-import _ "github.com/lib/pq"
 import _ "github.com/lishimeng/owl-messager/providers"
 
 func main() {
@@ -53,7 +55,7 @@ func _main() (err error) {
 		}
 		var dbConfig persistence.BaseConfig
 		if len(etc.Config.Db.Host) > 0 {
-			c := persistence.PostgresConfig{
+			c := postgres.Config{
 				UserName:  etc.Config.Db.User,
 				Password:  etc.Config.Db.Password,
 				Host:      etc.Config.Db.Host,
@@ -65,7 +67,7 @@ func _main() (err error) {
 			}
 			dbConfig = c.Build()
 		} else if len(etc.Config.Sqlite.Db) > 0 {
-			c := persistence.SqliteConfig{
+			c := sqlite.Config{
 				Database:  etc.Config.Sqlite.Db,
 				AliasName: "default",
 				InitDb:    true,
