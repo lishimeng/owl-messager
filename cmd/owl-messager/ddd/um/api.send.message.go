@@ -10,7 +10,6 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
-	"github.com/lishimeng/owl-messager/internal/etc"
 	"github.com/lishimeng/owl-messager/internal/messager/task"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 	"github.com/lishimeng/x/container"
@@ -119,9 +118,7 @@ func sendMessage(ctx server.Context) {
 		return
 	}
 
-	var senderStrategy = task.Strategy(etc.Config.Sender.Strategy)
-	switch senderStrategy {
-	case task.MemQueue:
+	if task.UseMemQueue() {
 		var handler task.MessageTask
 		e := container.Get(&handler)
 		if e != nil {

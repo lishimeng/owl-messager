@@ -3,6 +3,7 @@ package ddd
 import (
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/apnsApi"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/authApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/clientApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/dict"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/historyApi"
@@ -15,10 +16,13 @@ import (
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/taskApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/templateApi"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/themeApi"
+	"github.com/lishimeng/owl-messager/cmd/console/midware"
 )
 
 func Route(app server.Router) {
 	root := app.Path("/api")
+	midware.MountApiAuth(root)
+	authApi.Route(root.Path("/auth"))
 	router(root)
 	return
 }

@@ -36,7 +36,7 @@ func WithHost(host string) Option {
 	}
 }
 
-// WithAuth Credentials配置
+// WithAuth sets appId and secret for HTTP Basic authentication.
 func WithAuth(appKey, secret string) Option {
 	return func(client *messageClient) {
 		client.appId = appKey
@@ -44,11 +44,9 @@ func WithAuth(appKey, secret string) Option {
 	}
 }
 
-// New 初始化.
+// New creates a reusable message client.
 //
-// 内部存储了Credentials,应该确保复用,而不是每次新建
-//
-// Client 内置了刷新credentials功能,不需要考虑credentials的获取问题.
+// Pass WithAuth(appId, secret) so each request uses Authorization: Basic.
 func New(options ...Option) (m Client) {
 	c := &messageClient{}
 	for _, opt := range options {

@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 
+	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 )
 
@@ -31,5 +32,25 @@ func SaveConfig(code string, content interface{}) error {
 
 func GetOneConfig(code string) (config model.Config, err error) {
 	err = orm().Model(&model.Config{}).Equal("code", code).First(&config)
+	return
+}
+
+func DecodeConfigContent(encoded string, dest interface{}) error {
+	js, err := base64.StdEncoding.DecodeString(encoded)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(js, dest)
+}
+
+// LoadTaskChannelSettings reads task channel config from DB; missing row returns zero value (memqueue).
+func LoadTaskChannelSettings() (settings model.TaskChannelSettings) {
+	cfg, err := GetOneConfig(model.ConfigCodeTaskChannel)
+	if err != nil {
+		return
+	}
+	if err = DecodeConfigContent(cfg.Content, &settings); err != nil {
+		log.Debug("decode task channel config: %v", err)
+	}
 	return
 }

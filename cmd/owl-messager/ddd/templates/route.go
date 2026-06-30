@@ -6,5 +6,5 @@ import (
 )
 
 func Route(root server.Router) {
-	root.Get("/{category}", midware.WithAuth(templates)...)
+	root.Get("/{category}", midware.WithOpenAuth(templates)...)
 }

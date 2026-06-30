@@ -9,12 +9,10 @@ import (
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/persistence/driver/postgres"
 	"github.com/lishimeng/app-starter/persistence/driver/sqlite"
-	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/cmd/owl-messager/ddd"
 	"github.com/lishimeng/owl-messager/cmd/owl-messager/process"
 	"github.com/lishimeng/owl-messager/internal/etc"
-	"github.com/lishimeng/x/container"
 )
 import _ "github.com/lishimeng/owl-messager/providers"
 
@@ -76,19 +74,6 @@ func _main() (err error) {
 		} else {
 			panic("no db config")
 		}
-
-		issuer := etc.Config.Token.Issuer
-		tokenKey := []byte(etc.Config.Token.Key)
-		builder = builder.EnableTokenValidator(func(inject app.TokenValidatorInjectFunc) {
-			provider := token.NewJwtProvider(token.WithIssuer(issuer),
-				token.WithKey(tokenKey, tokenKey), // hs256的秘钥必须是[]byte
-				token.WithAlg("HS256"),
-				token.WithDefaultTTL(etc.TokenTTL),
-			)
-			storage := token.NewLocalStorage(provider)
-			container.Add(provider)
-			inject(storage)
-		})
 
 		builder.EnableDatabase(dbConfig,
 			ddd.Tables()...).

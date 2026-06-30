@@ -2,13 +2,13 @@ package process
 
 import (
 	"context"
-	"github.com/lishimeng/owl-messager/internal/etc"
+
+	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/internal/messager/sender"
 	"github.com/lishimeng/owl-messager/internal/messager/task"
 	"github.com/lishimeng/x/container"
 )
-
-//var taskExecutor sender.TaskExecutor
 
 func messageSendProcess(ctx context.Context) (err error) {
 	taskExecutor, err := sender.New(ctx)
@@ -16,20 +16,15 @@ func messageSendProcess(ctx context.Context) (err error) {
 		return
 	}
 
-	var messageTask task.MessageTask
-	var opts []task.Option
-
-	var strategy = task.Strategy(etc.Config.Sender.Strategy)
-	switch strategy {
-	case task.MemQueue:
-		opts = append(opts, task.WithQueue(etc.Config.Sender.Buff))
-	case task.Db:
-		opts = append(opts, task.WithDb(10)) // etc
-	default:
-		opts = append(opts, task.WithQueue(etc.Config.Sender.Buff)) // 默认使用queue
+	settings := repo.LoadTaskChannelSettings()
+	opts := task.Configure(settings.Channel, settings.ScanInterval)
+	if task.UseMemQueue() {
+		log.Info("message task channel: memqueue")
+	} else {
+		log.Info("message task channel: db (scanInterval=%ds)", settings.ScanInterval)
 	}
 
-	messageTask, err = task.New(ctx, taskExecutor, opts...)
+	messageTask, err := task.New(ctx, taskExecutor, opts...)
 	if err != nil {
 		return
 	}

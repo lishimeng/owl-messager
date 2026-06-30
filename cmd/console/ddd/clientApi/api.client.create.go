@@ -10,7 +10,8 @@ import (
 
 type respCreate struct {
 	respSecret
-	AppId string `json:"appId,omitempty"`
+	AppId     string `json:"appId,omitempty"`
+	BasicAuth string `json:"basicAuth,omitempty"`
 }
 
 func createClient(ctx server.Context) {
@@ -36,6 +37,7 @@ func createClient(ctx server.Context) {
 		}
 		resp.AppId = client.AppId
 		resp.Secret = client.Secret
+		resp.BasicAuth = client.BasicAuth
 		return
 	})
 

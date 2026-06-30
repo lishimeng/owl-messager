@@ -109,6 +109,15 @@
       <el-form style="margin-top: 20px"
                :model="state.testForm"
                label-width="120px">
+        <el-form-item label="Messager 地址" prop="host">
+          <el-input v-model="state.testForm.host" placeholder="http://127.0.0.1:8080"></el-input>
+        </el-form-item>
+        <el-form-item label="AppId" prop="appId">
+          <el-input v-model="state.testForm.appId" placeholder="open_client.app_id"></el-input>
+        </el-form-item>
+        <el-form-item label="Secret" prop="secret">
+          <el-input v-model="state.testForm.secret" type="password" show-password placeholder="open_client.secret"></el-input>
+        </el-form-item>
         <el-form-item label="平台" prop="vendor">
           <el-input v-model="state.testForm.vendor" disabled></el-input>
         </el-form-item>
@@ -193,6 +202,9 @@ const state = reactive({
   testTitle: "",
   testReceiver: "",
   testForm: {
+    host: "",
+    appId: "",
+    secret: "",
     code: "",
     vendor: "",
     receiver: "",
@@ -201,7 +213,31 @@ const state = reactive({
   },
   tplList: [],
 })
+const MESSAGER_PROXY_KEY = 'messagerTestProxy';
+
+const loadMessagerProxy = () => {
+  try {
+    const raw = localStorage.getItem(MESSAGER_PROXY_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    state.testForm.host = saved.host || '';
+    state.testForm.appId = saved.appId || '';
+    state.testForm.secret = saved.secret || '';
+  } catch {
+    // ignore
+  }
+};
+
+const saveMessagerProxy = () => {
+  localStorage.setItem(MESSAGER_PROXY_KEY, JSON.stringify({
+    host: state.testForm.host,
+    appId: state.testForm.appId,
+    secret: state.testForm.secret,
+  }));
+};
+
 onMounted(() => {
+  loadMessagerProxy();
   getMailSenders();
 })
 const showEdit = (row: object) => {
@@ -253,10 +289,18 @@ const loadTemplate = async (category: string, vendor: string) => {
   }
 }
 const sendTest = () => {
+  if (!state.testForm.host || !state.testForm.appId || !state.testForm.secret) {
+    ElMessage.error('请填写 Messager 地址、AppId 和 Secret');
+    return;
+  }
+  saveMessagerProxy();
   state.showTest = false
   senderTestApi({
     category: state.category,
-    subject: "Owl-messager: 测试邮件", // sms无需subject
+    host: state.testForm.host,
+    appId: state.testForm.appId,
+    secret: state.testForm.secret,
+    subject: "Owl-messager: 测试邮件",
     receiver: state.testForm.receiver,
     template: state.testForm.tpl,
   }).then(res => {

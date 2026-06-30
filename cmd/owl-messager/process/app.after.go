@@ -9,7 +9,6 @@ import (
 
 func AfterStarted(ctx context.Context) (err error) {
 	go runAttachmentCleanup(ctx)
-	err = messageSendProcess(ctx)
 	return
 }
 

@@ -2,12 +2,11 @@ package sender
 
 import (
 	"github.com/lishimeng/app-starter/server"
-	"github.com/lishimeng/owl-messager/cmd/console/midware"
 )
 
 func Route(root server.Router) {
 
-	root.Get("/", midware.WithAuth(list)...) // 列表
+	root.Get("/", list)
 	root.Get("/mail/{id}", mailSenderInfo)
 	root.Get("/sms/{id}", smsSenderInfo)
 	root.Get("/apns/{id}", apnsSenderInfo)

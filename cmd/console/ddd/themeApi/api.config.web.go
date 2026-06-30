@@ -1,8 +1,6 @@
 package themeApi
 
 import (
-	"encoding/base64"
-	"encoding/json"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
@@ -30,15 +28,7 @@ func GetThemeConfig(ctx server.Context) {
 		return
 	}
 
-	js, err := base64.StdEncoding.DecodeString(cfg.Content)
-	if err != nil {
-		resp.Message = err.Error()
-		resp.Code = tool.RespCodeError
-		ctx.Json(resp)
-		return
-	}
-
-	err = json.Unmarshal(js, &config)
+	err = repo.DecodeConfigContent(cfg.Content, &config)
 	if err != nil {
 		resp.Message = err.Error()
 		resp.Code = tool.RespCodeError

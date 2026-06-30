@@ -11,5 +11,6 @@ import (
 func BeforeStarted(ctx context.Context) (err error) {
 	mailattachment.Init(etc.MailAttachmentConfig())
 	task.InitMonitor(ctx)
+	err = messageSendProcess(ctx)
 	return
 }

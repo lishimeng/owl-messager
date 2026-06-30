@@ -49,7 +49,7 @@ func getClientByPage(ctx server.Context) {
 	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
 		q := tx.Model(&model.OpenClient{})
 		if org > repo.ConditionIgnore {
-			q = q.Equal("domain", tenant)
+			q = q.Equal("tenant_code", tenant)
 		}
 		return q
 	}

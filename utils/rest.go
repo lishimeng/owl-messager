@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/lishimeng/app-starter/midware/auth/bearer"
@@ -107,6 +108,12 @@ func (rc *RestClient) build(method string, body []byte) (code int, err error) {
 
 func (rc *RestClient) Auth(token string) *RestClient {
 	rc.headers[bearer.AuthHeader] = bearer.Realm + token
+	return rc
+}
+
+func (rc *RestClient) BasicAuth(user, pass string) *RestClient {
+	raw := user + ":" + pass
+	rc.headers[bearer.AuthHeader] = "Basic " + base64.StdEncoding.EncodeToString([]byte(raw))
 	return rc
 }
 

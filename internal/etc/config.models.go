@@ -3,9 +3,6 @@ package etc
 type Configuration struct {
 	Db             db             `toml:"db"`
 	Web            web            `toml:"web"`
-	Token          token          `toml:"token"`
-	Console        console        `toml:"console"`
-	Sender         sender         `toml:"sender"`
 	MailAttachment mailAttachment `toml:"mail-attachment"`
 	LogLevel       string         `toml:"log-level"`
 	Sqlite         sqlite         `toml:"sqlite"`
@@ -17,17 +14,6 @@ type web struct {
 
 type sqlite struct {
 	Db string `toml:"db"`
-}
-
-type token struct {
-	Enable bool   `toml:"enable"`
-	Issuer string `toml:"issuer"`
-	Key    string `toml:"key"`
-}
-
-type sender struct {
-	Strategy int `toml:"strategy"` // task.Strategy
-	Buff     int `toml:"buff"`
 }
 
 type mailAttachment struct {
@@ -46,12 +32,4 @@ type db struct {
 	Port     int    `toml:"port"`
 	Database string `toml:"database"`
 	Ssl      string `toml:"ssl"`
-}
-
-// console独有的配置
-type console struct {
-	TokenProvider string `toml:"tokenProvider"`
-	Host          string `toml:"host"`
-	AppKey        string `toml:"appKey"`
-	Secret        string `toml:"secret"`
 }

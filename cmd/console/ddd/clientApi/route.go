@@ -6,5 +6,6 @@ func Route(root server.Router) {
 	root.Get("/list", getClientByPage)     // 获取列表
 	root.Post("/create", createClient)     // 创建客户端
 	root.Post("/del", deleteClient)        // 删除客户端
-	root.Get("/secret", queryClientSecret) // 查询密码
+	root.Get("/secret", queryClientSecret)     // 查询 app secret
+	root.Get("/basicAuth", queryClientBasicAuth) // 查询 console 登录 token
 }

@@ -6,6 +6,6 @@ import (
 )
 
 func Route(root server.Router) {
-	root.Post("/mail/attachments", midware.WithAuth(uploadMailAttachment)...)
-	root.Post("/{category:string}", midware.WithAuth(sendMessage)...)
+	root.Post("/mail/attachments", midware.WithOpenAuth(uploadMailAttachment)...)
+	root.Post("/{category:string}", midware.WithOpenAuth(sendMessage)...)
 }
