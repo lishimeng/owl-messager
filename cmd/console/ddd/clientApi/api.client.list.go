@@ -5,6 +5,7 @@ import (
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/consoleorg"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"time"
@@ -18,7 +19,10 @@ type respPager struct {
 
 func getClientByPage(ctx server.Context) {
 	var resp respPager
-	var org = ctx.C.URLParamIntDefault("org", 0)
+	var tenantCode = ctx.C.URLParamDefault("tenantCode", "")
+	if tenantCode == "" {
+		tenantCode = consoleorg.Code(ctx)
+	}
 	var pageNum = ctx.C.URLParamIntDefault("pageNum", 1)
 	var pageSize = ctx.C.URLParamIntDefault("pageSize", 10)
 	var pager app.SimplePager[model.OpenClient, respClient]
@@ -27,34 +31,28 @@ func getClientByPage(ctx server.Context) {
 	pager.Transform = func(src model.OpenClient, dst *respClient) {
 		dst.Id = src.Id
 		dst.AppId = src.AppId
-		dst.Org = src.Org
+		dst.TenantCode = src.TenantCode
 		dst.Name = src.Name
 		dst.CreateTime = src.CreateTime.UTC().Format(time.RFC3339)
 	}
-	var tenant string
-	err := app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
-		t, e := repo.GetTenantById(ctx, org)
-		if e != nil {
+	if tenantCode != "" {
+		_, err := repo.GetTenant(tenantCode)
+		if err != nil {
+			resp.Code = tool.RespCodeNotFound
+			resp.Message = "unknown tenant"
+			ctx.Json(resp)
 			return
 		}
-		tenant = t.Code
-		return
-	})
-	if err != nil {
-		resp.Code = tool.RespCodeNotFound
-		resp.Message = "unknown tenant"
-		ctx.Json(resp)
-		return
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
 		q := tx.Model(&model.OpenClient{})
-		if org > repo.ConditionIgnore {
-			q = q.Equal("tenant_code", tenant)
+		if tenantCode != "" {
+			q = q.Equal("tenant_code", tenantCode)
 		}
 		return q
 	}
 	pager.OrderExp = append(pager.OrderExp, "ctime")
-	err = app.QueryPage(&pager)
+	err := app.QueryPage(&pager)
 	if err != nil {
 		resp.Code = tool.RespCodeNotFound
 		resp.Message = "not found"

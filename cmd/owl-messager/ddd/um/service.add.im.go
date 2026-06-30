@@ -9,14 +9,14 @@ import (
 	"github.com/pkg/errors"
 )
 
-func serviceAddIm(org int, templateCode string, params, receiver string) (m model.MessageInfo, err error) {
+func serviceAddIm(tenantCode string, templateCode string, params, receiver string) (m model.MessageInfo, err error) {
 	var tpl model.MessageTemplate
-	tpl, err = repo.GetMessageTemplateByCode(templateCode, org)
+	tpl, err = repo.GetMessageTemplateByCode(templateCode, tenantCode)
 	if err != nil {
 		log.Debug(errors.Wrapf(err, "template not found:%s", templateCode))
 		return
 	}
-	if tpl.Org != org {
+	if tpl.TenantCode != tenantCode {
 		err = errors.New("template not found")
 		return
 	}
@@ -27,10 +27,9 @@ func serviceAddIm(org int, templateCode string, params, receiver string) (m mode
 	}
 
 	m, err = service.CreateImMessage(
-		org,
+		tenantCode,
 		tpl,
-		params,
-		receiver)
+		params, receiver)
 
 	return
 }

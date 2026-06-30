@@ -36,9 +36,9 @@ func GetProvidersStat(ctx server.Context) {
 	var resp respProvidersStat
 	var stat []model.ProviderStats
 
-	orgID := consoleorg.ID(ctx)
+	orgID := consoleorg.Code(ctx)
 	err := app.GetOrm().Model(&model.ProviderStats{}).
-		Equal("org", orgID).
+		Equal("tenant_code", orgID).
 		Find(&stat)
 	if err != nil {
 		resp.Code = tool.RespCodeError
@@ -76,10 +76,10 @@ func GetDailyStat(ctx server.Context) {
 	}
 	startDate = startDate.Local()
 
-	orgID := consoleorg.ID(ctx)
+	orgID := consoleorg.Code(ctx)
 	var earliest model.DailySummary
 	err = app.GetOrm().Model(&model.DailySummary{}).
-		Equal("org", orgID).
+		Equal("tenant_code", orgID).
 		Order("date").
 		First(&earliest)
 	if err != nil {
@@ -102,7 +102,7 @@ func GetDailyStat(ctx server.Context) {
 	result := make([]dailyStat, batch)
 	var records []model.DailySummary
 	err = app.GetOrm().Model(&model.DailySummary{}).
-		Equal("org", orgID).
+		Equal("tenant_code", orgID).
 		Where("date > ?", endDate).
 		Where("date <= ?", startDate).
 		Order("-date").

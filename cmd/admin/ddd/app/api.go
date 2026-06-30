@@ -55,7 +55,7 @@ func add(ctx server.Context) {
 	appId := genAppId(tenantCode)
 	secret := genSecret(appId)
 
-	tenant, err := getTenant(tenantCode)
+	_, err = getTenant(tenantCode)
 	if err != nil {
 		log.Debug("can't find tenant: %s", tenantCode)
 		resp.Code = tool.RespCodeNotFound
@@ -63,11 +63,11 @@ func add(ctx server.Context) {
 	}
 
 	var appInfo = model.OpenClient{
-		AppId:  appId,
-		Secret: secret,
-		TenantCode: tenantCode,
+		TenantScope: model.TenantScope{TenantCode: tenantCode},
+		AppId:       appId,
+		Secret:      secret,
 	}
-	appInfo.Org = tenant.Id
+	_ = appInfo
 	// TODO create app --> db(check duplicate:appid and name_in_tenant)
 
 	resp.Code = tool.RespCodeSuccess

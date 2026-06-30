@@ -18,7 +18,7 @@ func GetTemplateInfo(ctx server.Context) {
 		return
 	}
 
-	tpl, err := repo.GetMessageTemplateByCode(code, consoleorg.ID(ctx))
+	tpl, err := repo.GetMessageTemplateByCode(code, consoleorg.Code(ctx))
 	if err != nil {
 		resp.Code = tool.RespCodeNotFound
 		resp.Message = "未查到记录"

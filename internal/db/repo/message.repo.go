@@ -1,11 +1,12 @@
 package repo
 
 import (
+	"time"
+
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/pkg/msg"
-	"time"
 )
 
 func GetMessageById(id int) (m model.MessageInfo, err error) {
@@ -42,9 +43,9 @@ func UpdateMessagePriority(id int, priority int) (m model.MessageInfo, err error
 	return
 }
 
-func CreateMessage(ctx persistence.TxContext, org int, subject string, category msg.MessageCategory) (m model.MessageInfo, err error) {
+func CreateMessage(ctx persistence.TxContext, tenantCode string, subject string, category msg.MessageCategory) (m model.MessageInfo, err error) {
 	log.Debug("create message %s[category:%s]", subject, category)
-	m.Org = org
+	m.TenantCode = tenantCode
 	m.Subject = subject
 	m.Priority = model.MessagePriorityNormal
 	m.Category = category

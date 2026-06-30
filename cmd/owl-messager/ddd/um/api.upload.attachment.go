@@ -36,7 +36,7 @@ func uploadMailAttachment(ctx server.Context) {
 	}
 	defer file.Close()
 
-	ref, err := mailattachment.Default().Save(tenant.Id, info.Filename, info.Header.Get("Content-Type"), file)
+	ref, err := mailattachment.Default().Save(tenant.Code, info.Filename, info.Header.Get("Content-Type"), file)
 	if err != nil {
 		log.Info("upload attachment failed: %v", err)
 		resp.Code = tool.RespCodeError

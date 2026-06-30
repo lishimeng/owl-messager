@@ -8,10 +8,10 @@ import (
 	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
-func GetDefMessageSender(org int, category msg.MessageCategory, provider msg.MessageProvider) (s model.MessageSenderInfo, err error) {
+func GetDefMessageSender(tenantCode string, category msg.MessageCategory, provider msg.MessageProvider) (s model.MessageSenderInfo, err error) {
 	var senders []model.MessageSenderInfo
 	err = orm().Model(&model.MessageSenderInfo{}).
-		Equal("org", org).
+		Equal("tenant_code", tenantCode).
 		Equal("message_category", category).
 		Equal("message_provider", provider).
 		Equal("status", model.SenderEnable).
@@ -31,7 +31,7 @@ func GetDefMessageSender(org int, category msg.MessageCategory, provider msg.Mes
 }
 
 func CreateMessageSender(
-	org int,
+	tenantCode string,
 	category msg.MessageCategory,
 	provider msg.MessageProvider,
 	isDefault int,
@@ -49,7 +49,7 @@ func CreateMessageSender(
 	if err != nil {
 		return m, err
 	}
-	m.Org = org
+	m.TenantCode = tenantCode
 	m.Status = model.SenderEnable
 	err = create(&m)
 	return m, err

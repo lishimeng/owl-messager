@@ -50,7 +50,7 @@ func GetMailTemplateList(ctx server.Context) {
 	var pageSize = ctx.C.URLParamIntDefault("pageSize", repo.DefaultPageSize)
 	var pageNo = ctx.C.URLParamIntDefault("pageNo", repo.DefaultPageNo)
 	var provider = ctx.C.URLParamDefault("provider", "")
-	orgID := consoleorg.ID(ctx)
+	orgID := consoleorg.Code(ctx)
 
 	var pager app.SimplePager[model.MessageTemplate, Info]
 	pager.PageSize = pageSize
@@ -64,7 +64,7 @@ func GetMailTemplateList(ctx server.Context) {
 		dst.UpdateTime = util.FormatTime(src.UpdateTime)
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
-		q := tx.Model(&model.MessageTemplate{}).Equal("org", orgID).Equal("message_category", msg.MailMessage)
+		q := tx.Model(&model.MessageTemplate{}).Equal("tenant_code", orgID).Equal("message_category", msg.MailMessage)
 		if len(provider) > 0 {
 			q = q.Equal("message_provider", provider)
 		}
@@ -97,7 +97,7 @@ func GetMailTemplateInfo(ctx server.Context) {
 	}
 
 	tpl, err := repo.GetMessageTemplateById(id)
-	if err != nil || tpl.Org != consoleorg.ID(ctx) || tpl.Category != msg.MailMessage {
+	if err != nil || tpl.TenantCode != consoleorg.Code(ctx) || tpl.Category != msg.MailMessage {
 		resp.Code = tool.RespCodeNotFound
 		resp.Message = "not found"
 		ctx.Json(resp)
@@ -158,7 +158,7 @@ func AddMailTemplate(ctx server.Context) {
 
 	code := "tl_mail_" + util.UUIDString()
 	m, err := repo.CreateMessageTemplate(
-		consoleorg.ID(ctx),
+		consoleorg.Code(ctx),
 		code, req.Name, req.Body, "", "{}", req.Description,
 		msg.MailMessage, provider,
 	)
@@ -209,7 +209,7 @@ func UpdateMailTemplate(ctx server.Context) {
 	code := req.Code
 	if code == "" {
 		tpl, err := repo.GetMessageTemplateById(req.Id)
-		if err != nil || tpl.Org != consoleorg.ID(ctx) {
+		if err != nil || tpl.TenantCode != consoleorg.Code(ctx) {
 			resp.Code = tool.RespCodeNotFound
 			resp.Message = "not found"
 			ctx.Json(resp)
@@ -249,7 +249,7 @@ func DeleteMailTemplate(ctx server.Context) {
 	}
 
 	tpl, err := repo.GetMessageTemplateById(id)
-	if err != nil || tpl.Org != consoleorg.ID(ctx) || tpl.Category != msg.MailMessage {
+	if err != nil || tpl.TenantCode != consoleorg.Code(ctx) || tpl.Category != msg.MailMessage {
 		resp.Code = tool.RespCodeNotFound
 		resp.Message = "not found"
 		ctx.Json(resp)
@@ -290,7 +290,7 @@ func ChangeMailTemplateStatus(ctx server.Context) {
 	}
 
 	tpl, err := repo.GetMessageTemplateById(req.Id)
-	if err != nil || tpl.Org != consoleorg.ID(ctx) {
+	if err != nil || tpl.TenantCode != consoleorg.Code(ctx) {
 		resp.Code = tool.RespCodeNotFound
 		resp.Message = "template not found"
 		ctx.Json(resp)

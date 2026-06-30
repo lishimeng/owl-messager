@@ -45,7 +45,7 @@ func templates(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
-	tpls, err = getTemplates(msg.MessageCategory(category), tenant.Id, pageNo, pageSize)
+	tpls, err = getTemplates(msg.MessageCategory(category), tenant.Code, pageNo, pageSize)
 
 	if err != nil {
 		resp.Code = tool.RespCodeSuccess
@@ -62,7 +62,7 @@ func templates(ctx server.Context) {
 	ctx.Json(resp)
 }
 
-func getTemplates(category msg.MessageCategory, org int, pageNo, pageSize int) (tpls []pkg.TemplateInfo, err error) {
+func getTemplates(category msg.MessageCategory, tenantCode string, pageNo, pageSize int) (tpls []pkg.TemplateInfo, err error) {
 
 	var pager app.SimplePager[model.MessageTemplate, pkg.TemplateInfo]
 	pager.PageSize = pageSize
@@ -71,7 +71,7 @@ func getTemplates(category msg.MessageCategory, org int, pageNo, pageSize int) (
 		*dst = pkg.TemplateInfoFromModel(src)
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
-		q := tx.Model(&model.MessageTemplate{}).Equal("org", org)
+		q := tx.Model(&model.MessageTemplate{}).Equal("tenant_code", tenantCode)
 		if len(category) > 0 {
 			q = q.Equal("message_category", category)
 		}

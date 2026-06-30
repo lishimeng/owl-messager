@@ -41,7 +41,7 @@ func GetTemplateListByPage(ctx server.Context) {
 		dst.UpdateTime = src.UpdateTime.UTC().Format(time.RFC3339)
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
-		q := tx.Model(&model.MessageTemplate{}).Equal("org", consoleorg.ID(ctx))
+		q := tx.Model(&model.MessageTemplate{}).Equal("tenant_code", consoleorg.Code(ctx))
 		if len(category) > 0 {
 			q = q.Equal("message_category", category)
 		}

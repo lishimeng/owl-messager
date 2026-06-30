@@ -65,18 +65,17 @@ func genBasicAuth(tenant, appId string) (code string) {
 	return
 }
 
-func AddClient(ctx persistence.TxContext, tenant string, org int, name string) (client model.OpenClient, err error) {
-	appId := genAppId(tenant)
+func AddClient(ctx persistence.TxContext, tenantCode string, name string) (client model.OpenClient, err error) {
+	appId := genAppId(tenantCode)
 	secret := genSecret(appId)
-	basicAuth := genBasicAuth(tenant, appId)
+	basicAuth := genBasicAuth(tenantCode, appId)
 	client = model.OpenClient{
-		AppId:      appId,
-		Secret:     secret,
-		BasicAuth:  basicAuth,
-		TenantCode: tenant,
-		Name:       name,
+		TenantScope: model.TenantScope{TenantCode: tenantCode},
+		AppId:       appId,
+		Secret:      secret,
+		BasicAuth:   basicAuth,
+		Name:        name,
 	}
-	client.Org = org
 	err = ctx.Create(&client)
 	return
 }

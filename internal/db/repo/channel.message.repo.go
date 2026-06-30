@@ -11,7 +11,7 @@ func initTemplateChannel(
 	template model.MessageTemplate,
 	templateParams, receiver string,
 ) {
-	d.Org = message.Org
+	d.TenantCode = message.TenantCode
 	d.MessageId = message.Id
 	d.Template = template.Id
 	d.Params = templateParams
@@ -25,7 +25,7 @@ func initPushChannel(
 	mode int,
 	bundleId, params, receiver string,
 ) {
-	d.Org = message.Org
+	d.TenantCode = message.TenantCode
 	d.MessageId = message.Id
 	d.SenderId = sender.Id
 	d.ApnsMode = model.ApnsMode(mode)

@@ -14,7 +14,7 @@ func CreateApnsMessage(sender model.MessageSenderInfo,
 
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// create message
-		m, e = repo.CreateMessage(ctx, sender.Org, subject, msg.ApnsMessage)
+		m, e = repo.CreateMessage(ctx, sender.TenantCode, subject, msg.ApnsMessage)
 		if e != nil {
 			return
 		}

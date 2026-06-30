@@ -46,7 +46,7 @@ func GetHistoryList(ctx server.Context) {
 		dst.CreateTime = src.CreateTime.UTC().Format(time.RFC3339)
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
-		q := tx.Model(&model.MessageInfo{}).Equal("org", consoleorg.ID(ctx))
+		q := tx.Model(&model.MessageInfo{}).Equal("tenant_code", consoleorg.Code(ctx))
 		if len(category) > 0 {
 			q = q.Equal("category", category)
 		}

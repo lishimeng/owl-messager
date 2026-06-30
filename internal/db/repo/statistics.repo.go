@@ -9,16 +9,16 @@ import (
 	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
-func updateDailyStat(ctx persistence.TxContext, org int, category msg.MessageCategory) (err error) {
+func updateDailyStat(ctx persistence.TxContext, tenantCode string, category msg.MessageCategory) (err error) {
 	var daily model.DailySummary
 	newDate := false
 	err = ctx.Model(&model.DailySummary{}).
-		Equal("org", org).
+		Equal("tenant_code", tenantCode).
 		Where("date = ?", time.Now().Format("2006-01-02")).
 		First(&daily)
 	if err != nil {
 		daily = model.DailySummary{Date: time.Now()}
-		daily.Org = org
+		daily.TenantCode = tenantCode
 		newDate = true
 	}
 	switch category {
@@ -42,10 +42,10 @@ func updateDailyStat(ctx persistence.TxContext, org int, category msg.MessageCat
 	return
 }
 
-func updateProviderStat(ctx persistence.TxContext, org int, category msg.MessageCategory, provider msg.MessageProvider) (err error) {
+func updateProviderStat(ctx persistence.TxContext, tenantCode string, category msg.MessageCategory, provider msg.MessageProvider) (err error) {
 	var stat model.ProviderStats
 	err = ctx.Model(&model.ProviderStats{}).
-		Equal("org", org).
+		Equal("tenant_code", tenantCode).
 		Equal("category", category).
 		Equal("provider", provider).
 		First(&stat)
@@ -55,7 +55,7 @@ func updateProviderStat(ctx persistence.TxContext, org int, category msg.Message
 			Provider: provider,
 			Value:    1,
 		}
-		stat.Org = org
+		stat.TenantCode = tenantCode
 		err = ctx.Create(&stat)
 		return
 	}
@@ -70,9 +70,9 @@ func UpdateStatistics(ctx persistence.TxContext, task model.MessageTask) (err er
 	if err != nil {
 		return
 	}
-	org := info.Org
+	tenantCode := info.TenantCode
 	category := info.Category
-	err = updateDailyStat(ctx, org, category)
+	err = updateDailyStat(ctx, tenantCode, category)
 	if err != nil {
 		return
 	}
@@ -92,7 +92,7 @@ func UpdateStatistics(ctx persistence.TxContext, task model.MessageTask) (err er
 		if err != nil {
 			return
 		}
-		return updateProviderStat(ctx, org, category, sender.Provider)
+		return updateProviderStat(ctx, tenantCode, category, sender.Provider)
 	}
 
 	var templateId int
@@ -133,6 +133,6 @@ func UpdateStatistics(ctx persistence.TxContext, task model.MessageTask) (err er
 	if err != nil {
 		return
 	}
-	err = updateProviderStat(ctx, org, category, tpl.Provider)
+	err = updateProviderStat(ctx, tenantCode, category, tpl.Provider)
 	return
 }

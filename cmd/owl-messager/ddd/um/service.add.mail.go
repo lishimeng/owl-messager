@@ -9,14 +9,14 @@ import (
 	"github.com/pkg/errors"
 )
 
-func serviceAddMail(org int, templateCode string, params, subject, receiver string, attachmentIDs []string) (m model.MessageInfo, err error) {
+func serviceAddMail(tenantCode string, templateCode string, params, subject, receiver string, attachmentIDs []string) (m model.MessageInfo, err error) {
 	var tpl model.MessageTemplate
-	tpl, err = repo.GetMessageTemplateByCode(templateCode, org)
+	tpl, err = repo.GetMessageTemplateByCode(templateCode, tenantCode)
 	if err != nil {
 		log.Debug(errors.Wrapf(err, "template not found:%s", templateCode))
 		return
 	}
-	if tpl.Org != org {
+	if tpl.TenantCode != tenantCode {
 		err = errors.New("template not found")
 		return
 	}
@@ -27,7 +27,7 @@ func serviceAddMail(org int, templateCode string, params, subject, receiver stri
 	}
 
 	m, err = service.CreateMailMessage(
-		org,
+		tenantCode,
 		tpl,
 		params,
 		subject, receiver, attachmentIDs)

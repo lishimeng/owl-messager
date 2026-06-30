@@ -318,7 +318,6 @@ const setDefaultSender = (row: object) => {
     code: row.code,
     category: state.category,
     provider: row.vendor,
-    org: 1,
   }).then(res => {
     if (res && res.code == 200) {
       getMailSenders();

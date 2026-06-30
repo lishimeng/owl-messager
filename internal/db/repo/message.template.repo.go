@@ -15,12 +15,12 @@ func GetTemplateByCode(code string, category msg.MessageCategory) (s model.Messa
 }
 
 func GetMessageTemplates(
-	org int,
+	tenantCode string,
 	category msg.MessageCategory,
 	provider msg.MessageProvider,
 ) (templates []model.MessageTemplate, err error) {
 	err = orm().Model(&model.MessageTemplate{}).
-		Equal("org", org).
+		Equal("tenant_code", tenantCode).
 		Equal("message_category", category).
 		Equal("message_provider", provider).
 		Equal("status", model.TemplateEnable).
@@ -36,17 +36,17 @@ func GetMessageTemplateById(id int) (tpl model.MessageTemplate, err error) {
 	return
 }
 
-func GetMessageTemplateByCode(code string, org int) (tpl model.MessageTemplate, err error) {
+func GetMessageTemplateByCode(code string, tenantCode string) (tpl model.MessageTemplate, err error) {
 	err = orm().Model(&model.MessageTemplate{}).
 		Equal("code", code).
-		Equal("org", org).
+		Equal("tenant_code", tenantCode).
 		Equal("status", model.TemplateEnable).
 		First(&tpl)
 	return
 }
 
 func CreateMessageTemplate(
-	org int,
+	tenantCode string,
 	code,
 	name,
 	body,
@@ -65,7 +65,7 @@ func CreateMessageTemplate(
 		Body:          body,
 		CloudTemplate: cloudTemplate,
 	}
-	m.Org = org
+	m.TenantCode = tenantCode
 	if len(description) > 0 {
 		m.Description = description
 	}

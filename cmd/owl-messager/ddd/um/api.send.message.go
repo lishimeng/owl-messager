@@ -37,7 +37,7 @@ func sendMessage(ctx server.Context) {
 	log.Info("Union message send function")
 	var req Req
 	var resp Resp
-	var org = ctx.C.GetHeader(auth.OrgKey)
+	var tenantCode = ctx.C.GetHeader(auth.OrgKey)
 	err := ctx.C.ReadJSON(&req)
 	if err != nil {
 		log.Info("read req fail")
@@ -86,9 +86,9 @@ func sendMessage(ctx server.Context) {
 		}
 	}
 
-	tenant, err := repo.GetTenant(org)
+	tenant, err := repo.GetTenant(tenantCode)
 	if err != nil {
-		log.Debug("unknown tenant: %s", org)
+		log.Debug("unknown tenant: %s", tenantCode)
 		resp.Code = -1
 		resp.Message = "unknown tenant"
 		ctx.Json(resp)
@@ -99,13 +99,13 @@ func sendMessage(ctx server.Context) {
 	var message model.MessageInfo
 	switch msg.MessageCategory(category) {
 	case msg.MailMessage:
-		message, resp, err = createMail(tenant.Id, req, params)
+		message, resp, err = createMail(tenant.Code, req, params)
 	case msg.SmsMessage:
-		message, resp, err = createSms(tenant.Id, req, params)
+		message, resp, err = createSms(tenant.Code, req, params)
 	case msg.ApnsMessage:
-		message, resp, err = createApns(tenant.Id, req, params)
+		message, resp, err = createApns(tenant.Code, req, params)
 	case msg.ImMessage:
-		message, resp, err = createIm(tenant.Id, req, params)
+		message, resp, err = createIm(tenant.Code, req, params)
 	default:
 		err = fmt.Errorf("unkown message category")
 		resp.Code = -1
@@ -136,13 +136,13 @@ func sendMessage(ctx server.Context) {
 	ctx.Json(resp)
 }
 
-func createMail(org int, req Req, params string) (m model.MessageInfo, resp Resp, err error) {
+func createMail(tenantCode string, req Req, params string) (m model.MessageInfo, resp Resp, err error) {
 	if len(req.Title) == 0 {
 		log.Debug("no title, use default: %s", DefaultTitle)
 		req.Title = DefaultTitle
 	}
 
-	m, err = serviceAddMail(org, req.Template, params, req.Title, req.Receiver, req.Attachments)
+	m, err = serviceAddMail(tenantCode, req.Template, params, req.Title, req.Receiver, req.Attachments)
 	if err != nil {
 		resp.Code = -1
 		resp.Message = "create mail message failed"
@@ -150,8 +150,8 @@ func createMail(org int, req Req, params string) (m model.MessageInfo, resp Resp
 	return
 }
 
-func createSms(org int, req Req, params string) (m model.MessageInfo, resp Resp, err error) {
-	m, err = serviceAddSms(org, req.Template, params, req.Receiver)
+func createSms(tenantCode string, req Req, params string) (m model.MessageInfo, resp Resp, err error) {
+	m, err = serviceAddSms(tenantCode, req.Template, params, req.Receiver)
 	if err != nil {
 		resp.Code = -1
 		resp.Message = "create sms message failed"
@@ -159,8 +159,8 @@ func createSms(org int, req Req, params string) (m model.MessageInfo, resp Resp,
 	return
 }
 
-func createIm(org int, req Req, params string) (m model.MessageInfo, resp Resp, err error) {
-	m, err = serviceAddIm(org, req.Template, params, req.Receiver)
+func createIm(tenantCode string, req Req, params string) (m model.MessageInfo, resp Resp, err error) {
+	m, err = serviceAddIm(tenantCode, req.Template, params, req.Receiver)
 	if err != nil {
 		resp.Code = -1
 		resp.Message = "create im message failed"
@@ -168,7 +168,7 @@ func createIm(org int, req Req, params string) (m model.MessageInfo, resp Resp, 
 	return
 }
 
-func createApns(org int, req Req, params string) (m model.MessageInfo, resp Resp, err error) {
+func createApns(tenantCode string, req Req, params string) (m model.MessageInfo, resp Resp, err error) {
 	if len(req.Title) == 0 {
 		log.Debug("no title, use default: %s", DefaultTitle)
 		req.Title = DefaultTitle
@@ -181,7 +181,7 @@ func createApns(org int, req Req, params string) (m model.MessageInfo, resp Resp
 		return
 	}
 
-	m, err = serviceAddApns(org, req.Template, params, req.Title, req.BundleId, req.Receiver)
+	m, err = serviceAddApns(tenantCode, req.Template, params, req.Title, req.BundleId, req.Receiver)
 	if err != nil {
 		resp.Code = -1
 		resp.Message = "create sms message failed"

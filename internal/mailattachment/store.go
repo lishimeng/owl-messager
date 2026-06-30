@@ -20,9 +20,9 @@ import (
 
 type attachmentMetaStore interface {
 	Create(row *model.MailAttachment) error
-	Get(org int, attachmentId string) (model.MailAttachment, error)
-	UpdateBound(org int, attachmentId string, bound bool, expiresAt time.Time) error
-	Delete(org int, attachmentId string) error
+	Get(tenantCode string, attachmentId string) (model.MailAttachment, error)
+	UpdateBound(tenantCode string, attachmentId string, bound bool, expiresAt time.Time) error
+	Delete(tenantCode string, attachmentId string) error
 	ListExpired(before time.Time) ([]model.MailAttachment, error)
 }
 
@@ -31,14 +31,14 @@ type dbAttachmentMetaStore struct{}
 func (dbAttachmentMetaStore) Create(row *model.MailAttachment) error {
 	return repo.CreateMailAttachment(row)
 }
-func (dbAttachmentMetaStore) Get(org int, attachmentId string) (model.MailAttachment, error) {
-	return repo.GetMailAttachment(org, attachmentId)
+func (dbAttachmentMetaStore) Get(tenantCode string, attachmentId string) (model.MailAttachment, error) {
+	return repo.GetMailAttachment(tenantCode, attachmentId)
 }
-func (dbAttachmentMetaStore) UpdateBound(org int, attachmentId string, bound bool, expiresAt time.Time) error {
-	return repo.UpdateMailAttachmentBound(org, attachmentId, bound, expiresAt)
+func (dbAttachmentMetaStore) UpdateBound(tenantCode string, attachmentId string, bound bool, expiresAt time.Time) error {
+	return repo.UpdateMailAttachmentBound(tenantCode, attachmentId, bound, expiresAt)
 }
-func (dbAttachmentMetaStore) Delete(org int, attachmentId string) error {
-	return repo.DeleteMailAttachment(org, attachmentId)
+func (dbAttachmentMetaStore) Delete(tenantCode string, attachmentId string) error {
+	return repo.DeleteMailAttachment(tenantCode, attachmentId)
 }
 func (dbAttachmentMetaStore) ListExpired(before time.Time) ([]model.MailAttachment, error) {
 	return repo.ListExpiredMailAttachments(before)
@@ -73,18 +73,18 @@ func (m *Manager) Config() Config {
 	return m.cfg
 }
 
-func genAttachmentID(filename string, org int, at time.Time) string {
-	raw := fmt.Sprintf("%s:%d:%s", filename, org, at.Format(time.RFC3339Nano))
+func genAttachmentID(filename string, tenantCode string, at time.Time) string {
+	raw := fmt.Sprintf("%s:%s:%s", filename, tenantCode, at.Format(time.RFC3339Nano))
 	sum := md5.Sum([]byte(raw))
 	return hex.EncodeToString(sum[:])
 }
 
-func (m *Manager) itemDir(storageDate string, org int, id string) string {
-	return filepath.Join(m.cfg.Dir, storageDate, fmt.Sprintf("%d", org), id)
+func (m *Manager) itemDir(storageDate string, tenantCode string, id string) string {
+	return filepath.Join(m.cfg.Dir, storageDate, tenantCode, id)
 }
 
-func (m *Manager) dataPath(storageDate string, org int, id string) string {
-	return filepath.Join(m.itemDir(storageDate, org, id), "data")
+func (m *Manager) dataPath(storageDate string, tenantCode string, id string) string {
+	return filepath.Join(m.itemDir(storageDate, tenantCode, id), "data")
 }
 
 func (m *Manager) refFromRow(row model.MailAttachment) msg.MailAttachmentRef {
@@ -96,8 +96,8 @@ func (m *Manager) refFromRow(row model.MailAttachment) msg.MailAttachmentRef {
 	}
 }
 
-func (m *Manager) Save(org int, filename string, contentType string, r io.Reader) (msg.MailAttachmentRef, error) {
-	if org <= 0 {
+func (m *Manager) Save(tenantCode string, filename string, contentType string, r io.Reader) (msg.MailAttachmentRef, error) {
+	if tenantCode == "" {
 		return msg.MailAttachmentRef{}, errOrgMismatch
 	}
 	name := filepath.Base(strings.TrimSpace(filename))
@@ -106,14 +106,14 @@ func (m *Manager) Save(org int, filename string, contentType string, r io.Reader
 	}
 
 	at := time.Now()
-	id := genAttachmentID(name, org, at)
+	id := genAttachmentID(name, tenantCode, at)
 	storageDate := at.Format("2006-01-02")
-	dir := m.itemDir(storageDate, org, id)
+	dir := m.itemDir(storageDate, tenantCode, id)
 	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return msg.MailAttachmentRef{}, err
 	}
 
-	dataPath := m.dataPath(storageDate, org, id)
+	dataPath := m.dataPath(storageDate, tenantCode, id)
 	f, err := os.OpenFile(dataPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o640)
 	if err != nil {
 		return msg.MailAttachmentRef{}, err
@@ -146,6 +146,7 @@ func (m *Manager) Save(org int, filename string, contentType string, r io.Reader
 	mimeBase := strings.Split(detected, ";")[0]
 
 	row := &model.MailAttachment{
+		TenantScope:  model.TenantScope{TenantCode: tenantCode},
 		AttachmentId: id,
 		FileName:     name,
 		Mime:         mimeBase,
@@ -154,7 +155,6 @@ func (m *Manager) Save(org int, filename string, contentType string, r io.Reader
 		ExpiresAt:    at.Add(m.cfg.StagingTTL),
 		Bound:        false,
 	}
-	row.Org = org
 	if err = m.store.Create(row); err != nil {
 		_ = os.RemoveAll(dir)
 		return msg.MailAttachmentRef{}, err
@@ -162,7 +162,7 @@ func (m *Manager) Save(org int, filename string, contentType string, r io.Reader
 	return m.refFromRow(*row), nil
 }
 
-func (m *Manager) Resolve(org int, ids []string) ([]msg.MailAttachmentRef, error) {
+func (m *Manager) Resolve(tenantCode string, ids []string) ([]msg.MailAttachmentRef, error) {
 	if len(ids) == 0 {
 		return nil, nil
 	}
@@ -182,11 +182,11 @@ func (m *Manager) Resolve(org int, ids []string) ([]msg.MailAttachmentRef, error
 		}
 		seen[id] = struct{}{}
 
-		row, err := m.store.Get(org, id)
+		row, err := m.store.Get(tenantCode, id)
 		if err != nil {
 			return nil, errNotFound
 		}
-		if row.Org != org {
+		if row.TenantCode != tenantCode {
 			return nil, errOrgMismatch
 		}
 		if time.Now().After(row.ExpiresAt) {
@@ -201,28 +201,28 @@ func (m *Manager) Resolve(org int, ids []string) ([]msg.MailAttachmentRef, error
 	return refs, nil
 }
 
-func (m *Manager) MarkBound(org int, ids []string) error {
+func (m *Manager) MarkBound(tenantCode string, ids []string) error {
 	for _, id := range ids {
 		id = strings.TrimSpace(id)
 		if id == "" {
 			continue
 		}
-		row, err := m.store.Get(org, id)
+		row, err := m.store.Get(tenantCode, id)
 		if err != nil {
 			return err
 		}
-		if row.Org != org {
+		if row.TenantCode != tenantCode {
 			return errOrgMismatch
 		}
 		expiresAt := time.Now().Add(m.cfg.StagingTTL)
-		if err = m.store.UpdateBound(org, id, true, expiresAt); err != nil {
+		if err = m.store.UpdateBound(tenantCode, id, true, expiresAt); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (m *Manager) LoadForSend(org int, attachmentsJSON string) ([]messager.MailAttachment, error) {
+func (m *Manager) LoadForSend(tenantCode string, attachmentsJSON string) ([]messager.MailAttachment, error) {
 	refs, err := msg.ParseMailAttachmentRefs(attachmentsJSON)
 	if err != nil {
 		return nil, err
@@ -236,11 +236,11 @@ func (m *Manager) LoadForSend(org int, attachmentsJSON string) ([]messager.MailA
 	var total int64
 	var out []messager.MailAttachment
 	for _, ref := range refs {
-		row, err := m.store.Get(org, ref.ID)
+		row, err := m.store.Get(tenantCode, ref.ID)
 		if err != nil {
 			return nil, err
 		}
-		if row.Org != org {
+		if row.TenantCode != tenantCode {
 			return nil, errOrgMismatch
 		}
 		if time.Now().After(row.ExpiresAt) {
@@ -250,7 +250,7 @@ func (m *Manager) LoadForSend(org int, attachmentsJSON string) ([]messager.MailA
 		if total > m.cfg.MaxTotalSize {
 			return nil, errTotalTooLarge
 		}
-		data, err := os.ReadFile(m.dataPath(row.StorageDate, org, row.AttachmentId))
+		data, err := os.ReadFile(m.dataPath(row.StorageDate, tenantCode, row.AttachmentId))
 		if err != nil {
 			return nil, err
 		}
@@ -266,7 +266,7 @@ func (m *Manager) LoadForSend(org int, attachmentsJSON string) ([]messager.MailA
 	return out, nil
 }
 
-func (m *Manager) ScheduleRemove(org int, attachmentsJSON string) {
+func (m *Manager) ScheduleRemove(tenantCode string, attachmentsJSON string) {
 	refs, err := msg.ParseMailAttachmentRefs(attachmentsJSON)
 	if err != nil || len(refs) == 0 {
 		return
@@ -274,7 +274,7 @@ func (m *Manager) ScheduleRemove(org int, attachmentsJSON string) {
 	delay := m.cfg.RetainAfterSend
 	if delay <= 0 {
 		for _, ref := range refs {
-			_ = m.remove(org, ref.ID)
+			_ = m.remove(tenantCode, ref.ID)
 		}
 		return
 	}
@@ -282,7 +282,7 @@ func (m *Manager) ScheduleRemove(org int, attachmentsJSON string) {
 	go func() {
 		time.Sleep(delay)
 		for _, ref := range ids {
-			_ = m.remove(org, ref.ID)
+			_ = m.remove(tenantCode, ref.ID)
 		}
 	}()
 }
@@ -293,16 +293,16 @@ func (m *Manager) CleanupExpired() {
 		return
 	}
 	for _, row := range rows {
-		_ = m.remove(row.Org, row.AttachmentId)
+		_ = m.remove(row.TenantCode, row.AttachmentId)
 	}
 }
 
-func (m *Manager) remove(org int, id string) error {
-	row, err := m.store.Get(org, id)
+func (m *Manager) remove(tenantCode string, id string) error {
+	row, err := m.store.Get(tenantCode, id)
 	if err == nil {
-		_ = os.RemoveAll(m.itemDir(row.StorageDate, org, id))
+		_ = os.RemoveAll(m.itemDir(row.StorageDate, tenantCode, id))
 	}
-	return m.store.Delete(org, id)
+	return m.store.Delete(tenantCode, id)
 }
 
 func mimeTypeByName(name string) string {

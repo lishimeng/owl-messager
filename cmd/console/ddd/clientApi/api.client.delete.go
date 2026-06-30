@@ -19,13 +19,19 @@ func deleteClient(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
+	if req.TenantCode == "" || req.AppId == "" {
+		resp.Code = tool.RespCodeError
+		resp.Message = "tenantCode and appId required"
+		ctx.Json(resp)
+		return
+	}
 
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
-		tenant, e := repo.GetTenantById(ctx, req.Org)
+		_, e = repo.GetTenant(req.TenantCode)
 		if e != nil {
 			return
 		}
-		e = repo.DeleteClient(ctx, tenant.Code, req.AppId)
+		e = repo.DeleteClient(ctx, req.TenantCode, req.AppId)
 		return
 	})
 

@@ -9,7 +9,6 @@ import (
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/internal/common"
-	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/x/util"
 	"strings"
 	"time"
@@ -51,19 +50,14 @@ func add(ctx server.Context) {
 	appId := genAppId(tenantCode)
 	secret := genSecret(appId)
 
-	tenant, err := getTenant(tenantCode)
+	_, err = getTenant(tenantCode)
 	if err != nil {
 		log.Debug("can't find tenant: %s", tenantCode)
 		resp.Code = tool.RespCodeNotFound
 		ctx.Json(resp)
+		return
 	}
 
-	var appInfo = model.OpenClient{
-		AppId:  appId,
-		Secret: secret,
-		TenantCode: tenantCode,
-	}
-	appInfo.Org = tenant.Id
 	// TODO create app --> db(check duplicate:appid and name_in_tenant)
 
 	resp.Code = tool.RespCodeSuccess

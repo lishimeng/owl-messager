@@ -9,22 +9,21 @@ import (
 	"github.com/pkg/errors"
 )
 
-func serviceAddApns(org int, templateCode, params, subject, bundleId, receiver string) (m model.MessageInfo, err error) {
+func serviceAddApns(tenantCode string, templateCode, params, subject, bundleId, receiver string) (m model.MessageInfo, err error) {
 	if len(bundleId) == 0 {
 		err = errors.New("bundleId required")
 		return
 	}
 
-	sender, err := repo.GetDefMessageSender(org, msg.ApnsMessage, msg.Apns)
+	sender, err := repo.GetDefMessageSender(tenantCode, msg.ApnsMessage, msg.Apns)
 	if err != nil {
-		log.Debug(errors.Wrapf(err, "apns sender not found for org:%d", org))
+		log.Debug(errors.Wrapf(err, "apns sender not found for tenant:%s", tenantCode))
 		return
 	}
 
-	// template 可选：若传入则校验存在且为 apns 类型
 	if len(templateCode) > 0 {
 		var tpl model.MessageTemplate
-		tpl, err = repo.GetMessageTemplateByCode(templateCode, org)
+		tpl, err = repo.GetMessageTemplateByCode(templateCode, tenantCode)
 		if err != nil || tpl.Category != msg.ApnsMessage {
 			err = errors.New("template not found")
 			return

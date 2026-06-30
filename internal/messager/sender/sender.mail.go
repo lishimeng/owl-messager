@@ -38,7 +38,7 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 		return
 	}
 
-	si, err := repo.GetDefMessageSender(tpl.Org, tpl.Category, tpl.Provider)
+	si, err := repo.GetDefMessageSender(tpl.TenantCode, tpl.Category, tpl.Provider)
 	if err != nil {
 		log.Info("mail sender not exist")
 		return
@@ -61,7 +61,7 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 		return
 	}
 
-	attachments, err := mailattachment.Default().LoadForSend(p.Org, p.Attachments)
+	attachments, err := mailattachment.Default().LoadForSend(p.TenantCode, p.Attachments)
 	if err != nil {
 		log.Info("load attachments failed: %v", err)
 		return
@@ -81,6 +81,6 @@ func (m *mailSender) Send(p model.MailMessageInfo) (err error) {
 	if err != nil {
 		return
 	}
-	mailattachment.Default().ScheduleRemove(p.Org, p.Attachments)
+	mailattachment.Default().ScheduleRemove(p.TenantCode, p.Attachments)
 	return
 }

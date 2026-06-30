@@ -37,7 +37,7 @@ type respList struct {
 
 func GetMailSenderList(ctx server.Context) {
 	var resp respList
-	orgID := consoleorg.ID(ctx)
+	orgID := consoleorg.Code(ctx)
 	pageSize := ctx.C.URLParamIntDefault("pageSize", repo.DefaultPageSize)
 	pageNo := ctx.C.URLParamIntDefault("pageNo", repo.DefaultPageNo)
 
@@ -54,7 +54,7 @@ func GetMailSenderList(ctx server.Context) {
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
 		return tx.Model(&model.MessageSenderInfo{}).
-			Equal("org", orgID).
+			Equal("tenant_code", orgID).
 			Equal("message_category", msg.MailMessage)
 	}
 	pager.OrderExp = append(pager.OrderExp, "ctime")
@@ -85,7 +85,7 @@ func GetMailSenderInfo(ctx server.Context) {
 	var ms model.MessageSenderInfo
 	err = app.GetOrm().Model(&model.MessageSenderInfo{}).
 		Equal("id", id).
-		Equal("org", consoleorg.ID(ctx)).
+		Equal("tenant_code", consoleorg.Code(ctx)).
 		Equal("message_category", msg.MailMessage).
 		First(&ms)
 	if err != nil {
@@ -130,7 +130,7 @@ func AddMailSender(ctx server.Context) {
 	}
 
 	code := "sender_mail_" + util.UUIDString()
-	orgID := consoleorg.ID(ctx)
+	orgID := consoleorg.Code(ctx)
 	isDefault := 0
 	if req.Default == 1 {
 		isDefault = 1
@@ -180,7 +180,7 @@ func UpdateMailSender(ctx server.Context) {
 	var ms model.MessageSenderInfo
 	err = app.GetOrm().Model(&model.MessageSenderInfo{}).
 		Equal("id", id).
-		Equal("org", consoleorg.ID(ctx)).
+		Equal("tenant_code", consoleorg.Code(ctx)).
 		Equal("message_category", msg.MailMessage).
 		First(&ms)
 	if err != nil {

@@ -43,7 +43,7 @@ func CreateTemplate(ctx server.Context) {
 		return
 	}
 	_, err = repo.CreateMessageTemplate(
-		consoleorg.ID(ctx),
+		consoleorg.Code(ctx),
 		code, req.Name, req.Body, req.CloudTemplate, params, req.Description,
 		msg.MessageCategory(req.Category), msg.MessageProvider(req.Provider),
 	)

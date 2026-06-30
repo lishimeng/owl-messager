@@ -38,7 +38,7 @@ func (m *imSender) Send(mi model.ImMessageInfo) (err error) {
 	}
 
 	// 获取sender
-	si, err := repo.GetDefMessageSender(tpl.Org, tpl.Category, tpl.Provider) // 使用默认sender
+	si, err := repo.GetDefMessageSender(tpl.TenantCode, tpl.Category, tpl.Provider) // 使用默认sender
 
 	if err != nil {
 		log.Info("mail sender not exist")

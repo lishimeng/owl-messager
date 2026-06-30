@@ -3,20 +3,15 @@ package consoleorg
 import (
 	"github.com/lishimeng/app-starter/midware/auth"
 	"github.com/lishimeng/app-starter/server"
-	"github.com/lishimeng/owl-messager/internal/db/repo"
 )
 
-const DefaultOrg = 1
+const DefaultTenantCode = "default"
 
-// ID resolves tenant org id from request header; falls back to DefaultOrg.
-func ID(ctx server.Context) int {
+// Code returns tenant.code from request header (JWT / auth middleware).
+func Code(ctx server.Context) string {
 	code := ctx.C.GetHeader(auth.OrgKey)
 	if code == "" {
-		return DefaultOrg
+		return DefaultTenantCode
 	}
-	tenant, err := repo.GetTenant(code)
-	if err != nil {
-		return DefaultOrg
-	}
-	return tenant.Id
+	return code
 }

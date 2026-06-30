@@ -94,7 +94,6 @@ const state = reactive({
     pageNum: 1,
     pageSize: 10,
     totalNum: 0,
-    org: 1,
   },
   dataList: []
 })
@@ -133,7 +132,6 @@ const showCreate = () => {
 
 const createClient = () => {
   createClientApi({
-    org: 1,
     name: state.formData.name,
   }).then(res => {
     if (res.code == 200) {

@@ -5,6 +5,7 @@ import (
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/owl-messager/cmd/console/ddd/consoleorg"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 )
 
@@ -25,13 +26,23 @@ func createClient(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
+	tenantCode := req.TenantCode
+	if tenantCode == "" {
+		tenantCode = consoleorg.Code(ctx)
+	}
+	if tenantCode == "" {
+		resp.Code = tool.RespCodeError
+		resp.Message = "tenantCode required"
+		ctx.Json(resp)
+		return
+	}
 
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
-		tenant, e := repo.GetTenantById(ctx, req.Org)
+		_, e = repo.GetTenant(tenantCode)
 		if e != nil {
 			return
 		}
-		client, e := repo.AddClient(ctx, tenant.Code, req.Org, req.Name)
+		client, e := repo.AddClient(ctx, tenantCode, req.Name)
 		if e != nil {
 			return
 		}
