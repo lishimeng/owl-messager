@@ -1,6 +1,9 @@
 <template>
   <div class="home-container layout-pd" style="margin-top: 10px">
     <el-form :inline="true">
+      <el-form-item label="租户">
+        <el-input v-model="state.queryValue.tenantCode" clearable placeholder="可选" style="width: 140px" @change="getMailSenders"/>
+      </el-form-item>
       <el-form-item label="通讯方式">
         <el-select v-model="state.category" @change="getMailSenders" placeholder="请选择通讯方式" style="width: 120px">
           <el-option v-for="(item,index) in state.categoryList" :key="index" :label="item" :value="item">
@@ -72,6 +75,9 @@
     <el-dialog v-model="state.showDialog" :title="state.title" width="50%" center>
       <div style="margin: 10px">
         <el-form :model="state.form" label-width="120px">
+          <el-form-item v-if="!state.isDisabled" label="租户" prop="tenantCode">
+            <el-input v-model="state.form.tenantCode" placeholder="tenant.code"></el-input>
+          </el-form-item>
           <el-form-item label="配置平台" prop="vendor">
             <el-select class="input_width" :disabled="state.isDisabled"
                        v-model="state.form.vendor"
@@ -169,7 +175,8 @@ const state = reactive({
     pageSize: 10,
     pageNum: 1,
     totalNum: 0,
-    category: ""
+    category: "",
+    tenantCode: "",
   },
   dataList: [],
   category: "mail",
@@ -193,6 +200,7 @@ const state = reactive({
     "fastmsg",
   ],
   form: {
+    tenantCode: "",
     code: "",
     defaultSender: 1,
     vendor: "",
@@ -253,6 +261,7 @@ const showEdit = (row: object) => {
     state.isShowText = false
     state.title = '新增'
     state.form.vendor = ''
+    state.form.tenantCode = ''
   }
 }
 const showTest = async (row: object) => {
@@ -353,6 +362,10 @@ const createConfig = () => {
       }
     })
   } else {
+    if (!state.form.tenantCode?.trim()) {
+      ElMessage.error('请填写租户 code');
+      return;
+    }
     createMailSenderConfigApi(state.form).then(res => {
       if (res && res.code == 200) {
         ElMessage.success(`提交成功！`);

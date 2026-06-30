@@ -5,7 +5,6 @@ import (
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
-	"github.com/lishimeng/owl-messager/cmd/console/ddd/consoleorg"
 	"github.com/lishimeng/owl-messager/internal/db/model"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"time"
@@ -20,9 +19,6 @@ type respPager struct {
 func getClientByPage(ctx server.Context) {
 	var resp respPager
 	var tenantCode = ctx.C.URLParamDefault("tenantCode", "")
-	if tenantCode == "" {
-		tenantCode = consoleorg.Code(ctx)
-	}
 	var pageNum = ctx.C.URLParamIntDefault("pageNum", 1)
 	var pageSize = ctx.C.URLParamIntDefault("pageSize", 10)
 	var pager app.SimplePager[model.OpenClient, respClient]

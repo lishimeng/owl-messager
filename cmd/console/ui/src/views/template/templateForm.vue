@@ -4,6 +4,9 @@
              :model="state.formData"
              ref="mailFormFormRef"
              label-width="120px">
+      <el-form-item label="租户" prop="tenantCode" v-if="!state.formData.code">
+        <el-input v-model="state.formData.tenantCode" clearable placeholder="tenant.code"></el-input>
+      </el-form-item>
       <el-form-item label="配置平台" prop="provider">
         <el-select class="input_width"
                    v-model="state.formData.provider"
@@ -127,6 +130,7 @@ onMounted(() => {
 
 const state = reactive({
   formData: {
+    tenantCode: "",
     code: "",
     name: "",
     description: "",
@@ -183,6 +187,10 @@ const onSubmit = async () => {
       res = await updateTemplateApi(state.formData);
     } else {
       console.log("创建");
+      if (!state.formData.tenantCode?.trim()) {
+        ElMessage.error("请填写租户 code");
+        return false;
+      }
       res = await createTemplateApi(state.formData);
     }
 

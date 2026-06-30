@@ -15,6 +15,10 @@ type ProviderStats struct {
 	app.TableChangeInfo
 }
 
+func (ProviderStats) TableName() string {
+	return "provider_stats"
+}
+
 type DailySummary struct {
 	TenantScope `gorm:"uniqueIndex:idx_daily_tenant_date"`
 	Date        time.Time `gorm:"column:date;type:date;uniqueIndex:idx_daily_tenant_date"`
@@ -22,4 +26,8 @@ type DailySummary struct {
 	Sms  int       `gorm:"column:sms"`
 	Im   int       `gorm:"column:im"`
 	Apns int       `gorm:"column:apns"`
+}
+
+func (DailySummary) TableName() string {
+	return "daily_summary"
 }

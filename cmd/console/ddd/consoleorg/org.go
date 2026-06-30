@@ -1,17 +1,8 @@
 package consoleorg
 
-import (
-	"github.com/lishimeng/app-starter/midware/auth"
-	"github.com/lishimeng/app-starter/server"
-)
+import "github.com/lishimeng/app-starter/server"
 
-const DefaultTenantCode = "default"
-
-// Code returns tenant.code from request header (JWT / auth middleware).
-func Code(ctx server.Context) string {
-	code := ctx.C.GetHeader(auth.OrgKey)
-	if code == "" {
-		return DefaultTenantCode
-	}
-	return code
+// TenantFilter returns optional tenant_code query filter; empty means all tenants (management console).
+func TenantFilter(ctx server.Context) string {
+	return ctx.C.URLParamDefault("tenantCode", "")
 }

@@ -1,6 +1,8 @@
 package templateApi
 
 import (
+	"time"
+
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
@@ -8,7 +10,6 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd/consoleorg"
 	"github.com/lishimeng/owl-messager/internal/db/model"
-	"time"
 )
 
 type respPager struct {
@@ -23,11 +24,14 @@ func GetTemplateListByPage(ctx server.Context) {
 	var provider = ctx.C.URLParamDefault("provider", "")
 	var pageNum = ctx.C.URLParamIntDefault("pageNum", 1)
 	var pageSize = ctx.C.URLParamIntDefault("pageSize", 10)
+	tenantCode := consoleorg.TenantFilter(ctx)
+
 	var pager app.SimplePager[model.MessageTemplate, TemplateResp]
 	pager.PageSize = pageSize
 	pager.PageNum = pageNum
 	pager.Transform = func(src model.MessageTemplate, dst *TemplateResp) {
 		dst.Id = src.Id
+		dst.TenantCode = src.TenantCode
 		dst.Name = src.Name
 		dst.Body = src.Body
 		dst.CloudTemplate = src.CloudTemplate
@@ -41,7 +45,10 @@ func GetTemplateListByPage(ctx server.Context) {
 		dst.UpdateTime = src.UpdateTime.UTC().Format(time.RFC3339)
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
-		q := tx.Model(&model.MessageTemplate{}).Equal("tenant_code", consoleorg.Code(ctx))
+		q := tx.Model(&model.MessageTemplate{})
+		if tenantCode != "" {
+			q = q.Equal("tenant_code", tenantCode)
+		}
 		if len(category) > 0 {
 			q = q.Equal("message_category", category)
 		}

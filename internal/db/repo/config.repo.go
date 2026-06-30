@@ -54,3 +54,15 @@ func LoadTaskChannelSettings() (settings model.TaskChannelSettings) {
 	}
 	return
 }
+
+// LoadConsoleTokenSettings reads console management token from config table.
+func LoadConsoleTokenSettings() (settings model.ConsoleTokenSettings) {
+	cfg, err := GetOneConfig(model.ConfigCodeConsoleToken)
+	if err != nil {
+		return
+	}
+	if err = DecodeConfigContent(cfg.Content, &settings); err != nil {
+		log.Debug("decode console token config: %v", err)
+	}
+	return
+}

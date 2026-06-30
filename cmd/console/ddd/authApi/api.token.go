@@ -5,7 +5,7 @@ import (
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/db/repo"
+	"github.com/lishimeng/owl-messager/internal/consoleauth"
 )
 
 type loginReq struct {
@@ -17,7 +17,7 @@ type tokenResp struct {
 	Token string `json:"token,omitempty"`
 }
 
-// verifyToken checks basic_auth and echoes it back for the client to store.
+// verifyToken checks management token and echoes it back for the client to store.
 func verifyToken(ctx server.Context) {
 	var req loginReq
 	var resp tokenResp
@@ -35,8 +35,8 @@ func verifyToken(ctx server.Context) {
 		return
 	}
 
-	if _, err := repo.GetClientByBasicAuth(req.Token); err != nil {
-		log.Debug("console login rejected: invalid basic_auth")
+	if !consoleauth.Valid(req.Token) {
+		log.Debug("console login rejected: invalid token")
 		resp.Code = 401
 		resp.Message = "invalid token"
 		ctx.Json(resp)

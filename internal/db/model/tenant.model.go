@@ -9,3 +9,7 @@ type Tenant struct {
 	Name string `gorm:"column:name"`
 	app.TableChangeInfo
 }
+
+func (Tenant) TableName() string {
+	return "tenant"
+}

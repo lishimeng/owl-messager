@@ -8,6 +8,7 @@ import (
 
 type TemplateResp struct {
 	Id            int    `json:"id,omitempty"`
+	TenantCode    string `json:"tenantCode,omitempty"`
 	Name          string `json:"name,omitempty"`
 	Body          string `json:"body,omitempty"`
 	CloudTemplate string `json:"cloudTemplate,omitempty"`
@@ -22,6 +23,7 @@ type TemplateResp struct {
 }
 
 type TemplateReq struct {
+	TenantCode    string `json:"tenantCode,omitempty"`
 	Name          string `json:"name,omitempty"`
 	Body          string `json:"body,omitempty"`
 	CloudTemplate string `json:"cloudTemplate,omitempty"`

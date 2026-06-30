@@ -21,11 +21,6 @@ func GetClientByAppId(appId string) (c model.OpenClient, err error) {
 	return
 }
 
-func GetClientByBasicAuth(token string) (c model.OpenClient, err error) {
-	err = orm().Model(&model.OpenClient{}).Equal("basic_auth", token).First(&c)
-	return
-}
-
 func GetClients(ctx persistence.OrmContext, key string) (c []model.OpenClient, err error) {
 	q := ctx.Model(&model.OpenClient{})
 	if len(key) > 0 {
@@ -55,25 +50,13 @@ func genSecret(appId string) (code string) {
 	return
 }
 
-func genBasicAuth(tenant, appId string) (code string) {
-	now := time.Now().Format(time.RFC3339Nano)
-	var tmp = fmt.Sprintf("BasicAuth_%s_%s_%s", now, tenant, appId)
-	sh := sha256.New()
-	sh.Write([]byte(tmp))
-	bs := sh.Sum(nil)
-	code = strings.ToLower(util.BytesToHex(bs))
-	return
-}
-
 func AddClient(ctx persistence.TxContext, tenantCode string, name string) (client model.OpenClient, err error) {
 	appId := genAppId(tenantCode)
 	secret := genSecret(appId)
-	basicAuth := genBasicAuth(tenantCode, appId)
 	client = model.OpenClient{
 		TenantScope: model.TenantScope{TenantCode: tenantCode},
 		AppId:       appId,
 		Secret:      secret,
-		BasicAuth:   basicAuth,
 		Name:        name,
 	}
 	err = ctx.Create(&client)

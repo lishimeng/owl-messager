@@ -37,7 +37,7 @@ type respList struct {
 
 func GetMailSenderList(ctx server.Context) {
 	var resp respList
-	orgID := consoleorg.Code(ctx)
+	tenantCode := consoleorg.TenantFilter(ctx)
 	pageSize := ctx.C.URLParamIntDefault("pageSize", repo.DefaultPageSize)
 	pageNo := ctx.C.URLParamIntDefault("pageNo", repo.DefaultPageNo)
 
@@ -53,9 +53,11 @@ func GetMailSenderList(ctx server.Context) {
 		dst.UpdateTime = util.FormatTime(src.UpdateTime)
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
-		return tx.Model(&model.MessageSenderInfo{}).
-			Equal("tenant_code", orgID).
-			Equal("message_category", msg.MailMessage)
+		q := tx.Model(&model.MessageSenderInfo{}).Equal("message_category", msg.MailMessage)
+		if tenantCode != "" {
+			q = q.Equal("tenant_code", tenantCode)
+		}
+		return q
 	}
 	pager.OrderExp = append(pager.OrderExp, "ctime")
 	if err := app.QueryPage(&pager); err != nil {
@@ -85,7 +87,6 @@ func GetMailSenderInfo(ctx server.Context) {
 	var ms model.MessageSenderInfo
 	err = app.GetOrm().Model(&model.MessageSenderInfo{}).
 		Equal("id", id).
-		Equal("tenant_code", consoleorg.Code(ctx)).
 		Equal("message_category", msg.MailMessage).
 		First(&ms)
 	if err != nil {
@@ -108,9 +109,10 @@ func GetMailSenderInfo(ctx server.Context) {
 }
 
 type addMailSenderReq struct {
-	Vendor  msg.MessageProvider `json:"vendor,omitempty"`
-	Config  json.RawMessage     `json:"config,omitempty"`
-	Default int                 `json:"default,omitempty"`
+	TenantCode string              `json:"tenantCode,omitempty"`
+	Vendor     msg.MessageProvider `json:"vendor,omitempty"`
+	Config     json.RawMessage     `json:"config,omitempty"`
+	Default    int                 `json:"default,omitempty"`
 }
 
 func AddMailSender(ctx server.Context) {
@@ -128,9 +130,14 @@ func AddMailSender(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
+	if req.TenantCode == "" {
+		resp.Code = -1
+		resp.Message = "tenantCode required"
+		ctx.Json(resp)
+		return
+	}
 
 	code := "sender_mail_" + util.UUIDString()
-	orgID := consoleorg.Code(ctx)
 	isDefault := 0
 	if req.Default == 1 {
 		isDefault = 1
@@ -140,7 +147,7 @@ func AddMailSender(ctx server.Context) {
 	if len(req.Config) > 0 {
 		cfg = msg.SenderConfig(req.Config)
 	}
-	ms, err := repo.CreateMessageSender(orgID, msg.MailMessage, req.Vendor, isDefault, code, cfg)
+	ms, err := repo.CreateMessageSender(req.TenantCode, msg.MailMessage, req.Vendor, isDefault, code, cfg)
 	if err != nil {
 		resp.Code = -1
 		resp.Message = "create sender failed"
@@ -180,7 +187,6 @@ func UpdateMailSender(ctx server.Context) {
 	var ms model.MessageSenderInfo
 	err = app.GetOrm().Model(&model.MessageSenderInfo{}).
 		Equal("id", id).
-		Equal("tenant_code", consoleorg.Code(ctx)).
 		Equal("message_category", msg.MailMessage).
 		First(&ms)
 	if err != nil {

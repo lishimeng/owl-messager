@@ -24,6 +24,10 @@ type MessageInfo struct {
 	NextSendTime time.Time           `gorm:"column:next_send_time"`
 }
 
+func (MessageInfo) TableName() string {
+	return "message_info"
+}
+
 const (
 	MessagePriorityLow    = 1
 	MessagePriorityNormal = 2

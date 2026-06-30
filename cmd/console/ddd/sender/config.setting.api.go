@@ -15,6 +15,7 @@ import (
 
 type reqSender struct {
 	DefaultSender int                 `json:"defaultSender,omitempty"`
+	TenantCode    string              `json:"tenantCode,omitempty"`
 	Vendor        msg.MessageProvider `json:"vendor,omitempty"`
 	Config        msg.SenderConfig    `json:"config,omitempty"`
 	Code          string              `json:"code,omitempty"`
@@ -46,7 +47,14 @@ func SetMailSenderInfo(ctx server.Context) {
 		return
 	}
 
-	_, err = repo.CreateMessageSender(consoleorg.Code(ctx), req.Category, req.Vendor, 0, code, req.Config)
+	if req.TenantCode == "" {
+		resp.Code = tool.RespCodeError
+		resp.Message = "tenantCode required"
+		ctx.Json(resp)
+		return
+	}
+
+	_, err = repo.CreateMessageSender(req.TenantCode, req.Category, req.Vendor, 0, code, req.Config)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "创建失败"
@@ -54,7 +62,7 @@ func SetMailSenderInfo(ctx server.Context) {
 		return
 	}
 	if req.DefaultSender == 1 {
-		err = _setDefault(code, req.Category.String(), consoleorg.Code(ctx), req.Vendor.String())
+		err = _setDefault(code, req.Category.String(), req.TenantCode, req.Vendor.String())
 		if err != nil {
 			resp.Code = tool.RespCodeError
 			ctx.Json(resp)
@@ -81,7 +89,13 @@ func UpMailSenderInfo(ctx server.Context) {
 		return
 	}
 	if req.DefaultSender == 1 {
-		err = _setDefault(req.Code, req.Category.String(), consoleorg.Code(ctx), req.Vendor.String())
+		sender, e := repo.GetMessageSenderByCode(req.Code)
+		if e != nil {
+			resp.Code = tool.RespCodeNotFound
+			ctx.Json(resp)
+			return
+		}
+		err = _setDefault(req.Code, req.Category.String(), sender.TenantCode, req.Vendor.String())
 		if err != nil {
 			resp.Code = tool.RespCodeError
 			ctx.Json(resp)
@@ -145,7 +159,10 @@ func ListByPage(ctx server.Context) {
 		dst.UpdateTime = src.UpdateTime.UTC().Format(time.RFC3339)
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
-		q := tx.Model(&model.MessageSenderInfo{}).Equal("tenant_code", consoleorg.Code(ctx))
+		q := tx.Model(&model.MessageSenderInfo{})
+		if tenantCode := consoleorg.TenantFilter(ctx); tenantCode != "" {
+			q = q.Equal("tenant_code", tenantCode)
+		}
 		if len(category) > 0 {
 			q = q.Equal("message_category", category)
 		}

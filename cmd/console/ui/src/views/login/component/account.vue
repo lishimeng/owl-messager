@@ -4,7 +4,7 @@
 			<el-input
 				type="textarea"
 				:rows="3"
-				placeholder="请输入授权 Token（open_client.basic_auth）"
+				placeholder="请输入管理 Token"
 				v-model="state.ruleForm.token"
 				clearable
 				autocomplete="off"

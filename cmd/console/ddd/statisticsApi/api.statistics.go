@@ -36,10 +36,12 @@ func GetProvidersStat(ctx server.Context) {
 	var resp respProvidersStat
 	var stat []model.ProviderStats
 
-	orgID := consoleorg.Code(ctx)
-	err := app.GetOrm().Model(&model.ProviderStats{}).
-		Equal("tenant_code", orgID).
-		Find(&stat)
+	tenantCode := consoleorg.TenantFilter(ctx)
+	q := app.GetOrm().Model(&model.ProviderStats{})
+	if tenantCode != "" {
+		q = q.Equal("tenant_code", tenantCode)
+	}
+	err := q.Find(&stat)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = err.Error()
@@ -76,12 +78,13 @@ func GetDailyStat(ctx server.Context) {
 	}
 	startDate = startDate.Local()
 
-	orgID := consoleorg.Code(ctx)
+	tenantCode := consoleorg.TenantFilter(ctx)
 	var earliest model.DailySummary
-	err = app.GetOrm().Model(&model.DailySummary{}).
-		Equal("tenant_code", orgID).
-		Order("date").
-		First(&earliest)
+	q := app.GetOrm().Model(&model.DailySummary{})
+	if tenantCode != "" {
+		q = q.Equal("tenant_code", tenantCode)
+	}
+	err = q.Order("date").First(&earliest)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = err.Error()
@@ -101,9 +104,11 @@ func GetDailyStat(ctx server.Context) {
 
 	result := make([]dailyStat, batch)
 	var records []model.DailySummary
-	err = app.GetOrm().Model(&model.DailySummary{}).
-		Equal("tenant_code", orgID).
-		Where("date > ?", endDate).
+	dq := app.GetOrm().Model(&model.DailySummary{})
+	if tenantCode != "" {
+		dq = dq.Equal("tenant_code", tenantCode)
+	}
+	err = dq.Where("date > ?", endDate).
 		Where("date <= ?", startDate).
 		Order("-date").
 		Find(&records)

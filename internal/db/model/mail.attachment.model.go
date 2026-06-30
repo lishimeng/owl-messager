@@ -18,3 +18,7 @@ type MailAttachment struct {
 	Bound        bool      `gorm:"column:bound"`
 	app.TableChangeInfo
 }
+
+func (MailAttachment) TableName() string {
+	return "mail_attachment"
+}

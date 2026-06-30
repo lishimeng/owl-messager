@@ -18,3 +18,7 @@ type MessageTemplate struct {
 	Description   string              `gorm:"column:description"`
 	app.TableChangeInfo
 }
+
+func (MessageTemplate) TableName() string {
+	return "message_template"
+}

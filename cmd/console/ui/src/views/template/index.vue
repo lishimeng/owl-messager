@@ -1,6 +1,9 @@
 <template>
   <div class="home-container layout-pd" style="margin-top: 10px">
     <el-form :inline="true">
+      <el-form-item label="租户">
+        <el-input v-model="state.queryValue.tenantCode" clearable placeholder="可选" style="width: 140px" @change="chooseCategory"/>
+      </el-form-item>
       <el-form-item label="通讯方式">
         <el-select v-model="state.category" @change="chooseCategory" placeholder="请选择通讯方式" style="width: 120px">
           <el-option v-for="(item,index) in state.categoryList" :key="index" :label="item" :value="item">
@@ -14,6 +17,7 @@
     <div style="margin-top: 10px">
       <el-table :data="state.dataList" border style="width: 100%">
         <el-table-column prop="id" label="Id" width="60"/>
+        <el-table-column prop="tenantCode" label="租户" width="120" show-overflow-tooltip/>
         <el-table-column prop="code" label="Code" width="180" show-overflow-tooltip/>
         <el-table-column prop="name" label="模板名称" width="120"/>
         <el-table-column prop="description" label="模板描述" width="180" show-overflow-tooltip/>
@@ -116,7 +120,8 @@ const state = reactive({
     pageNum: 1,
     pageSize: 10,
     totalNum: 0,
-    category: ''
+    category: '',
+    tenantCode: '',
   },
   // 新增模版
   subForm: {

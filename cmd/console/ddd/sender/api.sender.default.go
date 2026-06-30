@@ -5,8 +5,8 @@ import (
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
-	"github.com/lishimeng/owl-messager/cmd/console/ddd/consoleorg"
 	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/repo"
 )
 
 func _setDefault(code string, category string, tenantCode string, provider string) (err error) {
@@ -48,7 +48,13 @@ func setDefaultSender(ctx server.Context) {
 	}
 	tenantCode := req.TenantCode
 	if tenantCode == "" {
-		tenantCode = consoleorg.Code(ctx)
+		sender, e := repo.GetMessageSenderByCode(req.Code)
+		if e != nil {
+			resp.Code = tool.RespCodeNotFound
+			ctx.Json(resp)
+			return
+		}
+		tenantCode = sender.TenantCode
 	}
 	err = _setDefault(req.Code, req.Category, tenantCode, req.Provider)
 	if err != nil {

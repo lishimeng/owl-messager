@@ -10,6 +10,7 @@ import (
 	"github.com/lishimeng/app-starter/persistence/driver/postgres"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/cmd/console/ddd"
+	"github.com/lishimeng/owl-messager/cmd/console/process"
 	"github.com/lishimeng/owl-messager/cmd/console/static"
 	"github.com/lishimeng/owl-messager/internal/etc"
 )
@@ -54,6 +55,7 @@ func _main() (err error) {
 
 		builder.EnableDatabase(dbConfig.Build(),
 			ddd.Tables()...).
+			ComponentBefore(process.BeforeStarted).
 			EnableStaticWeb(func() http.FileSystem {
 				return http.FS(static.Static)
 			}).

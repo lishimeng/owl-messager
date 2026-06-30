@@ -45,6 +45,14 @@ func GetMessageTemplateByCode(code string, tenantCode string) (tpl model.Message
 	return
 }
 
+func GetMessageTemplateByCodeAny(code string) (tpl model.MessageTemplate, err error) {
+	err = orm().Model(&model.MessageTemplate{}).
+		Equal("code", code).
+		Equal("status", model.TemplateEnable).
+		First(&tpl)
+	return
+}
+
 func CreateMessageTemplate(
 	tenantCode string,
 	code,

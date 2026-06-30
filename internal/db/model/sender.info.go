@@ -16,6 +16,10 @@ type MessageSenderInfo struct {
 	app.TableChangeInfo
 }
 
+func (MessageSenderInfo) TableName() string {
+	return "message_sender_info"
+}
+
 type SenderAppInfo struct {
 	AppIdentify string `gorm:"column:app_identify"`
 }

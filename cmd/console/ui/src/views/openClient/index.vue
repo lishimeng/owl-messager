@@ -1,6 +1,9 @@
 <template>
   <div class="home-container layout-pd" style="margin-top: 10px">
     <el-form :inline="true">
+      <el-form-item label="租户">
+        <el-input v-model="state.queryValue.tenantCode" clearable placeholder="可选，留空查全部" style="width: 160px" @change="getClientList"/>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="showCreate()" icon="ele-CirclePlus">新增</el-button>
       </el-form-item>
@@ -8,6 +11,7 @@
     <div style="margin-top: 10px">
       <el-table :data="state.dataList" border style="width: 100%">
         <el-table-column prop="id" label="Id" width="120"/>
+        <el-table-column prop="tenantCode" label="租户" width="140" show-overflow-tooltip/>
         <el-table-column prop="name" label="名称" width="200" show-overflow-tooltip/>
         <el-table-column prop="appId" label="AppId" show-overflow-tooltip/>
         <el-table-column prop="createTime" label="创建时间" width="220">
@@ -55,6 +59,9 @@
         width="50%"
         center>
       <el-form :model="state.formData" label-width="120px">
+        <el-form-item label="租户" prop="tenantCode">
+          <el-input v-model="state.formData.tenantCode" :readonly="state.createSuccess" placeholder="tenant.code"></el-input>
+        </el-form-item>
         <el-form-item label="名称" prop="name">
           <el-input v-model="state.formData.name" :readonly="state.createSuccess"></el-input>
         </el-form-item>
@@ -85,6 +92,7 @@ const state = reactive({
   showCreate: false,
   createSuccess: false,
   formData: {
+    tenantCode: "",
     name: "",
     appId: "",
     secret: "",
@@ -94,6 +102,7 @@ const state = reactive({
     pageNum: 1,
     pageSize: 10,
     totalNum: 0,
+    tenantCode: "",
   },
   dataList: []
 })
@@ -123,6 +132,7 @@ const getClientList = () => {
 }
 
 const showCreate = () => {
+  state.formData.tenantCode = ""
   state.formData.name = ""
   state.formData.appId = ""
   state.formData.secret = ""
@@ -131,7 +141,12 @@ const showCreate = () => {
 }
 
 const createClient = () => {
+  if (!state.formData.tenantCode.trim()) {
+    ElMessage.error('请填写租户 code')
+    return
+  }
   createClientApi({
+    tenantCode: state.formData.tenantCode.trim(),
     name: state.formData.name,
   }).then(res => {
     if (res.code == 200) {
@@ -168,7 +183,10 @@ const showSecret = (row: object) => {
 }
 
 const deleteClient = (row: object) => {
-  delClientApi(row).then(res => {
+  delClientApi({
+    tenantCode: row.tenantCode,
+    appId: row.appId,
+  }).then(res => {
     if (res.code == 200) {
       ElMessage.success(`删除成功`)
       getClientList()

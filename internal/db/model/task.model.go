@@ -14,9 +14,17 @@ type MessageTask struct {
 	app.TableChangeInfo
 }
 
+func (MessageTask) TableName() string {
+	return "message_task"
+}
+
 // MessageRunningTask 当前在运行的 task
 type MessageRunningTask struct {
 	app.Pk
 	TaskId int `gorm:"column:task_id"`
 	app.TableChangeInfo
+}
+
+func (MessageRunningTask) TableName() string {
+	return "message_running_task"
 }

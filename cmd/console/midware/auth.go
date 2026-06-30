@@ -9,14 +9,14 @@ import (
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/db/repo"
+	"github.com/lishimeng/owl-messager/internal/consoleauth"
 )
 
 func skipApiAuth(path string) bool {
 	return strings.HasPrefix(path, "/api/auth")
 }
 
-// MountApiAuth protects /api routes with Bearer basic_auth (k8s dashboard style).
+// MountApiAuth protects /api routes with Bearer management token (config.console.token).
 func MountApiAuth(r server.Router) {
 	r.Party().Use(irisConsoleAuth)
 }
@@ -31,26 +31,16 @@ func irisConsoleAuth(ctx iris.Context) {
 
 func consoleBearerAuth(ctx server.Context) {
 	raw, ok := bearer.GetAuth(ctx)
-	if !ok {
-		denyConsole(ctx)
-		return
-	}
-
-	client, err := repo.GetClientByBasicAuth(raw)
-	if err != nil {
+	if !ok || !consoleauth.Valid(raw) {
 		log.Debug("console auth rejected")
 		denyConsole(ctx)
 		return
 	}
 
-	p := token.JwtPayload{
-		Uid: client.AppId,
-		Org: client.TenantCode,
-	}
+	p := token.JwtPayload{Uid: "admin"}
 	ctx.C.Values().Set(auth.UserInfoKey, p)
 	r := ctx.C.Request()
-	r.Header.Set(auth.OrgKey, client.TenantCode)
-	r.Header.Set(auth.UidKey, client.AppId)
+	r.Header.Set(auth.UidKey, "admin")
 	ctx.C.Next()
 }
 

@@ -5,14 +5,12 @@ import (
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
-	"github.com/lishimeng/owl-messager/cmd/console/ddd/consoleorg"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 )
 
 type respCreate struct {
 	respSecret
-	AppId     string `json:"appId,omitempty"`
-	BasicAuth string `json:"basicAuth,omitempty"`
+	AppId string `json:"appId,omitempty"`
 }
 
 func createClient(ctx server.Context) {
@@ -27,9 +25,6 @@ func createClient(ctx server.Context) {
 		return
 	}
 	tenantCode := req.TenantCode
-	if tenantCode == "" {
-		tenantCode = consoleorg.Code(ctx)
-	}
 	if tenantCode == "" {
 		resp.Code = tool.RespCodeError
 		resp.Message = "tenantCode required"
@@ -48,7 +43,6 @@ func createClient(ctx server.Context) {
 		}
 		resp.AppId = client.AppId
 		resp.Secret = client.Secret
-		resp.BasicAuth = client.BasicAuth
 		return
 	})
 

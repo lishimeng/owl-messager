@@ -5,6 +5,10 @@ type ApnsMessageInfo struct {
 	PushChannelDetail
 }
 
+func (ApnsMessageInfo) TableName() string {
+	return "apns_message_info"
+}
+
 type ApnsMode int
 
 const (
