@@ -3,5 +3,5 @@ package model
 // MailMessageInfo 邮件渠道详情；主题见 MessageInfo.Subject
 type MailMessageInfo struct {
 	TemplateChannelDetail
-	Attachments string `gorm:"column:attachments"` // JSON，预留附件列表
+	Attachments string `gorm:"column:attachments"` // JSON：MailAttachmentRef 列表（id 关联 mail_attachment 表）
 }

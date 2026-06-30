@@ -2,7 +2,7 @@ package msg
 
 import "encoding/json"
 
-// MailAttachmentRef 邮件附件引用（DB 仅存元数据，文件在 staging）
+// MailAttachmentRef 邮件附件引用（元数据在 mail_attachment 表，文件在 staging 目录）
 type MailAttachmentRef struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`

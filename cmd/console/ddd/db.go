@@ -15,6 +15,7 @@ func Tables() (t []interface{}) {
 		new(model.ImMessageInfo),
 		new(model.MessageTemplate),
 		new(model.MessageSenderInfo),
+		new(model.MailAttachment),
 		new(model.Config),
 		new(model.ProviderStats),
 		new(model.DailySummary),

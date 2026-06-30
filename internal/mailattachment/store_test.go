@@ -1,9 +1,63 @@
 package mailattachment
 
 import (
+	"fmt"
 	"strings"
 	"testing"
+	"time"
+
+	"github.com/lishimeng/owl-messager/internal/db/model"
 )
+
+type memAttachmentStore struct {
+	rows map[string]model.MailAttachment
+}
+
+func (s *memAttachmentStore) key(org int, id string) string {
+	return fmt.Sprintf("%d:%s", org, id)
+}
+
+func (s *memAttachmentStore) Create(row *model.MailAttachment) error {
+	if s.rows == nil {
+		s.rows = make(map[string]model.MailAttachment)
+	}
+	s.rows[s.key(row.Org, row.AttachmentId)] = *row
+	return nil
+}
+
+func (s *memAttachmentStore) Get(org int, attachmentId string) (model.MailAttachment, error) {
+	row, ok := s.rows[s.key(org, attachmentId)]
+	if !ok {
+		return model.MailAttachment{}, errNotFound
+	}
+	return row, nil
+}
+
+func (s *memAttachmentStore) UpdateBound(org int, attachmentId string, bound bool, expiresAt time.Time) error {
+	row, err := s.Get(org, attachmentId)
+	if err != nil {
+		return err
+	}
+	row.Bound = bound
+	row.ExpiresAt = expiresAt
+	s.rows[s.key(org, attachmentId)] = row
+	return nil
+}
+
+func (s *memAttachmentStore) Delete(org int, attachmentId string) error {
+	delete(s.rows, s.key(org, attachmentId))
+	return nil
+}
+
+func (s *memAttachmentStore) ListExpired(before time.Time) ([]model.MailAttachment, error) {
+	var out []model.MailAttachment
+	for _, row := range s.rows {
+		if row.ExpiresAt.Before(before) {
+			out = append(out, row)
+		}
+	}
+	return out, nil
+}
 
 func TestValidateMIME(t *testing.T) {
 	if err := validateMIME("a.pdf", "application/pdf"); err != nil {
@@ -14,19 +68,37 @@ func TestValidateMIME(t *testing.T) {
 	}
 }
 
+func TestGenAttachmentIDIsHex(t *testing.T) {
+	id := genAttachmentID("a.pdf", 1, time.Now())
+	if len(id) != 32 {
+		t.Fatalf("expected md5 hex length 32, got %d", len(id))
+	}
+	for _, c := range id {
+		if (c < '0' || c > '9') && (c < 'a' || c > 'f') {
+			t.Fatalf("expected hex id, got %q", id)
+		}
+	}
+}
+
 func TestManagerSaveResolve(t *testing.T) {
 	dir := t.TempDir()
-	m := &Manager{cfg: Config{
+	store := &memAttachmentStore{}
+	m := newManager(Config{
 		Dir:          dir,
 		MaxFileSize:  1024,
 		MaxTotalSize: 2048,
 		MaxCount:     3,
-	}.withDefaults()}
+		StagingTTL:   time.Hour,
+	}, store)
 
 	ref, err := m.Save(1, "test.txt", "text/plain", strings.NewReader("hello"))
 	if err != nil {
 		t.Fatal(err)
 	}
+	if ref.ID == "" {
+		t.Fatal("empty id")
+	}
+
 	refs, err := m.Resolve(1, []string{ref.ID})
 	if err != nil || len(refs) != 1 {
 		t.Fatalf("resolve: %v %v", refs, err)
@@ -34,5 +106,13 @@ func TestManagerSaveResolve(t *testing.T) {
 	_, err = m.Resolve(2, []string{ref.ID})
 	if err != errNotFound {
 		t.Fatalf("expected not found for other org, got %v", err)
+	}
+}
+
+func TestDataPathIncludesDate(t *testing.T) {
+	m := newManager(Config{Dir: "/data"}, &memAttachmentStore{})
+	p := m.dataPath("2026-06-29", 3, "abc")
+	if !strings.Contains(p, "2026-06-29") || !strings.Contains(p, "3") || !strings.Contains(p, "abc") {
+		t.Fatalf("unexpected path: %s", p)
 	}
 }

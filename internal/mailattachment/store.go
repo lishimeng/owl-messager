@@ -1,7 +1,8 @@
 package mailattachment
 
 import (
-	"encoding/json"
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"mime"
@@ -11,39 +12,88 @@ import (
 	"sync"
 	"time"
 
-	"github.com/iris-contrib/go.uuid"
+	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/internal/messager"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
-type storedMeta struct {
-	msg.MailAttachmentRef
-	Org       int       `json:"org"`
-	ExpiresAt time.Time `json:"expiresAt"`
-	Bound     bool      `json:"bound"`
+type attachmentMetaStore interface {
+	Create(row *model.MailAttachment) error
+	Get(org int, attachmentId string) (model.MailAttachment, error)
+	UpdateBound(org int, attachmentId string, bound bool, expiresAt time.Time) error
+	Delete(org int, attachmentId string) error
+	ListExpired(before time.Time) ([]model.MailAttachment, error)
+}
+
+type dbAttachmentMetaStore struct{}
+
+func (dbAttachmentMetaStore) Create(row *model.MailAttachment) error {
+	return repo.CreateMailAttachment(row)
+}
+func (dbAttachmentMetaStore) Get(org int, attachmentId string) (model.MailAttachment, error) {
+	return repo.GetMailAttachment(org, attachmentId)
+}
+func (dbAttachmentMetaStore) UpdateBound(org int, attachmentId string, bound bool, expiresAt time.Time) error {
+	return repo.UpdateMailAttachmentBound(org, attachmentId, bound, expiresAt)
+}
+func (dbAttachmentMetaStore) Delete(org int, attachmentId string) error {
+	return repo.DeleteMailAttachment(org, attachmentId)
+}
+func (dbAttachmentMetaStore) ListExpired(before time.Time) ([]model.MailAttachment, error) {
+	return repo.ListExpiredMailAttachments(before)
 }
 
 type Manager struct {
-	cfg Config
-	mu  sync.Mutex
+	cfg   Config
+	mu    sync.Mutex
+	store attachmentMetaStore
 }
 
 var defaultMgr *Manager
 
 func Init(cfg Config) {
-	defaultMgr = &Manager{cfg: cfg.withDefaults()}
-	_ = os.MkdirAll(defaultMgr.cfg.Dir, 0o750)
+	defaultMgr = newManager(cfg, dbAttachmentMetaStore{})
+}
+
+func newManager(cfg Config, store attachmentMetaStore) *Manager {
+	m := &Manager{cfg: cfg.withDefaults(), store: store}
+	_ = os.MkdirAll(m.cfg.Dir, 0o750)
+	return m
 }
 
 func Default() *Manager {
 	if defaultMgr == nil {
-		Init(Config{})
+		defaultMgr = newManager(Config{}, dbAttachmentMetaStore{})
 	}
 	return defaultMgr
 }
 
 func (m *Manager) Config() Config {
 	return m.cfg
+}
+
+func genAttachmentID(filename string, org int, at time.Time) string {
+	raw := fmt.Sprintf("%s:%d:%s", filename, org, at.Format(time.RFC3339Nano))
+	sum := md5.Sum([]byte(raw))
+	return hex.EncodeToString(sum[:])
+}
+
+func (m *Manager) itemDir(storageDate string, org int, id string) string {
+	return filepath.Join(m.cfg.Dir, storageDate, fmt.Sprintf("%d", org), id)
+}
+
+func (m *Manager) dataPath(storageDate string, org int, id string) string {
+	return filepath.Join(m.itemDir(storageDate, org, id), "data")
+}
+
+func (m *Manager) refFromRow(row model.MailAttachment) msg.MailAttachmentRef {
+	return msg.MailAttachmentRef{
+		ID:   row.AttachmentId,
+		Name: row.FileName,
+		Mime: row.Mime,
+		Size: row.Size,
+	}
 }
 
 func (m *Manager) Save(org int, filename string, contentType string, r io.Reader) (msg.MailAttachmentRef, error) {
@@ -55,13 +105,15 @@ func (m *Manager) Save(org int, filename string, contentType string, r io.Reader
 		return msg.MailAttachmentRef{}, errEmptyFile
 	}
 
-	id := strings.ReplaceAll(uuid.Must(uuid.NewV4()).String(), "-", "")
-	dir := m.itemDir(org, id)
+	at := time.Now()
+	id := genAttachmentID(name, org, at)
+	storageDate := at.Format("2006-01-02")
+	dir := m.itemDir(storageDate, org, id)
 	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return msg.MailAttachmentRef{}, err
 	}
 
-	dataPath := m.dataPath(org, id)
+	dataPath := m.dataPath(storageDate, org, id)
 	f, err := os.OpenFile(dataPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o640)
 	if err != nil {
 		return msg.MailAttachmentRef{}, err
@@ -91,23 +143,23 @@ func (m *Manager) Save(org int, filename string, contentType string, r io.Reader
 		_ = os.RemoveAll(dir)
 		return msg.MailAttachmentRef{}, err
 	}
+	mimeBase := strings.Split(detected, ";")[0]
 
-	ref := msg.MailAttachmentRef{
-		ID:   id,
-		Name: name,
-		Mime: strings.Split(detected, ";")[0],
-		Size: n,
+	row := &model.MailAttachment{
+		AttachmentId: id,
+		FileName:     name,
+		Mime:         mimeBase,
+		Size:         n,
+		StorageDate:  storageDate,
+		ExpiresAt:    at.Add(m.cfg.StagingTTL),
+		Bound:        false,
 	}
-	meta := storedMeta{
-		MailAttachmentRef: ref,
-		Org:               org,
-		ExpiresAt:         time.Now().Add(m.cfg.StagingTTL),
-	}
-	if err = m.writeMeta(org, id, meta); err != nil {
+	row.Org = org
+	if err = m.store.Create(row); err != nil {
 		_ = os.RemoveAll(dir)
 		return msg.MailAttachmentRef{}, err
 	}
-	return ref, nil
+	return m.refFromRow(*row), nil
 }
 
 func (m *Manager) Resolve(org int, ids []string) ([]msg.MailAttachmentRef, error) {
@@ -130,21 +182,21 @@ func (m *Manager) Resolve(org int, ids []string) ([]msg.MailAttachmentRef, error
 		}
 		seen[id] = struct{}{}
 
-		meta, err := m.readMeta(org, id)
+		row, err := m.store.Get(org, id)
 		if err != nil {
-			return nil, err
+			return nil, errNotFound
 		}
-		if meta.Org != org {
+		if row.Org != org {
 			return nil, errOrgMismatch
 		}
-		if time.Now().After(meta.ExpiresAt) {
+		if time.Now().After(row.ExpiresAt) {
 			return nil, errExpired
 		}
-		total += meta.Size
+		total += row.Size
 		if total > m.cfg.MaxTotalSize {
 			return nil, errTotalTooLarge
 		}
-		refs = append(refs, meta.MailAttachmentRef)
+		refs = append(refs, m.refFromRow(row))
 	}
 	return refs, nil
 }
@@ -155,16 +207,15 @@ func (m *Manager) MarkBound(org int, ids []string) error {
 		if id == "" {
 			continue
 		}
-		meta, err := m.readMeta(org, id)
+		row, err := m.store.Get(org, id)
 		if err != nil {
 			return err
 		}
-		if meta.Org != org {
+		if row.Org != org {
 			return errOrgMismatch
 		}
-		meta.Bound = true
-		meta.ExpiresAt = time.Now().Add(m.cfg.StagingTTL)
-		if err = m.writeMeta(org, id, meta); err != nil {
+		expiresAt := time.Now().Add(m.cfg.StagingTTL)
+		if err = m.store.UpdateBound(org, id, true, expiresAt); err != nil {
 			return err
 		}
 	}
@@ -185,30 +236,30 @@ func (m *Manager) LoadForSend(org int, attachmentsJSON string) ([]messager.MailA
 	var total int64
 	var out []messager.MailAttachment
 	for _, ref := range refs {
-		meta, err := m.readMeta(org, ref.ID)
+		row, err := m.store.Get(org, ref.ID)
 		if err != nil {
 			return nil, err
 		}
-		if meta.Org != org {
+		if row.Org != org {
 			return nil, errOrgMismatch
 		}
-		if time.Now().After(meta.ExpiresAt) {
+		if time.Now().After(row.ExpiresAt) {
 			return nil, errExpired
 		}
-		total += meta.Size
+		total += row.Size
 		if total > m.cfg.MaxTotalSize {
 			return nil, errTotalTooLarge
 		}
-		data, err := os.ReadFile(m.dataPath(org, ref.ID))
+		data, err := os.ReadFile(m.dataPath(row.StorageDate, org, row.AttachmentId))
 		if err != nil {
 			return nil, err
 		}
-		if int64(len(data)) != meta.Size {
+		if int64(len(data)) != row.Size {
 			return nil, fmt.Errorf("mailattachment: size mismatch for %s", ref.ID)
 		}
 		out = append(out, messager.MailAttachment{
-			Filename:    meta.Name,
-			ContentType: meta.Mime,
+			Filename:    row.FileName,
+			ContentType: row.Mime,
 			Data:        data,
 		})
 	}
@@ -237,81 +288,21 @@ func (m *Manager) ScheduleRemove(org int, attachmentsJSON string) {
 }
 
 func (m *Manager) CleanupExpired() {
-	entries, err := os.ReadDir(m.cfg.Dir)
+	rows, err := m.store.ListExpired(time.Now())
 	if err != nil {
 		return
 	}
-	now := time.Now()
-	for _, orgEntry := range entries {
-		if !orgEntry.IsDir() {
-			continue
-		}
-		orgDir := filepath.Join(m.cfg.Dir, orgEntry.Name())
-		ids, err := os.ReadDir(orgDir)
-		if err != nil {
-			continue
-		}
-		for _, idEntry := range ids {
-			if !idEntry.IsDir() {
-				continue
-			}
-			id := idEntry.Name()
-			org := parseOrgDir(orgEntry.Name())
-			meta, err := m.readMeta(org, id)
-			if err != nil {
-				_ = os.RemoveAll(filepath.Join(orgDir, id))
-				continue
-			}
-			if now.After(meta.ExpiresAt) {
-				_ = m.remove(org, id)
-			}
-		}
+	for _, row := range rows {
+		_ = m.remove(row.Org, row.AttachmentId)
 	}
-}
-
-func (m *Manager) itemDir(org int, id string) string {
-	return filepath.Join(m.cfg.Dir, fmt.Sprintf("%d", org), id)
-}
-
-func (m *Manager) dataPath(org int, id string) string {
-	return filepath.Join(m.itemDir(org, id), "data")
-}
-
-func (m *Manager) metaPath(org int, id string) string {
-	return filepath.Join(m.itemDir(org, id), "meta.json")
-}
-
-func (m *Manager) readMeta(org int, id string) (storedMeta, error) {
-	b, err := os.ReadFile(m.metaPath(org, id))
-	if err != nil {
-		if os.IsNotExist(err) {
-			return storedMeta{}, errNotFound
-		}
-		return storedMeta{}, err
-	}
-	var meta storedMeta
-	if err = json.Unmarshal(b, &meta); err != nil {
-		return storedMeta{}, err
-	}
-	return meta, nil
-}
-
-func (m *Manager) writeMeta(org int, id string, meta storedMeta) error {
-	b, err := json.Marshal(meta)
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(m.metaPath(org, id), b, 0o640)
 }
 
 func (m *Manager) remove(org int, id string) error {
-	return os.RemoveAll(m.itemDir(org, id))
-}
-
-func parseOrgDir(name string) int {
-	var org int
-	_, _ = fmt.Sscanf(name, "%d", &org)
-	return org
+	row, err := m.store.Get(org, id)
+	if err == nil {
+		_ = os.RemoveAll(m.itemDir(row.StorageDate, org, id))
+	}
+	return m.store.Delete(org, id)
 }
 
 func mimeTypeByName(name string) string {
