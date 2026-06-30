@@ -54,10 +54,10 @@ func AddClient(ctx persistence.TxContext, tenant string, org int, name string) (
 	appId := genAppId(tenant)
 	secret := genSecret(appId)
 	client = model.OpenClient{
-		AppId:  appId,
-		Secret: secret,
-		Domain: tenant,
-		Name:   name,
+		AppId:      appId,
+		Secret:     secret,
+		TenantCode: tenant,
+		Name:       name,
 	}
 	client.Org = org
 	err = ctx.Create(&client)

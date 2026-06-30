@@ -68,15 +68,7 @@ func getTemplates(category msg.MessageCategory, org int, pageNo, pageSize int) (
 	pager.PageSize = pageSize
 	pager.PageNum = pageNo
 	pager.Transform = func(src model.MessageTemplate, dst *pkg.TemplateInfo) {
-		dst.Id = src.Id
-		dst.Name = src.Name
-		dst.Body = src.Body
-		dst.CloudTemplate = src.CloudTemplate
-		dst.Description = src.Description
-		dst.Category = src.Category.String()
-		dst.Params = src.Params
-		dst.Provider = src.Provider.String()
-		dst.Code = src.Code
+		*dst = pkg.TemplateInfoFromModel(src)
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
 		q := tx.Model(&model.MessageTemplate{}).Equal("org", org)

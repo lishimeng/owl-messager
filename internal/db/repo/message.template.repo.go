@@ -23,9 +23,7 @@ func GetMessageTemplates(
 		Equal("org", org).
 		Equal("message_category", category).
 		Equal("message_provider", provider).
-		Equal("status", model.SenderEnable).
-		Order("-Default").
-		Limit(10).
+		Equal("status", model.TemplateEnable).
 		Find(&templates)
 	return
 }
@@ -33,7 +31,7 @@ func GetMessageTemplates(
 func GetMessageTemplateById(id int) (tpl model.MessageTemplate, err error) {
 	err = orm().Model(&model.MessageTemplate{}).
 		Equal("id", id).
-		Equal("status", model.SenderEnable).
+		Equal("status", model.TemplateEnable).
 		First(&tpl)
 	return
 }
@@ -42,7 +40,7 @@ func GetMessageTemplateByCode(code string, org int) (tpl model.MessageTemplate, 
 	err = orm().Model(&model.MessageTemplate{}).
 		Equal("code", code).
 		Equal("org", org).
-		Equal("status", model.SenderEnable).
+		Equal("status", model.TemplateEnable).
 		First(&tpl)
 	return
 }

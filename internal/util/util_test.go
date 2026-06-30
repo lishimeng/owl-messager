@@ -7,7 +7,7 @@ func TestJoin(t *testing.T) {
 	if s != "a-s-d" {
 		t.Fatal("not match")
 	}
-	t.Logf(s)
+	t.Logf("%s", s)
 }
 
 func TestFormRequest(t *testing.T) {
@@ -23,5 +23,5 @@ func TestFormRequest(t *testing.T) {
 		return
 	}
 	t.Log(code)
-	t.Logf(body)
+	t.Logf("%s", body)
 }

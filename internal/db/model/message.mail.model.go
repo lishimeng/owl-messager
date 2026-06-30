@@ -1,9 +1,7 @@
 package model
 
+// MailMessageInfo 邮件渠道详情；主题见 MessageInfo.Subject
 type MailMessageInfo struct {
-	MessageHeader
-	Template  int    `gorm:"column:template_id"`
-	Params    string `gorm:"column:params"`
-	Receivers string `gorm:"column:receiver"`
-	Subject   string `gorm:"column:subject"`
+	TemplateChannelDetail
+	Attachments string `gorm:"column:attachments"` // JSON，预留附件列表
 }

@@ -6,8 +6,9 @@ import (
 )
 
 type MessageSenderInfo struct {
-	app.TenantPk
-	Code     string              `gorm:"column:code;uniqueIndex"`
+	app.Pk
+	Org      int                 `gorm:"column:org;uniqueIndex:idx_sender_org_code"`
+	Code     string              `gorm:"column:code;uniqueIndex:idx_sender_org_code"`
 	Category msg.MessageCategory `gorm:"column:message_category"`
 	Provider msg.MessageProvider `gorm:"column:message_provider"`
 	Default  int                 `gorm:"column:default_sender"`
@@ -19,12 +20,3 @@ type MessageSenderInfo struct {
 type SenderAppInfo struct {
 	AppIdentify string `gorm:"column:app_identify"`
 }
-
-const (
-	DefaultSenderDisable = 0
-	DefaultSenderEnable  = 1
-)
-const (
-	SenderDisable = 0
-	SenderEnable  = 1
-)

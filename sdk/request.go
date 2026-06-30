@@ -12,6 +12,7 @@ type MailRequest struct {
 	TemplateParam interface{} `json:"params"`            // 参数
 	Title         string      `json:"subject,omitempty"` // 标题
 	Receiver      string      `json:"receiver"`          // 接收者，多个时用逗号分隔
+	Attachments   []string    `json:"attachments,omitempty"`
 }
 
 // SmsRequest 短信服务请求参数

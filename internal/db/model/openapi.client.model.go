@@ -4,10 +4,10 @@ import "github.com/lishimeng/app-starter"
 
 type OpenClient struct {
 	app.TenantPk
-	AppId  string `gorm:"column:app_id;uniqueIndex"`
-	Secret string `gorm:"column:secret"`
-	Domain string `gorm:"column:domain"`
-	Name   string `gorm:"column:name"`
+	AppId      string `gorm:"column:app_id;uniqueIndex"`
+	Secret     string `gorm:"column:secret"`
+	TenantCode string `gorm:"column:domain"`
+	Name       string `gorm:"column:name"`
 	app.TableInfo
 }
 
@@ -20,5 +20,5 @@ func (t OpenClient) GetSecret() string {
 }
 
 func (t OpenClient) GetDomain() string {
-	return t.Domain
+	return t.TenantCode
 }

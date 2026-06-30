@@ -83,7 +83,7 @@ func CreateMessageTask(message model.MessageInfo, messageInstanceId int) (task m
 
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		// 创建task
-		task, e = repo.AddMessageTask(ctx, message.Id, messageInstanceId)
+		task, e = repo.AddMessageTask(ctx, message.Id, messageInstanceId, message.Category)
 		if e != nil {
 			log.Info("create message task failed")
 			return
@@ -126,6 +126,12 @@ func GetMessageInstanceId(message model.MessageInfo) (id int, err error) {
 		im, err = repo.GetImByMessageId(message.Id)
 		if err == nil {
 			id = im.Id
+		}
+	case msg.ApnsMessage:
+		var apns model.ApnsMessageInfo
+		apns, err = repo.GetApnsByMessageId(message.Id)
+		if err == nil {
+			id = apns.Id
 		}
 	default:
 		log.Info("unknown message category:%s[message id:%d]", message.Category, message.Id)

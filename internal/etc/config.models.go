@@ -1,14 +1,14 @@
 package etc
 
 type Configuration struct {
-	Db       db      `toml:"db"`
-	Web      web     `toml:"web"`
-	Token    token   `toml:"token"`
-	Redis    redis   `toml:"redis"`
-	Console  console `toml:"console"`
-	Sender   sender  `toml:"sender"`
-	LogLevel string  `toml:"log-level"`
-	Sqlite   sqlite  `toml:"sqlite"`
+	Db             db             `toml:"db"`
+	Web            web            `toml:"web"`
+	Token          token          `toml:"token"`
+	Console        console        `toml:"console"`
+	Sender         sender         `toml:"sender"`
+	MailAttachment mailAttachment `toml:"mail-attachment"`
+	LogLevel       string         `toml:"log-level"`
+	Sqlite         sqlite         `toml:"sqlite"`
 }
 
 type web struct {
@@ -17,13 +17,6 @@ type web struct {
 
 type sqlite struct {
 	Db string `toml:"db"`
-}
-
-type redis struct {
-	Enable   bool   `toml:"enable"`
-	Addr     string `toml:"addr"`
-	Password string `toml:"password"`
-	Db       int    `toml:"db"`
 }
 
 type token struct {
@@ -35,6 +28,15 @@ type token struct {
 type sender struct {
 	Strategy int `toml:"strategy"` // task.Strategy
 	Buff     int `toml:"buff"`
+}
+
+type mailAttachment struct {
+	Dir             string `toml:"dir"`
+	MaxFileSize     int64  `toml:"maxFileSize"`
+	MaxTotalSize    int64  `toml:"maxTotalSize"`
+	MaxCount        int    `toml:"maxCount"`
+	StagingTTL      string `toml:"stagingTTL"`
+	RetainAfterSend string `toml:"retainAfterSend"`
 }
 
 type db struct {

@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-func TestBuildMessage(t *testing.T) {
-	msg := string(buildMessage(
+func TestBuildSimpleMessage(t *testing.T) {
+	msg := string(buildSimpleMessage(
 		"Owl <noreply@example.com>",
 		"hello",
 		"<p>hi</p>",
@@ -27,6 +27,29 @@ func TestBuildMessage(t *testing.T) {
 	}
 	if !strings.Contains(msg, "<p>hi</p>") {
 		t.Fatalf("missing body: %s", msg)
+	}
+}
+
+func TestBuildMessageWithAttachment(t *testing.T) {
+	msg := string(buildMessage(
+		"Owl <noreply@example.com>",
+		"hello",
+		"<p>hi</p>",
+		[]string{"a@example.com"},
+		[]AttachmentPart{{
+			Filename:    "a.pdf",
+			ContentType: "application/pdf",
+			Data:        []byte("%PDF-1.4"),
+		}},
+	))
+	if !strings.Contains(msg, "multipart/mixed") {
+		t.Fatalf("expected multipart/mixed: %s", msg)
+	}
+	if !strings.Contains(msg, "Content-Disposition: attachment") {
+		t.Fatalf("expected attachment disposition: %s", msg)
+	}
+	if !strings.Contains(msg, "application/pdf") {
+		t.Fatalf("expected pdf content type: %s", msg)
 	}
 }
 

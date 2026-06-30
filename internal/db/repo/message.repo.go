@@ -15,8 +15,11 @@ func GetMessageById(id int) (m model.MessageInfo, err error) {
 }
 
 func GetMessageToSend(size int) (messages []model.MessageInfo, err error) {
+	now := time.Now()
 	err = orm().Model(&model.MessageInfo{}).
 		Equal("status", model.MessageInit).
+		Where("next_send_time <= ?", now).
+		Order("-priority").
 		Order("mtime").
 		Limit(size).
 		Find(&messages)
@@ -46,6 +49,7 @@ func CreateMessage(ctx persistence.TxContext, org int, subject string, category 
 	m.Priority = model.MessagePriorityNormal
 	m.Category = category
 	m.Status = model.MessageInit
+	m.NextSendTime = time.Now()
 	err = ctx.Create(&m)
 	return
 }

@@ -15,12 +15,6 @@ func CreateImMessage(ctx persistence.TxContext, message model.MessageInfo,
 	templateParams string,
 	receiver string) (m model.ImMessageInfo, err error) {
 
-	m.Org = message.Org
-	m.MessageId = message.Id
-	m.Template = template.Id
-	m.Params = templateParams
-	m.Receivers = receiver
-	m.Status = model.MessageInit
-	err = ctx.Create(&m)
+	err = createTemplateChannelMessage(ctx, &m, &m.TemplateChannelDetail, message, template, templateParams, receiver)
 	return
 }

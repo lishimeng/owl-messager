@@ -19,7 +19,7 @@ func CreateApnsMessage(sender model.MessageSenderInfo,
 			return
 		}
 		// create mail
-		_, _ = repo.CreateApnsMessage(ctx, m, sender, mode, bundleId, params, subject, receiver)
+		_, _ = repo.CreateApnsMessage(ctx, m, sender, mode, bundleId, params, receiver)
 		return
 	})
 	return

@@ -2,11 +2,18 @@ package messager
 
 import "github.com/lishimeng/owl-messager/internal/db/model"
 
+type MailAttachment struct {
+	Filename    string
+	ContentType string
+	Data        []byte
+}
+
 type MailRequest struct {
-	Subject   string
-	Receivers []string
-	Template  model.MessageTemplate
-	Params    map[string]any
+	Subject     string
+	Receivers   []string
+	Template    model.MessageTemplate
+	Params      map[string]any
+	Attachments []MailAttachment
 }
 
 type MailProvider interface {

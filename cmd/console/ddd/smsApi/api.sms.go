@@ -46,15 +46,21 @@ func GetByMessage(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
+	msgInfo, err := repo.GetMessageById(ms.MessageId)
+	if err != nil {
+		resp.Response.Code = tool.RespCodeNotFound
+		ctx.Json(resp)
+		return
+	}
 
 	var tmpInfo = SmsInfoResp{
 		Id:         ms.Id,
 		MessageId:  ms.MessageId,
 		TemplateId: ms.Template,
 		Params:     ms.Params,
-		Status:     ms.Status,
+		Status:     msgInfo.Status,
 		CreateTime: util.FormatTime(ms.CreateTime),
-		UpdateTime: util.FormatTime(ms.UpdateTime),
+		UpdateTime: util.FormatTime(msgInfo.UpdateTime),
 	}
 	resp.SmsInfoResp = tmpInfo
 	resp.Code = tool.RespCodeSuccess

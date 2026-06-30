@@ -7,11 +7,11 @@ import (
 	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
+// MessageHeader 渠道子表公共头；状态由 MessageInfo 维护，子表仅保留创建时间。
 type MessageHeader struct {
 	app.TenantPk
-
-	MessageId int `gorm:"column:message_id"`
-	app.TableChangeInfo
+	MessageId int `gorm:"column:message_id;uniqueIndex"`
+	app.TableInfo
 }
 
 // MessageInfo 消息主表
@@ -23,15 +23,6 @@ type MessageInfo struct {
 	Priority     int                 `gorm:"column:priority"`
 	NextSendTime time.Time           `gorm:"column:next_send_time"`
 }
-
-const (
-	MessageInit        = 1
-	MessageSending     = 2
-	MessageSendSuccess = 3
-	MessageSendFailed  = 4
-	MessageCancelled   = -1
-	MessageSendExpired = -9
-)
 
 const (
 	MessagePriorityLow    = 1

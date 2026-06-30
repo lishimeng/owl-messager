@@ -25,6 +25,14 @@ func (s *smtpSender) Send(req messager.MailRequest) (err error) {
 	if err != nil {
 		return
 	}
-	err = s.proxy.Send(req.Subject, content, req.Receivers...)
+	var parts []smtp.AttachmentPart
+	for _, att := range req.Attachments {
+		parts = append(parts, smtp.AttachmentPart{
+			Filename:    att.Filename,
+			ContentType: att.ContentType,
+			Data:        att.Data,
+		})
+	}
+	err = s.proxy.Send(req.Subject, content, req.Receivers, parts)
 	return
 }

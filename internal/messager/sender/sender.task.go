@@ -88,8 +88,17 @@ func (c *taskExecutor) Execute(task model.MessageTask) (err error) {
 			return
 		}
 		err = c.imSender.Send(m)
+	case msg.ApnsMessage:
+		log.Debug("apns task")
+		var m model.ApnsMessageInfo
+		m, err = repo.GetApnsByMessageId(mi.Id)
+		if err != nil {
+			_ = log.Error("no apns refer to message:%d", mi.Id)
+			return
+		}
+		err = c.apnsSender.Send(m)
 	default:
-		log.Info("unknown category:%d[task:%d]\n", category, task.Id)
+		log.Info("unknown category:%s[task:%d]\n", category, task.Id)
 	}
 	return
 }

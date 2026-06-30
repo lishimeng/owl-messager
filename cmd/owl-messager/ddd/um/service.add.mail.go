@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func serviceAddMail(org int, templateCode string, params, subject, receiver string) (m model.MessageInfo, err error) {
+func serviceAddMail(org int, templateCode string, params, subject, receiver string, attachmentIDs []string) (m model.MessageInfo, err error) {
 	var tpl model.MessageTemplate
 	tpl, err = repo.GetMessageTemplateByCode(templateCode, org)
 	if err != nil {
@@ -30,7 +30,7 @@ func serviceAddMail(org int, templateCode string, params, subject, receiver stri
 		org,
 		tpl,
 		params,
-		subject, receiver, "")
+		subject, receiver, attachmentIDs)
 
 	return
 }

@@ -60,6 +60,15 @@ func GetMessageSenderByCode(code string) (s model.MessageSenderInfo, err error) 
 	return
 }
 
+func GetMessageSenderById(id int) (s model.MessageSenderInfo, err error) {
+	err = orm().Model(&model.MessageSenderInfo{}).Equal("id", id).First(&s)
+	if err != nil {
+		return
+	}
+	err = s.Config.Decode()
+	return
+}
+
 func UpdateMessageSender(code string, config msg.SenderConfig) (s model.MessageSenderInfo, err error) {
 	err = orm().Transaction(func(ctx persistence.TxContext) (e error) {
 		e = ctx.Model(&model.MessageSenderInfo{}).Equal("code", code).First(&s)

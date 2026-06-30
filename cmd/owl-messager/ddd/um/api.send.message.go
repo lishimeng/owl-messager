@@ -26,6 +26,7 @@ type Req struct {
 	TemplateParam interface{} `json:"params"`             // 参数
 	Title         string      `json:"subject,omitempty"`  // 标题
 	Receiver      string      `json:"receiver"`           // 接收者，多个时用逗号分隔
+	Attachments   []string    `json:"attachments,omitempty"`
 }
 
 type Resp struct {
@@ -67,7 +68,7 @@ func sendMessage(ctx server.Context) {
 		return
 	}
 
-	if len(req.Template) == 0 {
+	if len(req.Template) == 0 && msg.MessageCategory(category) != msg.ApnsMessage {
 		log.Debug("param template code nil")
 		resp.Code = -1
 		resp.Message = "template nil"
@@ -144,7 +145,7 @@ func createMail(org int, req Req, params string) (m model.MessageInfo, resp Resp
 		req.Title = DefaultTitle
 	}
 
-	m, err = serviceAddMail(org, req.Template, params, req.Title, req.Receiver)
+	m, err = serviceAddMail(org, req.Template, params, req.Title, req.Receiver, req.Attachments)
 	if err != nil {
 		resp.Code = -1
 		resp.Message = "create mail message failed"
@@ -183,7 +184,7 @@ func createApns(org int, req Req, params string) (m model.MessageInfo, resp Resp
 		return
 	}
 
-	m, err = serviceAddApns(org, req.Template, params, req.Title, req.Receiver)
+	m, err = serviceAddApns(org, req.Template, params, req.Title, req.BundleId, req.Receiver)
 	if err != nil {
 		resp.Code = -1
 		resp.Message = "create sms message failed"

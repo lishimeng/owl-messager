@@ -1,13 +1,15 @@
 package messager
 
+import "github.com/lishimeng/owl-messager/pkg/msg"
+
 type Payload struct {
-	MessageCategory int         `json:"messageCategory,omitempty"` // 消息类型
-	Sender          string      `json:"sender"`                    // 发送者ID,必须在系统中注册过
-	Payload         interface{} `json:"payload"`
+	MessageCategory msg.MessageCategory `json:"messageCategory,omitempty"`
+	Sender          string              `json:"sender"`
+	Payload         interface{}         `json:"payload"`
 }
 
 // Message 消息
 type Message struct {
-	MessageId       int `json:"id"`
-	MessageCategory int `json:"messageCategory,omitempty"` // 消息类型
+	MessageId       int                 `json:"id"`
+	MessageCategory msg.MessageCategory `json:"messageCategory,omitempty"`
 }

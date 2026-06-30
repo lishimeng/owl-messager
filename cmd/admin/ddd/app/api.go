@@ -65,7 +65,7 @@ func add(ctx server.Context) {
 	var appInfo = model.OpenClient{
 		AppId:  appId,
 		Secret: secret,
-		Domain: tenantCode,
+		TenantCode: tenantCode,
 	}
 	appInfo.Org = tenant.Id
 	// TODO create app --> db(check duplicate:appid and name_in_tenant)

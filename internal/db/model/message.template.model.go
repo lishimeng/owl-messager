@@ -7,8 +7,9 @@ import (
 
 // MessageTemplate 消息模板
 type MessageTemplate struct {
-	app.TenantPk
-	Code          string              `gorm:"column:code;uniqueIndex"`
+	app.Pk
+	Org           int                 `gorm:"column:org;uniqueIndex:idx_tpl_org_code"`
+	Code          string              `gorm:"column:code;uniqueIndex:idx_tpl_org_code"`
 	Name          string              `gorm:"column:name"`
 	Category      msg.MessageCategory `gorm:"column:message_category"`
 	Body          string              `gorm:"column:body"`
@@ -18,8 +19,3 @@ type MessageTemplate struct {
 	Description   string              `gorm:"column:description"`
 	app.TableChangeInfo
 }
-
-const (
-	TemplateEnable  = 1
-	TemplateDisable = 0
-)

@@ -1,14 +1,8 @@
 package model
 
-// ApnsMessageInfo APNS
+// ApnsMessageInfo APNS 渠道详情；主题见 MessageInfo.Subject
 type ApnsMessageInfo struct {
-	MessageHeader
-	ApnsMode  ApnsMode `gorm:"column:apns_mode"`
-	BundleId  string   `gorm:"column:bundle_id"`
-	Params    string   `gorm:"column:params"`
-	Sender    int      `gorm:"column:sender_id"`
-	Receivers string   `gorm:"column:receiver"`
-	Subject   string   `gorm:"column:subject"`
+	PushChannelDetail
 }
 
 type ApnsMode int

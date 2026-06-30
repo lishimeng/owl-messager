@@ -66,7 +66,6 @@ func updateProviderStat(ctx persistence.TxContext, org int, category msg.Message
 
 func UpdateStatistics(ctx persistence.TxContext, task model.MessageTask) (err error) {
 	var info model.MessageInfo
-	var templateId int
 	err = ctx.Model(&model.MessageInfo{}).Equal("id", task.MessageId).First(&info)
 	if err != nil {
 		return
@@ -77,6 +76,26 @@ func UpdateStatistics(ctx persistence.TxContext, task model.MessageTask) (err er
 	if err != nil {
 		return
 	}
+
+	if category == msg.ApnsMessage {
+		var apnsInfo model.ApnsMessageInfo
+		err = ctx.Model(&model.ApnsMessageInfo{}).
+			Equal("id", task.MessageInstanceId).
+			First(&apnsInfo)
+		if err != nil {
+			return
+		}
+		var sender model.MessageSenderInfo
+		err = ctx.Model(&model.MessageSenderInfo{}).
+			Equal("id", apnsInfo.SenderId).
+			First(&sender)
+		if err != nil {
+			return
+		}
+		return updateProviderStat(ctx, org, category, sender.Provider)
+	}
+
+	var templateId int
 	switch category {
 	case msg.MailMessage:
 		var mailInfo model.MailMessageInfo
@@ -89,7 +108,7 @@ func UpdateStatistics(ctx persistence.TxContext, task model.MessageTask) (err er
 		templateId = mailInfo.Template
 	case msg.SmsMessage:
 		var smsInfo model.SmsMessageInfo
-		err = orm().Model(&model.SmsMessageInfo{}).
+		err = ctx.Model(&model.SmsMessageInfo{}).
 			Equal("id", task.MessageInstanceId).
 			First(&smsInfo)
 		if err != nil {
@@ -98,7 +117,7 @@ func UpdateStatistics(ctx persistence.TxContext, task model.MessageTask) (err er
 		templateId = smsInfo.Template
 	case msg.ImMessage:
 		var imInfo model.ImMessageInfo
-		err = orm().Model(&model.ImMessageInfo{}).
+		err = ctx.Model(&model.ImMessageInfo{}).
 			Equal("id", task.MessageInstanceId).
 			First(&imInfo)
 		if err != nil {
@@ -110,7 +129,7 @@ func UpdateStatistics(ctx persistence.TxContext, task model.MessageTask) (err er
 		return
 	}
 	var tpl model.MessageTemplate
-	err = orm().Model(&model.MessageTemplate{}).Equal("id", templateId).First(&tpl)
+	err = ctx.Model(&model.MessageTemplate{}).Equal("id", templateId).First(&tpl)
 	if err != nil {
 		return
 	}

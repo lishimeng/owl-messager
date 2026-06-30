@@ -73,3 +73,8 @@ type FastMsgConfig struct {
 	Username string `json:"username,omitempty"`
 	Password string `json:"password,omitempty"`
 }
+
+type ApnsConfig struct {
+	Certificate    string `json:"certificate,omitempty"`
+	CertificateKey string `json:"certificateKey,omitempty"`
+}

@@ -3,13 +3,15 @@ package repo
 import (
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/owl-messager/internal/db/model"
+	"github.com/lishimeng/owl-messager/pkg/msg"
 	"time"
 )
 
-func AddMessageTask(ctx persistence.TxContext, messageId int, messageInstanceId int) (task model.MessageTask, err error) {
+func AddMessageTask(ctx persistence.TxContext, messageId int, messageInstanceId int, category msg.MessageCategory) (task model.MessageTask, err error) {
 	task = model.MessageTask{
 		MessageId:         messageId,
 		MessageInstanceId: messageInstanceId,
+		Category:          category,
 	}
 	task.Status = model.MessageTaskInit
 	err = ctx.Create(&task)

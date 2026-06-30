@@ -16,9 +16,10 @@ var (
 	MailProviders map[MessageProvider]byte
 	SmsProviders  map[MessageProvider]byte
 	ImProviders   map[MessageProvider]byte
+	ApnsProviders map[MessageProvider]byte
 )
 
-func init() {
+func init() { // buildin
 
 	MailProviders = make(map[MessageProvider]byte)
 	MailProviders[Smtp] = VendorEnable
@@ -37,8 +38,12 @@ func init() {
 	ImProviders = make(map[MessageProvider]byte)
 	ImProviders[FastMsg] = VendorEnable
 
+	ApnsProviders = make(map[MessageProvider]byte)
+	ApnsProviders[Apns] = VendorEnable
+
 	Providers = make(map[MessageCategory]map[MessageProvider]byte)
 	Providers[MailMessage] = MailProviders
 	Providers[SmsMessage] = SmsProviders
 	Providers[ImMessage] = ImProviders
+	Providers[ApnsMessage] = ApnsProviders
 }
