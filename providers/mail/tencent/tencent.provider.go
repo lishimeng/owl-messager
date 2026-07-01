@@ -51,7 +51,11 @@ func New(config msg.TencentConfig) (s *MailTencentProvider, err error) {
 func (s *MailTencentProvider) Send(param messager.MailRequest) (err error) {
 	req := ses.NewSendEmailRequest()
 
-	req.FromEmailAddress = &s.Config.Sender
+	from, err := s.Config.FromEmailAddress()
+	if err != nil {
+		return err
+	}
+	req.FromEmailAddress = &from
 	for _, receiver := range param.Receivers {
 		var r = receiver
 		req.Destination = append(req.Destination, &r)

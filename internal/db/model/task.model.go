@@ -10,7 +10,7 @@ type MessageTask struct {
 	app.Pk
 	MessageId         int                 `gorm:"column:message_id"`
 	MessageInstanceId int                 `gorm:"column:message_instance_id"`
-	Category          msg.MessageCategory `gorm:"column:category"`
+	Category          msg.MessageCategory `gorm:"column:category;type:varchar(16)"`
 	app.TableChangeInfo
 }
 

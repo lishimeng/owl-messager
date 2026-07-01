@@ -6,12 +6,11 @@ import (
 )
 
 func TestVendorConfig(t *testing.T) {
-	var c, ok = vendorSupport[msg.Microsoft.String()+msg.MailMessage.String()]
-	if !ok {
+	m := msg.ProviderConfigFields(msg.MailMessage, msg.Microsoft)
+	if len(m) == 0 {
 		t.Log("unknown config")
 		return
 	}
-	var m = getJsonConstructor(c)
 	for key, value := range m {
 		t.Logf("%s:\t%s\n", key, value)
 	}

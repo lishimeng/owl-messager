@@ -16,9 +16,10 @@ func UpdateTemplate(ctx server.Context) {
 		ctx.Json(resp)
 		return
 	}
-	params, err := paramsToMap(req.Params)
+	params, err := normalizeParams(req.Params)
 	if err != nil {
 		resp.Code = tool.RespCodeNotFound
+		resp.Message = err.Error()
 		ctx.Json(resp)
 		return
 	}

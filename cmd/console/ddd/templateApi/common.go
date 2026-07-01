@@ -2,8 +2,10 @@ package templateApi
 
 import (
 	"encoding/json"
-	"github.com/lishimeng/app-starter"
+	"fmt"
 	"strings"
+
+	"github.com/lishimeng/app-starter"
 )
 
 type TemplateResp struct {
@@ -36,7 +38,8 @@ type TemplateReq struct {
 }
 
 type Param struct {
-	Attr []string `json:"attr,omitempty"`
+	Attr        []string `json:"attr,omitempty"`
+	Description string   `json:"description,omitempty"`
 }
 
 type Params map[string]Param
@@ -44,6 +47,57 @@ type Params map[string]Param
 type respTemplate struct {
 	app.Response
 	Item TemplateResp `json:"item"`
+}
+
+// normalizeParams 接受 JSON 映射或逗号简写（userName, code），返回紧凑 JSON 存库。
+func normalizeParams(params string) (string, error) {
+	params = strings.TrimSpace(params)
+	if params == "" {
+		return "{}", nil
+	}
+	if strings.HasPrefix(params, "{") {
+		return normalizeParamsJSON(params)
+	}
+	return paramsToMap(params)
+}
+
+func normalizeParamsJSON(params string) (string, error) {
+	var m Params
+	if err := json.Unmarshal([]byte(params), &m); err != nil {
+		return "", fmt.Errorf("invalid params json: %w", err)
+	}
+	for key, p := range m {
+		if strings.TrimSpace(key) == "" {
+			return "", fmt.Errorf("param key cannot be empty")
+		}
+		if len(p.Attr) == 0 {
+			m[key] = Param{
+				Attr:        []string{key},
+				Description: p.Description,
+			}
+		}
+	}
+	bs, err := json.Marshal(m)
+	if err != nil {
+		return "", err
+	}
+	return string(bs), nil
+}
+
+func formatParamsForDisplay(stored string) (string, error) {
+	stored = strings.TrimSpace(stored)
+	if stored == "" {
+		return "{}", nil
+	}
+	var m Params
+	if err := json.Unmarshal([]byte(stored), &m); err != nil {
+		return stored, nil
+	}
+	bs, err := json.MarshalIndent(m, "", "  ")
+	if err != nil {
+		return stored, nil
+	}
+	return string(bs), nil
 }
 
 func paramsToMap(params string) (string, error) {
@@ -61,16 +115,4 @@ func paramsToMap(params string) (string, error) {
 		return "", err
 	}
 	return string(bs), nil
-}
-
-func mapToParams(paramsMap string) (p string, err error) {
-	var m Params
-	err = json.Unmarshal([]byte(paramsMap), &m)
-	if err != nil {
-		return
-	}
-	for key, _ := range m {
-		p = p + key + ", "
-	}
-	return
 }

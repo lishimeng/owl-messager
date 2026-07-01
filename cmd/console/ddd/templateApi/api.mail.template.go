@@ -33,15 +33,13 @@ type InfoWrapper struct {
 	Info
 }
 
-// GetMailVendors 平台支持的mail类型
+// GetMailVendors 平台支持的 mail provider（来自 pkg/msg 目录）
 func GetMailVendors(ctx server.Context) {
 	var resp SmsVendors
 
 	resp.Code = tool.RespCodeSuccess
 	resp.Message = "Mail Vendors"
-	for key := range msg.MailProviders {
-		resp.Data = append(resp.Data, key)
-	}
+	resp.Data = msg.ListProviders(msg.MailMessage)
 	ctx.Json(resp)
 }
 
@@ -64,7 +62,7 @@ func GetMailTemplateList(ctx server.Context) {
 		dst.UpdateTime = util.FormatTime(src.UpdateTime)
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
-		q := tx.Model(&model.MessageTemplate{}).Equal("message_category", msg.MailMessage)
+		q := tx.Model(&model.MessageTemplate{}).Equal("category", msg.MailMessage)
 		if orgID != "" {
 			q = q.Equal("tenant_code", orgID)
 		}

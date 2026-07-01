@@ -18,7 +18,7 @@ type MessageHeader struct {
 type MessageInfo struct {
 	TenantScope
 	app.TableChangeInfo
-	Category     msg.MessageCategory `gorm:"column:category"`
+	Category     msg.MessageCategory `gorm:"column:category;type:varchar(16)"`
 	Subject      string              `gorm:"column:subject"`
 	Priority     int                 `gorm:"column:priority"`
 	NextSendTime time.Time           `gorm:"column:next_send_time"`

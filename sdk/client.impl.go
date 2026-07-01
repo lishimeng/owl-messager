@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-const ApiSendMessage = "/messages/"
+const ApiSendMessage = "/messages"
 
 const ApiTemplates = "/template"
 

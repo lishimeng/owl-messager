@@ -5,13 +5,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/lishimeng/app-starter/midware/auth/bearer"
-	"github.com/lishimeng/go-log"
-	"github.com/pkg/errors"
 	"io"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/lishimeng/app-starter/midware/auth/bearer"
+	"github.com/lishimeng/go-log"
+	"github.com/pkg/errors"
 )
 
 var DebugEnable bool
@@ -40,7 +41,7 @@ func (rc *RestClient) build(method string, body []byte) (code int, err error) {
 	var requestUri string
 	var request *http.Request
 
-	log.Debug("path:", rc.path)
+	log.Debug("path: %s", rc.path)
 	requestUri, err = url.JoinPath(rc.host, rc.path...) // 拼接uri
 	if len(rc.query) > 0 {                              // 拼接query部分
 		var content = ""
@@ -53,6 +54,7 @@ func (rc *RestClient) build(method string, body []byte) (code int, err error) {
 		log.Debug("request: [%s]%s", method, requestUri)
 	}
 
+	log.Info("[%s]%s", method, requestUri)
 	request, err = http.NewRequest(method, requestUri, bytes.NewBuffer(body))
 	if err != nil {
 		err = errors.Wrap(err, "create http request err")

@@ -43,7 +43,7 @@ type respMessageInfo struct {
 func GetMessageList(ctx server.Context) {
 	var resp respMessageInfo
 	var status = ctx.C.URLParamIntDefault("status", repo.ConditionIgnore)
-	var category = ctx.C.URLParamIntDefault("category", repo.ConditionIgnore)
+	var category = ctx.C.URLParamDefault("category", "")
 	var pageSize = ctx.C.URLParamIntDefault("pageSize", repo.DefaultPageSize)
 	var pageNo = ctx.C.URLParamIntDefault("pageNo", repo.DefaultPageNo)
 	var pager app.SimplePager[model.MessageInfo, RespMessageInfo]
@@ -64,7 +64,7 @@ func GetMessageList(ctx server.Context) {
 		if status > repo.ConditionIgnore {
 			q = q.Equal("status", status)
 		}
-		if category > repo.ConditionIgnore {
+		if len(category) > 0 {
 			q = q.Equal("category", category)
 		}
 		return q

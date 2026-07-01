@@ -9,7 +9,7 @@ import (
 func GetTemplateByCode(code string, category msg.MessageCategory) (s model.MessageTemplate, err error) {
 	err = orm().Model(&model.MessageTemplate{}).
 		Equal("code", code).
-		Equal("message_category", category).
+		Equal("category", category).
 		First(&s)
 	return
 }
@@ -21,7 +21,7 @@ func GetMessageTemplates(
 ) (templates []model.MessageTemplate, err error) {
 	err = orm().Model(&model.MessageTemplate{}).
 		Equal("tenant_code", tenantCode).
-		Equal("message_category", category).
+		Equal("category", category).
 		Equal("message_provider", provider).
 		Equal("status", model.TemplateEnable).
 		Find(&templates)

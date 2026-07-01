@@ -19,12 +19,7 @@ func GetSmsVendors(ctx server.Context) {
 	resp.Code = tool.RespCodeSuccess
 	resp.Message = "Sms Vendors"
 
-	providers := msg.Providers[msg.SmsMessage]
-	for key, v := range providers {
-		if v == 1 {
-			resp.Data = append(resp.Data, key)
-		}
-	}
+	resp.Data = msg.ListProviders(msg.SmsMessage)
 	ctx.Json(resp)
 }
 

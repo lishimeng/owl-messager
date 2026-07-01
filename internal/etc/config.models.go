@@ -3,9 +3,15 @@ package etc
 type Configuration struct {
 	Db             db             `toml:"db"`
 	Web            web            `toml:"web"`
+	Messager       messager       `toml:"messager"`
 	MailAttachment mailAttachment `toml:"mail-attachment"`
 	LogLevel       string         `toml:"log-level"`
 	Sqlite         sqlite         `toml:"sqlite"`
+}
+
+type messager struct {
+	// Host owl-messager Open API 根地址，Console 测试发送默认转发目标，如 http://127.0.0.1:81
+	Host string `toml:"host"`
 }
 
 type web struct {

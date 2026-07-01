@@ -60,7 +60,7 @@ func (c *taskExecutor) Execute(task model.MessageTask) (err error) {
 	}
 
 	category := mi.Category
-	switch mi.Category {
+	switch category {
 	case msg.MailMessage:
 		log.Debug("mail task")
 		var m model.MailMessageInfo

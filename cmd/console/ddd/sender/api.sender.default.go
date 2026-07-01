@@ -12,7 +12,7 @@ import (
 func _setDefault(code string, category string, tenantCode string, provider string) (err error) {
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) (e error) {
 		e = ctx.Model(&model.MessageSenderInfo{}).
-			Equal("message_category", category).
+			Equal("category", category).
 			Equal("message_provider", provider).
 			Equal("tenant_code", tenantCode).
 			Updates(map[string]any{"default_sender": 0})

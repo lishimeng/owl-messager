@@ -5,7 +5,6 @@ import (
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/provider"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 )
 
@@ -19,40 +18,17 @@ type ProviderInfo struct {
 	Category string `json:"category,omitempty"`
 }
 
-// 支持的provider列表
+// providerList 返回 pkg/msg 目录中的 provider 列表。
 func providerList(ctx server.Context) {
-	log.Info("get all providers...")
+	log.Info("get providers from catalog")
 	var resp Providers
-
-	mailList := provider.GetMailProviders()
-	for _, mail := range mailList {
+	category := msg.MessageCategory(ctx.C.Params().Get("category"))
+	for _, e := range msg.ListCatalog(category) {
 		resp.Items = append(resp.Items, ProviderInfo{
-			Name:     mail.String(),
-			Category: string(msg.MailMessage),
+			Name:     e.Provider.String(),
+			Category: string(e.Category),
 		})
 	}
-
-	smsList := provider.GetSmsProviders()
-	for _, sms := range smsList {
-		resp.Items = append(resp.Items, ProviderInfo{
-			Name:     sms.String(),
-			Category: string(msg.SmsMessage),
-		})
-	}
-
-	imList := provider.GetImProviders()
-	for _, im := range imList {
-		resp.Items = append(resp.Items, ProviderInfo{
-			Name:     im.String(),
-			Category: string(msg.ImMessage),
-		})
-	}
-
 	resp.Code = tool.RespCodeSuccess
 	ctx.Json(resp)
-}
-
-func providerCategoryList(ctx server.Context) {
-	category := ctx.C.Params().Get("category")
-	log.Info(category)
 }

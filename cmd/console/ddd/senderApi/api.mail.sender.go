@@ -53,7 +53,7 @@ func GetMailSenderList(ctx server.Context) {
 		dst.UpdateTime = util.FormatTime(src.UpdateTime)
 	}
 	pager.QueryBuilder = func(tx persistence.TxContext) persistence.Query {
-		q := tx.Model(&model.MessageSenderInfo{}).Equal("message_category", msg.MailMessage)
+		q := tx.Model(&model.MessageSenderInfo{}).Equal("category", msg.MailMessage)
 		if tenantCode != "" {
 			q = q.Equal("tenant_code", tenantCode)
 		}
@@ -87,7 +87,7 @@ func GetMailSenderInfo(ctx server.Context) {
 	var ms model.MessageSenderInfo
 	err = app.GetOrm().Model(&model.MessageSenderInfo{}).
 		Equal("id", id).
-		Equal("message_category", msg.MailMessage).
+		Equal("category", msg.MailMessage).
 		First(&ms)
 	if err != nil {
 		resp.Code = tool.RespCodeNotFound
@@ -187,7 +187,7 @@ func UpdateMailSender(ctx server.Context) {
 	var ms model.MessageSenderInfo
 	err = app.GetOrm().Model(&model.MessageSenderInfo{}).
 		Equal("id", id).
-		Equal("message_category", msg.MailMessage).
+		Equal("category", msg.MailMessage).
 		First(&ms)
 	if err != nil {
 		resp.Code = tool.RespCodeNotFound

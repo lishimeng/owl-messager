@@ -78,6 +78,7 @@ func _main() (err error) {
 		builder.EnableDatabase(dbConfig,
 			ddd.Tables()...).
 			PrintVersion().
+			EnableDatabaseLog().
 			EnableWeb(etc.Config.Web.Listen, ddd.Route).
 			ComponentBefore(process.BeforeStarted).
 			ComponentAfter(process.AfterStarted)

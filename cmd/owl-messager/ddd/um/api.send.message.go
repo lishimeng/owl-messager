@@ -3,13 +3,13 @@ package um
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/lishimeng/app-starter"
-	"github.com/lishimeng/app-starter/midware/auth"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/owl-messager/cmd/owl-messager/midware"
 	"github.com/lishimeng/owl-messager/internal/db/model"
-	"github.com/lishimeng/owl-messager/internal/db/repo"
 	"github.com/lishimeng/owl-messager/internal/messager/task"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 	"github.com/lishimeng/x/container"
@@ -37,8 +37,17 @@ func sendMessage(ctx server.Context) {
 	log.Info("Union message send function")
 	var req Req
 	var resp Resp
-	var tenantCode = ctx.C.GetHeader(auth.OrgKey)
-	err := ctx.C.ReadJSON(&req)
+	var tenantCode string
+	var err error
+	tenantCode, err = midware.TenantCodeFromContext(ctx)
+	if err != nil || tenantCode == "" {
+		log.Debug("tenant not in auth context")
+		resp.Code = -1
+		resp.Message = "unknown tenant"
+		ctx.Json(resp)
+		return
+	}
+	err = ctx.C.ReadJSON(&req)
 	if err != nil {
 		log.Info("read req fail")
 		log.Info(err)
@@ -86,26 +95,17 @@ func sendMessage(ctx server.Context) {
 		}
 	}
 
-	tenant, err := repo.GetTenant(tenantCode)
-	if err != nil {
-		log.Debug("unknown tenant: %s", tenantCode)
-		resp.Code = -1
-		resp.Message = "unknown tenant"
-		ctx.Json(resp)
-		return
-	}
-
 	// 检查消息类型(是否支持)
 	var message model.MessageInfo
 	switch msg.MessageCategory(category) {
 	case msg.MailMessage:
-		message, resp, err = createMail(tenant.Code, req, params)
+		message, resp, err = createMail(tenantCode, req, params)
 	case msg.SmsMessage:
-		message, resp, err = createSms(tenant.Code, req, params)
+		message, resp, err = createSms(tenantCode, req, params)
 	case msg.ApnsMessage:
-		message, resp, err = createApns(tenant.Code, req, params)
+		message, resp, err = createApns(tenantCode, req, params)
 	case msg.ImMessage:
-		message, resp, err = createIm(tenant.Code, req, params)
+		message, resp, err = createIm(tenantCode, req, params)
 	default:
 		err = fmt.Errorf("unkown message category")
 		resp.Code = -1

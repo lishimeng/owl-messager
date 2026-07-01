@@ -9,10 +9,11 @@ import (
 )
 
 func GetDefMessageSender(tenantCode string, category msg.MessageCategory, provider msg.MessageProvider) (s model.MessageSenderInfo, err error) {
+	provider = msg.NormalizeProvider(provider)
 	var senders []model.MessageSenderInfo
 	err = orm().Model(&model.MessageSenderInfo{}).
 		Equal("tenant_code", tenantCode).
-		Equal("message_category", category).
+		Equal("category", category).
 		Equal("message_provider", provider).
 		Equal("status", model.SenderEnable).
 		Order("-Default").

@@ -50,7 +50,7 @@ func (m *smsSender) Send(mi model.SmsMessageInfo) (err error) {
 		return
 	}
 
-	p, err := provider.GetFactory().Create(si.Provider, string(si.Config))
+	p, err := provider.GetFactory().Create(msg.NormalizeProvider(si.Provider), string(si.Config))
 	if err != nil {
 		log.Info("create sms provider failure:%d", si.Id)
 		return

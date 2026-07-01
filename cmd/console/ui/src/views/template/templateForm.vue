@@ -27,11 +27,17 @@
       <el-form-item label="第三方模板 ID" prop="cloudTemplate">
         <el-input v-model="state.formData.cloudTemplate" clearable placeholder="云平台模板 ID，本地模板可留空"></el-input>
       </el-form-item>
-			<el-form-item label="模板参数">
+			<el-form-item label="模板参数" prop="params">
 				<el-input
 					style="width: 100%"
+					type="textarea"
+					:autosize="{ minRows: 6, maxRows: 16 }"
 					v-model="state.formData.params"
+					placeholder='JSON 映射，例如：&#10;{&#10;  "userName": {&#10;    "description": "用户名",&#10;    "attr": ["UserName"]&#10;  },&#10;  "code": {&#10;    "attr": ["code"]&#10;  }&#10;}'
 				></el-input>
+				<div class="params-hint">
+					key 为发信 API 的 params 字段名；attr 为模板/云平台变量名（可不同大小写）。也支持简写：<code>userName, code</code>
+				</div>
 			</el-form-item>
 <!--      <el-form-item v-if="state.category=='sms'" label="第三方模板签名" prop="signature">-->
 <!--        <el-input type="textarea" v-model="state.formData.signature" clearable></el-input>-->
@@ -75,6 +81,7 @@
 <script setup lang="ts">
 import {computed, defineAsyncComponent, onMounted, reactive, ref, watch} from "vue";
 import {createTemplateApi, getTemplateInfoAPi, updateTemplateApi} from "/@/api/template";
+import {getProvidersApi} from "/@/api/dict";
 import {ElMessage} from "element-plus";
 const mailFormFormRef = ref()
 const JsEditor = defineAsyncComponent(() => import('/@/components/js/index.vue'));
@@ -89,22 +96,7 @@ const props = defineProps({
   }
 })
 
-// 新增模版: 通讯方式选项
-const mailVendors = [
-  "smtp",
-  "microsoft",
-  "tencent"
-];
-
-const smsVendors = [
-  "ali_yun",
-  "tencent_yun",
-  "huawei_yun",
-];
-
-const imVendors = [
-  "fastmsg",
-]
+// 通讯平台选项来自 /api/dict/providers/{category}
 
 const extractEditorHtml = (body: string) => {
   if (!body) return '';
@@ -112,8 +104,38 @@ const extractEditorHtml = (body: string) => {
   return match ? match[1].trim() : body;
 };
 
+const formatLoadedParams = (params: string) => {
+  if (!params?.trim()) {
+    return '{}';
+  }
+  if (params.trim().startsWith('{')) {
+    try {
+      return JSON.stringify(JSON.parse(params), null, 2);
+    } catch {
+      return params;
+    }
+  }
+  return params;
+};
+
+const vendorOptions = ref<string[]>([]);
+
+const loadVendors = async (category: string) => {
+  try {
+    const res = await getProvidersApi(category);
+    if (res?.code === 200 && res.items) {
+      vendorOptions.value = res.items.map((item: { name: string }) => item.name);
+    } else {
+      vendorOptions.value = [];
+    }
+  } catch {
+    vendorOptions.value = [];
+  }
+};
+
 onMounted(() => {
   state.category = props.category;
+  loadVendors(props.category);
   if (props.templateCode !== undefined) {
     // 编辑：加载配置
     getTemplateInfoAPi({
@@ -122,6 +144,7 @@ onMounted(() => {
     }).then(res => {
       if (res.code && res.code == 200) {
         state.formData = res.item
+        state.formData.params = formatLoadedParams(res.item.params || '{}')
         if (htmlTemplate.value && res.item.body) {
           state.getHtml = extractEditorHtml(res.item.body);
         }
@@ -141,7 +164,7 @@ const state = reactive({
     body: "",
     provider: "",
 		cloudTemplate: "",
-    params: "",
+    params: "{}",
     signature: "",
     sender: 0,
     category: "",
@@ -164,7 +187,28 @@ watch(() => state.getHtml, (newVal, oldVal) => {
   // console.log(state.formData.body)
 });
 
+const validateParams = (): boolean => {
+  const raw = state.formData.params?.trim();
+  if (!raw) {
+    state.formData.params = '{}';
+    return true;
+  }
+  if (raw.startsWith('{')) {
+    try {
+      JSON.parse(raw);
+      return true;
+    } catch {
+      ElMessage.error('模板参数不是合法 JSON');
+      return false;
+    }
+  }
+  return true;
+};
+
 const onSubmit = async () => {
+  if (!validateParams()) {
+    return false;
+  }
   // todo: 表单验证
   state.formData.category = state.category;
   // console.log(state.getText,state.getHtml);
@@ -214,24 +258,15 @@ const onSubmit = async () => {
 
 const resetForm = (category: string) => {
   state.category = category;
+  loadVendors(category);
   state.getHtml = "";
   state.getText = "";
   mailFormFormRef.value.resetFields();
   state.formData.body = "";
+  state.formData.params = "{}";
 }
 
-const vendors = computed(() => {
-  switch (state.category) {
-    case "sms":
-      return smsVendors;
-    case "mail":
-      return mailVendors;
-    case "im":
-      return imVendors;
-    default:
-      return [];
-  }
-})
+const vendors = computed(() => vendorOptions.value)
 
 const htmlTemplate = computed(() => {
   return state.category !== 'im'
@@ -244,5 +279,16 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+.params-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  line-height: 1.5;
 
+  code {
+    padding: 0 4px;
+    background: var(--el-fill-color-light);
+    border-radius: 3px;
+  }
+}
 </style>

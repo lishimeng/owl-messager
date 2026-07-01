@@ -9,7 +9,7 @@ import (
 
 type ProviderStats struct {
 	TenantScope `gorm:"uniqueIndex:idx_provider_stat"`
-	Category    msg.MessageCategory `gorm:"column:category;uniqueIndex:idx_provider_stat"`
+	Category    msg.MessageCategory `gorm:"column:category;type:varchar(16);uniqueIndex:idx_provider_stat"`
 	Provider    msg.MessageProvider `gorm:"column:provider;uniqueIndex:idx_provider_stat"`
 	Value    int                 `gorm:"column:value"`
 	app.TableChangeInfo

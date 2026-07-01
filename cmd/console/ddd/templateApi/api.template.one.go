@@ -33,7 +33,7 @@ func GetTemplateInfo(ctx server.Context) {
 		return
 	}
 
-	params, err := mapToParams(tpl.Params)
+	params, err := formatParamsForDisplay(tpl.Params)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "参数异常"

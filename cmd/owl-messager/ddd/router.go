@@ -7,7 +7,11 @@ import (
 )
 
 func Route(root server.Router) {
-	p := root.Path("/")
-	um.Route(p.Path("/messages"))
-	templates.Route(p.Path("/template"))
+	mountOpenAPI(root)
+	mountOpenAPI(root.Path("/api"))
+}
+
+func mountOpenAPI(root server.Router) {
+	um.Route(root.Path("/messages"))
+	templates.Route(root.Path("/template"))
 }

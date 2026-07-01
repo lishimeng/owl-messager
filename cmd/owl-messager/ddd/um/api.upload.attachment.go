@@ -2,11 +2,10 @@ package um
 
 import (
 	"github.com/lishimeng/app-starter"
-	"github.com/lishimeng/app-starter/midware/auth"
 	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/db/repo"
+	"github.com/lishimeng/owl-messager/cmd/owl-messager/midware"
 	"github.com/lishimeng/owl-messager/internal/mailattachment"
 	"github.com/lishimeng/owl-messager/pkg/msg"
 )
@@ -18,15 +17,13 @@ type uploadAttachmentResp struct {
 
 func uploadMailAttachment(ctx server.Context) {
 	var resp uploadAttachmentResp
-	orgHeader := ctx.C.GetHeader(auth.OrgKey)
-	tenant, err := repo.GetTenant(orgHeader)
-	if err != nil {
+	tenantCode, err := midware.TenantCodeFromContext(ctx)
+	if err != nil || tenantCode == "" {
 		resp.Code = tool.RespCodeError
 		resp.Message = "unknown tenant"
 		ctx.Json(resp)
 		return
 	}
-
 	file, info, err := ctx.C.FormFile("file")
 	if err != nil {
 		resp.Code = tool.RespCodeError
@@ -36,7 +33,7 @@ func uploadMailAttachment(ctx server.Context) {
 	}
 	defer file.Close()
 
-	ref, err := mailattachment.Default().Save(tenant.Code, info.Filename, info.Header.Get("Content-Type"), file)
+	ref, err := mailattachment.Default().Save(tenantCode, info.Filename, info.Header.Get("Content-Type"), file)
 	if err != nil {
 		log.Info("upload attachment failed: %v", err)
 		resp.Code = tool.RespCodeError

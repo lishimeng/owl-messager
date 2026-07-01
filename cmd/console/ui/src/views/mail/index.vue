@@ -99,6 +99,7 @@
         </el-form>
         <SenderConfigForm
             :vendor="state.form.vendor"
+            :category="state.category"
             :config="state.form.config"
             ref="senderForm"/>
       </div>
@@ -116,7 +117,8 @@
                :model="state.testForm"
                label-width="120px">
         <el-form-item label="Messager 地址" prop="host">
-          <el-input v-model="state.testForm.host" placeholder="http://127.0.0.1:8080"></el-input>
+          <el-input v-model="state.testForm.host" :placeholder="state.messagerHostHint"></el-input>
+          <div class="params-hint">{{ state.messagerHostTip }}</div>
         </el-form-item>
         <el-form-item label="AppId" prop="appId">
           <el-input v-model="state.testForm.appId" placeholder="open_client.app_id"></el-input>
@@ -134,14 +136,20 @@
           <el-input v-model="state.testForm.receiver"></el-input>
         </el-form-item>
         <el-form-item label="使用模板">
-          <el-select v-model="state.testForm.tpl" placeholder="已配置的模板..." style="width: 100%">
+          <el-select v-model="state.testForm.tpl" placeholder="已配置的模板..." style="width: 100%" @change="onTestTemplateChange">
             <el-option v-for="v in state.tplList" :key="v.code" :label="v.name" :value="v.code">
             </el-option>
           </el-select>
         </el-form-item>
-        <!--      <el-form-item label="模板参数" prop="tpl">-->
-        <!--        <el-input v-model="state.testForm.tplParam" disabled></el-input>-->
-        <!--      </el-form-item>-->
+        <el-form-item label="模板参数" prop="tplParam">
+          <el-input
+              v-model="state.testForm.tplParam"
+              type="textarea"
+              :autosize="{ minRows: 4, maxRows: 10 }"
+              placeholder='JSON，key 为模板映射对外参数名，例如：&#10;{&#10;  "userName": "张三",&#10;  "code": "839201"&#10;}'
+          ></el-input>
+          <div class="params-hint">对应发信 API 的 params 字段；留空时短信默认 {"code":"123456"}</div>
+        </el-form-item>
       </el-form>
       <span class="dialog-footer mt30" style="display: flex; justify-content: center;">
         <el-button type="primary" @click="sendTest()">发送</el-button>
@@ -156,12 +164,14 @@ import {
   createMailSenderConfigApi, delSenderApi,
   getMailSendersApi,
   getSenderInfoByCategoryAPi, senderTestApi, setDefaultSenderApi,
+  getSenderTestConfigApi,
   updateMailSenderConfigApi
 } from "/@/api/mail";
 import {ElMessage} from "element-plus";
 import {formatDate} from "/@/utils/formatTime";
 import SenderConfigForm from "/@/views/mail/senderConfigForm.vue";
 import {getTemplateListAPi} from "/@/api/template";
+import {getProvidersApi} from "/@/api/dict";
 
 const senderForm = ref();
 
@@ -185,20 +195,7 @@ const state = reactive({
     "sms",
     "im"
   ],
-  vendors: [],
-  mailVendors: [
-    "smtp",
-    "microsoft",
-    "tencent"
-  ],
-  smsVendors: [
-    "ali_yun",
-    "tencent_yun",
-    "huawei_yun",
-  ],
-  imVendors: [
-    "fastmsg",
-  ],
+  vendors: [] as string[],
   form: {
     tenantCode: "",
     code: "",
@@ -217,9 +214,11 @@ const state = reactive({
     vendor: "",
     receiver: "",
     tpl: "",
-    tplParam: "",
+    tplParam: "{}",
   },
   tplList: [],
+  messagerHostHint: "留空=本地直发；或 http://localhost:81",
+  messagerHostTip: "远程测试填 owl-messager 根地址（非 Console :80）。发信路径 POST /messages/mail",
 })
 const MESSAGER_PROXY_KEY = 'messagerTestProxy';
 
@@ -246,8 +245,24 @@ const saveMessagerProxy = () => {
 
 onMounted(() => {
   loadMessagerProxy();
+  loadSenderTestConfig();
   getMailSenders();
 })
+const loadSenderTestConfig = () => {
+  getSenderTestConfigApi().then(res => {
+    if (res?.defaultHost) {
+      state.messagerHostHint = `留空=本地直发；默认 ${res.defaultHost}`;
+      if (!state.testForm.host) {
+        state.testForm.host = res.defaultHost;
+      }
+    }
+    if (res?.message) {
+      state.messagerHostTip = res.message + (res.sendPath ? `（${res.sendPath}）` : '');
+    }
+  }).catch(() => {
+    // ignore
+  });
+};
 const showEdit = (row: object) => {
   // console.log(row)
   if (row) {
@@ -281,9 +296,43 @@ const showTest = async (row: object) => {
   }
   state.testForm.vendor = row.vendor
   state.testForm.code = row.code
+  state.testForm.tpl = ""
+  state.testForm.tplParam = "{}"
   await loadTemplate(state.category, state.testForm.vendor)
   state.showTest = true
 }
+const buildParamsExample = (paramsStr: string) => {
+  try {
+    const mapping = JSON.parse(paramsStr || '{}');
+    const example: Record<string, string> = {};
+    for (const key of Object.keys(mapping)) {
+      example[key] = key === 'code' ? '123456' : '示例值';
+    }
+    return JSON.stringify(example, null, 2);
+  } catch {
+    return '{}';
+  }
+};
+const onTestTemplateChange = (code: string) => {
+  const tpl = state.tplList.find((item: { code: string }) => item.code === code);
+  if (tpl?.params) {
+    state.testForm.tplParam = buildParamsExample(tpl.params);
+  } else {
+    state.testForm.tplParam = '{}';
+  }
+};
+const parseTestParams = () => {
+  const raw = state.testForm.tplParam?.trim();
+  if (!raw || raw === '{}') {
+    return undefined;
+  }
+  try {
+    return JSON.parse(raw);
+  } catch {
+    ElMessage.error('模板参数不是合法 JSON');
+    return null;
+  }
+};
 const loadTemplate = async (category: string, vendor: string) => {
   const res = await getTemplateListAPi({
     pageNum: 1,
@@ -298,28 +347,48 @@ const loadTemplate = async (category: string, vendor: string) => {
   }
 }
 const sendTest = () => {
-  if (!state.testForm.host || !state.testForm.appId || !state.testForm.secret) {
-    ElMessage.error('请填写 Messager 地址、AppId 和 Secret');
+  if (!state.testForm.appId || !state.testForm.secret) {
+    ElMessage.error('请填写 AppId 和 Secret');
+    return;
+  }
+  if (!state.testForm.tpl) {
+    ElMessage.error('请选择模板');
+    return;
+  }
+  if (!state.testForm.receiver?.trim()) {
+    ElMessage.error(`请填写${state.testReceiver}`);
+    return;
+  }
+  const params = parseTestParams();
+  if (params === null) {
     return;
   }
   saveMessagerProxy();
-  state.showTest = false
-  senderTestApi({
+  const payload: Record<string, unknown> = {
     category: state.category,
     host: state.testForm.host,
     appId: state.testForm.appId,
     secret: state.testForm.secret,
-    subject: "Owl-messager: 测试邮件",
     receiver: state.testForm.receiver,
     template: state.testForm.tpl,
-  }).then(res => {
+  };
+  if (params !== undefined) {
+    payload.params = params;
+  }
+  if (state.category === 'mail') {
+    payload.subject = 'Owl-messager: 测试邮件';
+  }
+  senderTestApi(payload).then(res => {
     if (res && res.code == 200) {
-      ElMessage.primary(`请检查发送历史与收件邮箱`);
+      state.showTest = false;
+      ElMessage.success('发送成功，请检查发送历史与收件方');
       getMailSenders();
+    } else {
+      ElMessage.error(res?.message || '发送失败');
     }
   }).catch(err => {
     console.log(err)
-    ElMessage.error(`发送失败`)
+    ElMessage.error(err?.message || '发送失败')
   })
 }
 const setDefaultSender = (row: object) => {
@@ -347,7 +416,12 @@ const deleteSender = (row: object) => {
   })
 }
 const onSubmit = () => {
-  state.form.config = senderForm.value.exportJson();
+  const config = senderForm.value.exportJson();
+  if (!config) {
+    ElMessage.error('请完善发件人配置');
+    return;
+  }
+  state.form.config = config;
   state.form.category = state.category
   createConfig();
 }
@@ -397,18 +471,20 @@ const getSenderInfoByCategory = (code: string) => {
     }
   })
 }
-const getMailSenders = () => {
-  switch (state.category) {
-    case 'mail':
-      state.vendors = state.mailVendors
-      break
-    case 'sms':
-      state.vendors = state.smsVendors
-      break
-    case 'im':
-      state.vendors = state.imVendors
-      break
+const loadVendors = async () => {
+  try {
+    const res = await getProvidersApi(state.category);
+    if (res?.code === 200 && res.items) {
+      state.vendors = res.items.map((item: { name: string }) => item.name);
+    } else {
+      state.vendors = [];
+    }
+  } catch {
+    state.vendors = [];
   }
+};
+const getMailSenders = async () => {
+  await loadVendors();
   state.queryValue.category = state.category
   getMailSendersApi(state.queryValue).then(res => {
     if (res && res.code == 200 && res.items) {
@@ -434,5 +510,11 @@ const onCurrentChange = (val: object) => {
 <style scoped lang="scss">
 .input_width {
   width: 100%;
+}
+.params-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  line-height: 1.5;
 }
 </style>

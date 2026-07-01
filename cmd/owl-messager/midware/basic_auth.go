@@ -8,9 +8,7 @@ import (
 	"github.com/lishimeng/app-starter/midware/auth"
 	"github.com/lishimeng/app-starter/midware/auth/bearer"
 	"github.com/lishimeng/app-starter/server"
-	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/owl-messager/internal/common"
 	"github.com/lishimeng/owl-messager/internal/db/repo"
 )
 
@@ -42,17 +40,18 @@ func openBasicAuth(ctx server.Context) {
 		denyOpen(ctx)
 		return
 	}
-
-	p := token.JwtPayload{
-		Uid:   client.AppId,
-		Org:   client.TenantCode,
-		Scope: common.Scope,
+	if client.TenantCode == "" {
+		log.Debug("open client missing tenant_code: %s", appId)
+		denyOpen(ctx)
+		return
 	}
-	ctx.C.Values().Set(auth.UserInfoKey, p)
-	r := ctx.C.Request()
-	r.Header.Set(auth.OrgKey, client.TenantCode)
-	r.Header.Set(auth.UidKey, client.AppId)
-	r.Header.Set(auth.ScopeKey, p.Scope)
+	if _, err = repo.GetTenant(client.TenantCode); err != nil {
+		log.Debug("open basic auth tenant disabled or missing: %s", client.TenantCode)
+		denyOpen(ctx)
+		return
+	}
+
+	setOpenClientContext(ctx, client.AppId, client.TenantCode)
 	ctx.C.Next()
 }
 

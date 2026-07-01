@@ -10,7 +10,7 @@ type MessageTemplate struct {
 	TenantScope   `gorm:"uniqueIndex:idx_tpl_tenant_code"`
 	Code          string              `gorm:"column:code;uniqueIndex:idx_tpl_tenant_code"`
 	Name          string              `gorm:"column:name"`
-	Category      msg.MessageCategory `gorm:"column:message_category"`
+	Category      msg.MessageCategory `gorm:"column:category;type:varchar(16)"`
 	Body          string              `gorm:"column:body"`
 	Params        string              `gorm:"column:params"`
 	Provider      msg.MessageProvider `gorm:"column:message_provider"`

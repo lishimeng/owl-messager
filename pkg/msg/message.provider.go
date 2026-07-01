@@ -9,7 +9,7 @@ const (
 	Ali       MessageProvider = "ali_yun"
 	Huawei    MessageProvider = "huawei_yun"
 	QiNiu     MessageProvider = "qi_niu_yun"
-	Tencent   MessageProvider = "tencent_yun"
+	Tencent   MessageProvider = "tencent"
 	UpYun     MessageProvider = "up_yun"
 	Apns      MessageProvider = "apns"
 	FastMsg   MessageProvider = "fastmsg"
@@ -61,10 +61,12 @@ type GraphConfig struct {
 }
 
 type TencentConfig struct {
-	AppId  string `json:"appId,omitempty"`
-	Secret string `json:"secret,omitempty"`
-	Region string `json:"region,omitempty"`
-	Sender string `json:"sender,omitempty"`
+	AppId       string `json:"appId,omitempty"`
+	Secret      string `json:"secret,omitempty"`
+	Region      string `json:"region,omitempty"`
+	SenderEmail string `json:"senderEmail,omitempty"` // 发件邮箱（须在腾讯云 SES 控制台验证）
+	SenderAlias string `json:"senderAlias,omitempty"` // 发件人别名，不能含冒号
+	Sender      string `json:"sender,omitempty"`      // 兼容旧配置：完整 FromEmailAddress 或纯邮箱
 }
 
 type FastMsgConfig struct {

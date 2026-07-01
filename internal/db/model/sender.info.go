@@ -8,7 +8,7 @@ import (
 type MessageSenderInfo struct {
 	TenantScope `gorm:"uniqueIndex:idx_sender_tenant_code"`
 	Code        string              `gorm:"column:code;uniqueIndex:idx_sender_tenant_code"`
-	Category msg.MessageCategory `gorm:"column:message_category"`
+	Category msg.MessageCategory `gorm:"column:category;type:varchar(16)"`
 	Provider msg.MessageProvider `gorm:"column:message_provider"`
 	Default  int                 `gorm:"column:default_sender"`
 	Config   msg.SenderConfig    `gorm:"column:config"`

@@ -50,7 +50,7 @@ func GetTemplateListByPage(ctx server.Context) {
 			q = q.Equal("tenant_code", tenantCode)
 		}
 		if len(category) > 0 {
-			q = q.Equal("message_category", category)
+			q = q.Equal("category", category)
 		}
 		if len(provider) > 0 {
 			q = q.Equal("message_provider", provider)
