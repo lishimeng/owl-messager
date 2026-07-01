@@ -55,6 +55,7 @@ func _main() (err error) {
 
 		builder.EnableDatabase(dbConfig.Build(),
 			ddd.Tables()...).
+			EnableDatabaseLog().
 			ComponentBefore(process.BeforeStarted).
 			EnableStaticWeb(func() http.FileSystem {
 				return http.FS(static.Static)

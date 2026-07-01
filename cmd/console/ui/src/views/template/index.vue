@@ -33,14 +33,14 @@
         </el-table-column>
         <el-table-column label="操作" width="140" fixed="right">
           <template #default="scope">
-            <el-button size="small" type="text" @click="openEdit(scope.row.code)">
+            <el-button size="small" link @click="openEdit(scope.row.code)">
               编辑
             </el-button>
             <el-popconfirm
                 title="是否删除?"
                 @confirm="deleteDeviceRow(scope.row.code)">
               <template #reference>
-                <el-button size="small" type="text">删除</el-button>
+                <el-button size="small" link>删除</el-button>
               </template>
             </el-popconfirm>
           </template>

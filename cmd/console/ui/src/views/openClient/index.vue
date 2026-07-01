@@ -21,14 +21,14 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="180">
           <template #default="scope">
-            <el-button size="small" type="text" @click="showSecret(scope.row)">
+            <el-button size="small" link @click="showSecret(scope.row)">
               查看密钥
             </el-button>
             <el-popconfirm
                 title="是否删除?"
                 @confirm="deleteClient(scope.row)">
               <template #reference>
-                <el-button size="small" type="text">删除</el-button>
+                <el-button size="small" link>删除</el-button>
               </template>
             </el-popconfirm>
           </template>

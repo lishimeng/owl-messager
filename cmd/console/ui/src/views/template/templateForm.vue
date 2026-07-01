@@ -24,8 +24,8 @@
       <el-form-item label="描述" prop="description">
         <el-input v-model="state.formData.description" clearable></el-input>
       </el-form-item>
-      <el-form-item v-if="useCloudTemplate" label="第三方模板code" prop="cloudTemplate">
-        <el-input v-model="state.formData.cloudTemplate" clearable></el-input>
+      <el-form-item label="第三方模板 ID" prop="cloudTemplate">
+        <el-input v-model="state.formData.cloudTemplate" clearable placeholder="云平台模板 ID，本地模板可留空"></el-input>
       </el-form-item>
 			<el-form-item label="模板参数">
 				<el-input
@@ -39,10 +39,15 @@
 <!--      <el-form-item v-if="state.category=='sms'" label="指定发送平台" prop="sender">-->
 <!--        <el-input type="number" v-model="state.formData.sender" clearable></el-input>-->
 <!--      </el-form-item>-->
-			<div v-if="!useCloudTemplate">
+			<div>
 				<el-form-item label="模板内容" v-if="htmlTemplate">
-					<wngEditor mode="default" height="300px" v-model:getHtml="state.getHtml"
-										v-model:getText="state.getText"></wngEditor>
+					<wngEditor
+              :key="props.templateCode || 'create'"
+              mode="default"
+              height="320px"
+              v-model:getHtml="state.getHtml"
+              v-model:getText="state.getText"
+          ></wngEditor>
 				</el-form-item>
 				<el-form-item v-if="htmlTemplate">
 					<el-input
@@ -101,6 +106,12 @@ const imVendors = [
   "fastmsg",
 ]
 
+const extractEditorHtml = (body: string) => {
+  if (!body) return '';
+  const match = body.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  return match ? match[1].trim() : body;
+};
+
 onMounted(() => {
   state.category = props.category;
   if (props.templateCode !== undefined) {
@@ -110,16 +121,9 @@ onMounted(() => {
       // category: state.category
     }).then(res => {
       if (res.code && res.code == 200) {
-        console.log(res);
         state.formData = res.item
-        if (htmlTemplate.value && !useCloudTemplate.value) {
-          state.getHtml = res.item.body.replace("<html>", "")
-              .replace("</html>", "")
-              .replace("<head>", "")
-              .replace("</head>", "")
-              .replace("<body>", "")
-              .replace("</body>", "")
-              .replace("<meta charset=\"utf-8\">", "")
+        if (htmlTemplate.value && res.item.body) {
+          state.getHtml = extractEditorHtml(res.item.body);
         }
       }
     }).catch(err => {
@@ -183,10 +187,8 @@ const onSubmit = async () => {
   try {
     let res;
     if (state.formData.code) {
-      console.log("更新");
       res = await updateTemplateApi(state.formData);
     } else {
-      console.log("创建");
       if (!state.formData.tenantCode?.trim()) {
         ElMessage.error("请填写租户 code");
         return false;
@@ -200,7 +202,6 @@ const onSubmit = async () => {
       // state
       return true;
     } else {
-      console.log(res);
       ElMessage.error("提交失败");
       return false;
     }
@@ -212,7 +213,6 @@ const onSubmit = async () => {
 };
 
 const resetForm = (category: string) => {
-  console.log("resetForm")
   state.category = category;
   state.getHtml = "";
   state.getText = "";
@@ -236,11 +236,6 @@ const vendors = computed(() => {
 const htmlTemplate = computed(() => {
   return state.category !== 'im'
 })
-
-const useCloudTemplate = computed(() => {
-	return state.category === 'sms'
-})
-
 
 defineExpose({
   onSubmit,

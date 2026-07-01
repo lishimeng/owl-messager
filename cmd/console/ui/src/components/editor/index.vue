@@ -8,7 +8,6 @@
 			v-model="state.editorVal"
 			@onCreated="handleCreated"
 			@onChange="handleChange"
-      @input="handleChange"
 		/>
 	</div>
 </template>
@@ -62,14 +61,29 @@ const state = reactive({
 });
 
 // 编辑器回调函数
+const syncEditorHtml = (html?: string) => {
+	const val = html ?? '';
+	const editor = editorRef.value;
+	if (editor?.getHtml && editor.getHtml() === val) {
+		state.editorVal = val;
+		return;
+	}
+	state.editorVal = val;
+	if (editor?.setHtml) {
+		editor.setHtml(val);
+	}
+};
+
 const handleCreated = (editor: IDomEditor) => {
 	editorRef.value = editor;
+	syncEditorHtml(props.getHtml);
 };
 // 编辑器内容改变时
-const handleChange = (editor: IDomEditor) => {
-  // console.log(editor.getHtml())
-	emit('update:getHtml', editor.getHtml());
-	emit('update:getText', editor.getText());
+const handleChange = (editor?: IDomEditor) => {
+	const instance = editor?.getHtml ? editor : editorRef.value;
+	if (!instance?.getHtml) return;
+	emit('update:getHtml', instance.getHtml());
+	emit('update:getText', instance.getText());
 };
 // 页面销毁时
 onBeforeUnmount(() => {
@@ -94,10 +108,7 @@ watch(
 watch(
 	() => props.getHtml,
 	(val) => {
-		state.editorVal = val;
-	},
-	{
-		deep: true,
+		syncEditorHtml(val);
 	}
 );
 </script>

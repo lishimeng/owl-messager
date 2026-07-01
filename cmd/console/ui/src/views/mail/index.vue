@@ -39,20 +39,20 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
-            <el-button size="small" type="text" @click="showEdit(scope.row)">
+            <el-button size="small" link @click="showEdit(scope.row)">
               编辑
             </el-button>
-            <el-button size="small" type="text" v-if="scope.row.defaultSender" @click="showTest(scope.row)">
+            <el-button size="small" link v-if="scope.row.defaultSender" @click="showTest(scope.row)">
               测试发送
             </el-button>
-            <el-button size="small" type="text" v-else @click="setDefaultSender(scope.row)">
+            <el-button size="small" link v-else @click="setDefaultSender(scope.row)">
               设为默认
             </el-button>
             <el-popconfirm
                 title="是否删除?"
                 @confirm="deleteSender(scope.row)">
               <template #reference>
-                <el-button size="small" type="text">删除</el-button>
+                <el-button size="small" link>删除</el-button>
               </template>
             </el-popconfirm>
           </template>
